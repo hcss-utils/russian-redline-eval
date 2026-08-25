@@ -1,0 +1,152 @@
+[
+ {
+  "chunk_id": "3404",
+  "gold_rls": "Y",
+  "gold_nts": "Y",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "kremlin.ru",
+  "date": "2016-06-17",
+  "source_arm": "kremlin"
+ },
+ {
+  "chunk_id": "4604",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "kremlin.ru",
+  "date": "2021-11-18",
+  "source_arm": "kremlin"
+ },
+ {
+  "chunk_id": "4817",
+  "gold_rls": "N",
+  "gold_nts": "Y",
+  "revised_pipeline_rls_candidate": true,
+  "revised_pipeline_nts_candidate": false,
+  "source_channel": "kremlin.ru",
+  "date": "2022-11-02",
+  "source_arm": "kremlin"
+ },
+ {
+  "chunk_id": "5244",
+  "gold_rls": "Y",
+  "gold_nts": "Y",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "kremlin.ru",
+  "date": "2024-11-07",
+  "source_arm": "kremlin"
+ },
+ {
+  "chunk_id": "5259",
+  "gold_rls": "Y",
+  "gold_nts": "Y",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "kremlin.ru",
+  "date": "2024-12-06",
+  "source_arm": "kremlin"
+ },
+ {
+  "chunk_id": "44609",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": false,
+  "source_channel": "council.gov.ru",
+  "date": "2024-07-05",
+  "source_arm": "federation_council"
+ },
+ {
+  "chunk_id": "92165",
+  "gold_rls": "Y",
+  "gold_nts": "Y",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "Embassy of Russia in the USA / Посольство России в США",
+  "date": "2022-09-30",
+  "source_arm": "telegram_official"
+ },
+ {
+  "chunk_id": "116031",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": false,
+  "source_channel": "МИД России 🇷🇺",
+  "date": "2023-04-13",
+  "source_arm": "telegram_official"
+ },
+ {
+  "chunk_id": "121263",
+  "gold_rls": "Y",
+  "gold_nts": "Y",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "Минобороны России",
+  "date": "2023-05-25",
+  "source_arm": "telegram_official"
+ },
+ {
+  "chunk_id": "191673",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "МИД России 🇷🇺",
+  "date": "2024-09-04",
+  "source_arm": "telegram_official"
+ },
+ {
+  "chunk_id": "204984",
+  "gold_rls": "Y",
+  "gold_nts": "Y",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "Дмитрий Медведев",
+  "date": "2024-11-26",
+  "source_arm": "telegram_official"
+ },
+ {
+  "chunk_id": "234122",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "МИД России 🇷🇺",
+  "date": "2025-06-09",
+  "source_arm": "telegram_official"
+ },
+ {
+  "chunk_id": "275380",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": false,
+  "source_channel": "kremlin.ru",
+  "date": "2023-06-13",
+  "source_arm": "kremlin"
+ },
+ {
+  "chunk_id": "275688",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": true,
+  "source_channel": "kremlin.ru",
+  "date": "2024-03-13",
+  "source_arm": "kremlin"
+ },
+ {
+  "chunk_id": "291535",
+  "gold_rls": "Y",
+  "gold_nts": "N",
+  "revised_pipeline_rls_candidate": false,
+  "revised_pipeline_nts_candidate": false,
+  "source_channel": "duma.gov.ru",
+  "date": "2026-06-09",
+  "source_arm": "state_duma"
+ }
+]

@@ -1,0 +1,9 @@
+ACTIVE PROMPT v2 — built from the CURRENT codebook.
+  sources: RLS_NTS_CODEBOOK_SDS_260727.md (STRICT construct + the eight-exclusion positions)
+           CODEBOOK_AMENDMENT_1_INCLUSIVE_260729.md (INCLUSIVE construct, receiver-side limb)
+  system_v2.md        sha256=f4f6db1793fbdd06007ad767566810a9d266a8b9e1152c69ee05a84611dcd516 chars=4654
+  user_template_v2.md sha256=6573585b2bdf0aa16c7e0d605459899ae71d5cc6bf255ef303e7870599c5e399 chars=120
+
+SUPERSEDED: system_v1.md was assembled from PRODUCTION_PROMPTS_gpt5mini_260725.txt (25 July),
+which PREDATES both codebooks above and enforces six exclusions the 27/29 July documents drop.
+Do not use v1. Retained only for provenance.

@@ -1,0 +1,7 @@
+# Verified working set for the recorded run (2026-08-25)
+anthropic==0.97.0
+openai==2.11.0
+google-genai>=1.0
+# Python 3.12 used for the recorded run.
+# Provider keys are read from a dotenv file at $CREDENTIALS_ENV (default ~/.rubicon.env).
+# No key material is contained in this repository.
