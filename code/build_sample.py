@@ -10,8 +10,13 @@ Design rationale (see README):
 Deterministic: fixed seed, sorted inputs. Same input -> same sample, always.
 """
 import csv, io, json, hashlib, random, statistics, sys, os
+import os
+# Local corpus paths are machine-specific and are read from the environment.
+# GOLD_DIR should point at the reference-set directory; the published data/
+# files in this repo are the outputs, so nothing here is needed to re-score.
+GOLD_DIR = os.environ.get("GOLD_DIR", "./gold_certification")
 
-BASE = "/mnt/g/My Drive/RuBase/Red lines/gold_certification"
+BASE = GOLD_DIR
 GOLD = os.path.join(BASE, "gold_v2_260726.csv")
 TEXT = os.path.join(BASE, "scripts", "gold298_rows.json")
 OUT  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_100.json")

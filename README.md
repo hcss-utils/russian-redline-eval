@@ -61,6 +61,55 @@ python code/score.py
 ```
 Append-only and resume-capable: re-running skips completed `(model, chunk, lang, rep)` work.
 
+## The sequential arm — does a raised alert ever come down?
+
+A static benchmark asks *is this passage a nuclear signal?* It cannot ask the question a
+decision-maker actually faces: **this speaker has been talking for weeks — is what they just said
+different?**
+
+So we built a second arm. Each of **17 sequences** is **8
+real statements by one speaker in chronological order**, with a gold nuclear signal at position
+**6** and *screened* negatives either side (`is_relevant = false` from the pass
+covering all 296,381 corpus chunks — the negatives are verified, not assumed). At each step the model
+sees the timeline so far **including its own earlier calls**, and sets an alert level: NONE, WATCH or
+NUCLEAR. It may raise or lower it freely.
+
+**816 decisions, $6.54.**
+
+| configuration | caught | cry-wolf before the signal | stuck high after catching | fabricated span |
+|---|---|---|---|---|
+| haiku-4.5 | 14/17 | 3.5% | 17.9% | 36.4% |
+| gpt-5.6-sol | 13/17 | 3.5% | 3.8% | 0.0% |
+| opus-5-think | 12/17 | 2.4% | 4.2% | 2.9% |
+| deepseek-v4-pro | 11/17 | 2.4% | 9.1% | 9.4% |
+| fable-5 | 9/17 | 2.4% | 5.6% | 5.9% |
+| gemini-3.6-flash | 8/17 | 1.2% | 0.0% | 25.0% |
+
+### The finding
+
+**Static accuracy separates these six configurations by 4.5 points. Catch rate separates them by 35.3
+— 7.8× wider — and the ranking inverts.** The most accurate model on the static task catches the
+fewest live signals. Some raise an alert and never stand down.
+
+That is a result about *evaluation design*, not only about models: the conventional framing was
+hiding the differences that matter when a model is watching a situation develop.
+
+### Honest shape
+
+Conversation history is carried **in the prompt** rather than as multi-turn API messages. The model
+conditions on its own prior commitments, which is the property under test, but this is not a
+true multi-turn or agentic harness and should not be described as one.
+
+### Reproducing
+
+`data/sequences.json` contains the full sequences including passage text, so the arm is reproducible
+without database access. `code/build_sequences.py` regenerates them from the corpus if you have one.
+
+```
+python code/run_sequential.py --budget 35
+python code/score_sequential.py results/results_sequential.jsonl
+```
+
 ## What we did not measure, and do not claim
 
 - **Russian only.** A verdict that flips between our translation and the original cannot be attributed to

@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """Generate the app's MODELS[] and PASSAGES[] from measured results. Nothing typed."""
 import json, io, os, collections, statistics, re
+import os
+# Local corpus paths are machine-specific and are read from the environment.
+# GOLD_DIR should point at the reference-set directory; the published data/
+# files in this repo are the outputs, so nothing here is needed to re-score.
+GOLD_DIR = os.environ.get("GOLD_DIR", "./gold_certification")
 
 HERE=os.path.dirname(os.path.abspath(__file__))
 RES=os.path.join(HERE,"results_sweep.jsonl")
 SCO=json.load(io.open(os.path.join(HERE,"scores.json"),encoding="utf-8"))
 SAMP={r["chunk_id"]:r for r in json.load(io.open(os.path.join(HERE,"sample_representative_100.json"),encoding="utf-8"))}
-raw=io.open("/mnt/g/My Drive/RuBase/Red lines/gold_certification/scripts/gold298_rows.json",encoding="utf-8").read()
+raw=io.open("" + GOLD_DIR + "/scripts/gold298_rows.json",encoding="utf-8").read()
 TXT={r["chunk_id"]:r["content"] for r in json.loads(raw[raw.index("["):])}
 
 DISPLAY={ "fable-5":("Claude Fable 5","Anthropic","claude-fable-5"),

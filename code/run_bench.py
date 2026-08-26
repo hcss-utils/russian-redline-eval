@@ -13,6 +13,11 @@ existing file keyed on (model_key, chunk_id, lang, rep); one flush per record.
 """
 import argparse, io, json, os, re, sys, time, hashlib, threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
+# Local corpus paths are machine-specific and are read from the environment.
+# GOLD_DIR should point at the reference-set directory; the published data/
+# files in this repo are the outputs, so nothing here is needed to re-score.
+GOLD_DIR = os.environ.get("GOLD_DIR", "./gold_certification")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -155,8 +160,8 @@ def main():
         return
 
     sample = json.load(io.open(a.sample, encoding="utf-8"))
-    G = "/mnt/g/My Drive/Red lines".replace("/Red lines","")  # placeholder, text loaded below
-    raw = io.open("/mnt/g/My Drive/RuBase/Red lines/gold_certification/scripts/gold298_rows.json",
+
+    raw = io.open("" + GOLD_DIR + "/scripts/gold298_rows.json",
                   encoding="utf-8").read()
     TXT = {r["chunk_id"]: r["content"] for r in json.loads(raw[raw.index("["):])}
     items = sample[:a.n] if a.mode == "pilot" else sample
