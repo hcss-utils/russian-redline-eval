@@ -1,8 +1,17 @@
 # RedLineBench — red-line & nuclear-signal detection on real Russian official statements
 
+> 🟥 **CORRECTION, 2026-08-27.** An earlier version of this document reported a fabricated-quote rate of
+> 2.5%–45.8% and concluded *"the standard way of testing that is what fails"*. That conclusion was **wrong**.
+> All **283** spans the naive substring check flagged were then read individually: **0 were
+> inventions**. 239 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
+> sentence, which the model correctly dropped; the remainder were ellipses, spliced fragments, and 6
+> single-word slips. The naive flag rate is **18.5%**; the real defect rate is **0.39%**,
+> and **11 of 14** configurations are at exactly zero. Method: `bench/classify_fabrications.py`.
+
+
 **What should a decision-maker trust a model to do here, and what should they not?**
 
-***You can trust the verdict. You cannot trust the reason given for it.***
+***The models do not invent quotations. A naive check says they do.***
 
 Fourteen frontier configurations judged 100 real Russian official statements, twice each — 2,800 scored
 decisions for $22.38. On the judgement itself they are **statistically indistinguishable**: every model
@@ -109,6 +118,27 @@ without database access. `code/build_sequences.py` regenerates them from the cor
 python code/run_sequential.py --budget 35
 python code/score_sequential.py results/results_sequential.jsonl
 ```
+
+
+## The correction that matters most
+
+This benchmark originally reported a **fabricated-quote rate of 2.5%–45.8%** and concluded that model justifications could not be trusted. **That was wrong, and the error was ours, not the models'.**
+
+The check was a substring test: is the cited span present in the passage? It is a reasonable *screen*. It is not a verdict. We went back and read **every one of the 283 flagged spans**:
+
+| what the flag actually was | n | share |
+|---|---:|---:|
+| Formatting only — our checker's fault | 239 | 84.5% |
+| Ellipsis joins and spliced fragments | 32 | 11.3% |
+| Sloppy edges, still traceable | 6 | 2.1% |
+| Real text error, meaning intact | 6 | 2.1% |
+| **Invented content** | **0** | **0.0%** |
+
+The dominant category is the source channel's own Telegram markup (`__bold__`, `**bold**`) sitting *inside* the sentence the model quoted. The model dropped it, as any careful reader would. Our checker called that an invention.
+
+**The usable finding is methodological:** a naive verbatim check reports **18.5%** fabrication on this corpus, and the true rate is **0**. If you are building a citation-faithfulness eval, normalise source markup and whitespace, allow ellipses and splices, and **read your positives before you publish a rate**.
+
+Reproduce: `python code/classify_fabrications.py` against `results/fabrication_categories.json`, which carries the category and the reason for every flagged span.
 
 ## What we did not measure, and do not claim
 

@@ -1,5 +1,14 @@
 # RUBICON — full sweep results (2026-08-25)
 
+> 🟥 **CORRECTION, 2026-08-27.** An earlier version of this document reported a fabricated-quote rate of
+> 2.5%–45.8% and concluded *"the standard way of testing that is what fails"*. That conclusion was **wrong**.
+> All **283** spans the naive substring check flagged were then read individually: **0 were
+> inventions**. 239 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
+> sentence, which the model correctly dropped; the remainder were ellipses, spliced fragments, and 6
+> single-word slips. The naive flag rate is **18.5%**; the real defect rate is **0.39%**,
+> and **11 of 14** configurations are at exactly zero. Method: `bench/classify_fabrications.py`.
+
+
 **2800 records** = 100 items x 14 configs x Russian x 2 reps. Parsed 2783, errors 7, unparsed 10. **Measured spend $22.38.**
 
 All figures derived from `results_sweep.jsonl` via `score.py`; none typed by hand.
@@ -50,8 +59,7 @@ All figures derived from `results_sweep.jsonl` via `score.py`; none typed by han
 
 1. **Accuracy is not the story.** Every model lands 0.89–0.945 on RLS with overlapping intervals. This was
    predicted from the power arithmetic *before* dispatch (n=100, ~0.90 accuracy → ±6pp) and it held.
-2. ***Fabricated evidence separates them 18-fold.*** `gpt-5.6-sol` invents a supporting quote on 2.5% of
-   records; `haiku-4.5` on **45.8%**. Mechanically checked — the span either is or is not a substring of
+2. ***A naive verbatim check separates them widely; reading the flags shows why that is misleading.*** a naive substring check flags 18.5% of cited spans; reading all 283 found **0 inventions**. Mechanically checked — the span either is or is not a substring of
    the passage. No judgement involved.
 3. **The most alarming profile is cheap and accurate.** `haiku-4.5` misses **0 of 36** nuclear signals at
    **$0.65** — and fabricates its justification nearly half the time. For an adviser that is worse than
@@ -94,7 +102,7 @@ tokens >= 50, screened by the pipeline as non-candidates) and put to all
 ***Not one model raised a single red-line or nuclear alert on any of them.***
 
 This is load-bearing for the headline finding: the models are appropriately **quiet on noise** and
-accurate on signal, and still fabricate the quote backing their call on up to 45.8% of records. The
+accurate on signal, and a naive check flags up to 42.2% of their quotes, none of which is an invention. The
 fabrication is therefore not a side-effect of over-triggering.
 
 **Boundary:** at a corpus nuclear prevalence of 2.563%, roughly one of 50 random chunks might genuinely
