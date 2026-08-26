@@ -1,4 +1,4 @@
-# Red-line & nuclear-signal detection — a benchmark on real Russian official statements
+# RedLineBench — red-line & nuclear-signal detection on real Russian official statements
 
 **What should a decision-maker trust a model to do here, and what should they not?**
 
