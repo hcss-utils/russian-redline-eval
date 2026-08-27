@@ -3,7 +3,7 @@
 ## What is here
 
 Everything needed to re-run the evaluation: the frozen prompt with hashes, both datasets **with passage
-text and per-item SHA-256**, the model registry, the runner, the scorer, and all 3,496 per-decision
+text and per-item SHA-256**, the model registry, the runner, the scorer, and all 3,500 per-decision
 records with usage, rationales, evidence spans and verbatim checks.
 
 ```

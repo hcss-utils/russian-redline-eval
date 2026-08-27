@@ -29,7 +29,9 @@ seeded from `sample_representative_100.json`. Prompt: `prompt/system_v2.md`. Raw
    on this task** — which is a more interesting result for a situation-room audience than a ranking, and
    it is the axis the full sweep should be powered to test.
 
-## 🟥 Fabricated evidence: 18 of 119 records (15%)
+## Naive-flag rate: 18 of 119 records (15%)
+
+> 🟥 **Superseded reading.** These are spans a naive substring check did not locate. On the full run all 283 such spans were read individually and **none was an invention**; the flags are overwhelmingly source-channel markup.
 
 Models quoting an "evidence" span that is **not a verbatim substring of the passage**. Designed as an
 automatic-disqualification check; firing far above the assumed rate. Mechanically verified, not judged —

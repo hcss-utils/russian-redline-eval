@@ -53,7 +53,7 @@ for k in keys:
         price=LIST[k], f1=f1(k,"rls"), rls=m["rls_incl"]["acc"], nts=m["nts_incl"]["acc"],
         rlsrec=m["rls_incl"]["recall"], ntsrec=m["nts_incl"]["recall"],
         fa=m["nts_incl"]["missed"], mn=m["nts_incl"]["missed"],
-        fabr=m["fabricated"]["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
+        fabr=(m.get("naive_flagged") or m.get("fabricated"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
         consis=m["rep_consistency"], secs=m["mean_secs"], cost=m["est_cost"], flip=None))
 
 # passages: first rep only, per model verdict
