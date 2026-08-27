@@ -3,7 +3,7 @@
 > 🟥 **CORRECTION, 2026-08-27.** An earlier version of this document reported a fabricated-quote rate of
 > 2.5%–45.8% and concluded *"the standard way of testing that is what fails"*. That conclusion was **wrong**.
 > All **283** spans the naive substring check flagged were then read individually: **0 were
-> inventions**. 239 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
+> inventions**. 238 were formatting only, of which 154 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
 > sentence, which the model correctly dropped; the remainder were ellipses, spliced fragments, and 6
 > single-word slips. The naive flag rate is **18.5%**; the real defect rate is **0.39%**,
 > and **11 of 14** configurations are at exactly zero. Method: `bench/classify_flagged_spans.py`.

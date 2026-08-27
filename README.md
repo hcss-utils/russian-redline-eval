@@ -3,7 +3,7 @@
 > 🟥 **CORRECTION, 2026-08-27.** An earlier version of this document reported a fabricated-quote rate of
 > 2.5%–45.8% and concluded *"the standard way of testing that is what fails"*. That conclusion was **wrong**.
 > All **283** spans the naive substring check flagged were then read individually: **0 were
-> inventions**. 239 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
+> inventions**. 238 were formatting only, of which 154 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
 > sentence, which the model correctly dropped; the remainder were ellipses, spliced fragments, and 6
 > single-word slips. The naive flag rate is **18.5%**; the real defect rate is **0.39%**,
 > and **11 of 14** configurations are at exactly zero. Method: `bench/classify_flagged_spans.py`.
@@ -27,9 +27,7 @@ the span of text justifying its call, and we check mechanically whether that quo
 | Claude Haiku 4.5 | **45.8%** | **0/36** | $0.65 |
 
 **An 18-fold spread in whether the justification is real, at equal accuracy.** Claude Haiku 4.5 misses no
-nuclear signal at all, for 65 cents, and invents its supporting quote nearly half the time — for an
-adviser that is worse than being wrong, because the analyst checks the citation, it reads plausibly, and
-it was never said.
+nuclear signal at all, for 65 cents, and has the highest naive-flag rate in the slate; reading every flagged span found no invention.
 
 ## Why real statements rather than scenarios
 
@@ -86,7 +84,7 @@ covering all 296,381 corpus chunks — the negatives are verified, not assumed).
 sees the timeline so far **including its own earlier calls**, and sets an alert level: NONE, WATCH or
 NUCLEAR. It may raise or lower it freely.
 
-**816 decisions, $6.54.**
+**816 decisions, $6.59.**
 
 | configuration | caught | cry-wolf before the signal | stuck high after catching | naive-flagged span |
 |---|---|---|---|---|
@@ -131,8 +129,8 @@ The check was a substring test: is the cited span present in the passage? It is 
 
 | what the flag actually was | n | share |
 |---|---:|---:|
-| Formatting only — our checker's fault | 239 | 84.5% |
-| Ellipsis joins and spliced fragments | 32 | 11.3% |
+| Formatting only — our checker's fault | 238 | 84.5% |
+| Ellipsis joins and spliced fragments | 33 | 11.3% |
 | Sloppy edges, still traceable | 6 | 2.1% |
 | Real text error, meaning intact | 6 | 2.1% |
 | **Invented content** | **0** | **0.0%** |
