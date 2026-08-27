@@ -25,6 +25,15 @@ CASES = [
     ("stale leaderboard accuracy",     '"rls":0.9,',        '"rls":0.87,'),
     ("stale per-span flag rate",       '"flag_rate":0.422', '"flag_rate":0.402'),
     ("cm total disagrees with parsed", '"parsed":189',      '"parsed":200'),
+    # Sol's round-16 counterexample: a STATIC displayed figure, in prose rather than a payload
+    ("static cost headline",           'Measured cost: $22.38', 'Measured cost: $99.99'),
+    ("static total-cost tile",         '$22.38</div><div class="kpi-label">total cost',
+                                       '$99.99</div><div class="kpi-label">total cost'),
+    ("static decisions tile",          '2,800</div><div class="kpi-label">scored decisions',
+                                       '9,999</div><div class="kpi-label">scored decisions'),
+    # fail-closed: deleting a payload must FAIL, not silently skip
+    ("FABX payload deleted",           'FABX=',              'FABX_REMOVED='),
+    ("MODELS payload deleted",         'const MODELS=',      'const MODELS_REMOVED='),
 ]
 
 def run(path):

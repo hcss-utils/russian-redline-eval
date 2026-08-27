@@ -72,6 +72,7 @@ def main(app_path):
         p = pred_of(r)
         if p is not None: cm[r["model_key"]][ref_of(r)][p] += 1
     mm = re.search(r"const MODELS=(\[.*?\]);\s*\n", app, re.S)
+    if not mm: fails.append("MODELS payload not found in the app")
     if mm:
         try: models = json.loads(mm.group(1))
         except Exception: models = []
@@ -132,6 +133,7 @@ def main(app_path):
     per = collections.defaultdict(collections.Counter)
     for r in cats["records"]: per[r["model"]][r["tier"]] += 1
     f = re.search(r"FABX\s*=\s*(\{.*?\});\s*\n", app, re.S)
+    if not f: fails.append("FABX payload not found in the app")
     if f:
         F = json.loads(f.group(1))
         for t in "ABCD":
@@ -161,7 +163,9 @@ def main(app_path):
             if R_ == "NTS" and p_ != "NTS": pat["Missed NTS"][a] += 1
         for label, c in pat.items():
             row = re.search(r'<tr><td style="text-align:left">' + re.escape(label) + r'</td>(.*?)</tr>', app, re.S)
-            if not row: continue
+            if not row:
+                fails.append(f"error-pattern row {label!r} is absent from the page")
+                continue
             shown = [int(x) for x in re.findall(r"<td[^>]*>(\d+)\s*<span", row.group(1))]
             want = [c["Telegram"], c["Kremlin"], c["Duma/FC"]]
             if shown and shown != want:
@@ -174,7 +178,46 @@ def main(app_path):
     for label, val in (("missed nuclear signals", missed), ("false strategic alerts", false_nts),
                        ("provider refusals", refus), ("spans flagged by a naive check", len(cats["records"]))):
         mt = re.search(r'kpi-num[^>]*>([\d,]+)</div><div class="kpi-label">' + re.escape(label), app)
-        if mt: check(f"KPI {label}", val, int(mt.group(1).replace(",", "")))
+        if not mt:
+            fails.append(f"KPI tile {label!r} is absent from the page")
+        else:
+            check(f"KPI {label}", val, int(mt.group(1).replace(",", "")))
+
+    # --- 5. static figures written into the prose -------------------------
+    # Sol's counterexample: changing the visible "Measured cost: $22.38" headline to
+    # $99.99 left this checker printing OK, because it covered payloads and four KPI
+    # tiles and nothing else. A number a reader sees is a number that must reconcile,
+    # whether it arrives through a payload or is typed into a heading.
+    spend = round(scores["spend_usd"], 2)
+    n_rec = scores["n_records"]
+    n_models = len(scores["models"])
+    n_pass = len({r["chunk_id"] for r in rows})
+    STATIC = [
+        (r"Measured cost:\s*\$([\d,.]+)",              f"{spend:.2f}",  "cost headline"),
+        (r"\$([\d,.]+)</div><div class=\"kpi-label\">total cost", f"{spend:.2f}", "total-cost tile"),
+        (r"([\d,]+)</div><div class=\"kpi-label\">scored decisions", f"{n_rec:,}", "scored-decisions tile"),
+        (r"([\d,]+)</div><div class=\"kpi-label\">real passages",    f"{n_pass:,}", "real-passages tile"),
+        (r"([\d,]+)</div><div class=\"kpi-label\">models, native APIs", f"{n_models:,}", "models tile"),
+        (r"([\d,]+)</div><div class=\"kpi-label\">spans flagged by a naive check", f"{len(cats['records']):,}", "flagged tile"),
+    ]
+    for pat, want, what in STATIC:
+        hits = re.findall(pat, app)
+        if not hits:
+            fails.append(f"static figure {what!r} not found on the page (anchor moved?)")
+            continue
+        for h in hits:
+            if h.replace(",", "") != want.replace(",", ""):
+                fails.append(f"static {what}: page shows {h!r}, data gives {want!r}")
+
+    # every per-model cost printed in the leaderboard must match its measured cost
+    for k, sm in scores["models"].items():
+        pat = re.escape(k.replace("-", "_").replace(".", "_"))
+        # the price appears in MODELS; the prose may repeat it as $x.xx beside the model name
+        want = f"{sm['est_cost']:.2f}"
+        for mo in (models if mm else []):
+            if mo.get("k") == k.replace("-", "_").replace(".", "_"):
+                if f"{mo.get('cost', -1):.2f}" != want:
+                    fails.append(f"MODELS[{k}].cost: app {mo.get('cost')}, data {sm['est_cost']}")
 
     # --- report ------------------------------------------------------------
     if fails:
