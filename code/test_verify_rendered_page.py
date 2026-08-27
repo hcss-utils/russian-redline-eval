@@ -22,8 +22,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CHECKER = os.path.join(HERE, "verify_rendered_page.py")
 
 CASES = [
-    # invert the CELL renderer, not the Correct column: the checker compares each rendered
-    # cell against PASSAGES, so only a cell-level lie exercises it
+    # the four Sol required in round 18, plus the originals
+    ("composition header transposition",
+     r"(<th>Passages</th>)<th>No alert</th><th>Red line</th><th>Nuclear signal</th>",
+     r"\g<1><th>Red line</th><th>Nuclear signal</th><th>No alert</th>"),
+    ("first model column corrupted",
+     r"(function vCell\(p,k\)\{\s*const got=p\.v\[k\], ok=got===p\.ref;)",
+     r"\g<1> if(k===MK[0]) return '<td>WRONG</td>';"),
+    ("Correct count is wrong",
+     r'''(<td class="'\+\(nOK\(p\)>=MK\.length-2\?'best':nOK\(p\)<=MK\.length\*0\.3\?'worst':''\)\+'">'\+)nOK\(p\)''',
+     r"\g<1>(nOK(p)+1)"),
+    ("Situation Room call is wrong",
+     r'''(\+'">'\+esc\()LBL\[v\]\|\|v''',
+     r"\g<1>'Red line'"),
     ("Cases cell disagrees with payload",
      r"(function vCell\(p,k\)\{\s*const got=p\.v\[k\], ok=got)===(p\.ref;)",
      r"\g<1>!==\g<2>"),

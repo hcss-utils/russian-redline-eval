@@ -25,41 +25,71 @@ WIDTHS = (1280, 1366, 1440, 1600)
 CASES_JS = r"""() => {
   const tbl=[...document.querySelectorAll('#cases table')][0];
   if(!tbl) return {err:'cases table not found'};
-  const heads=[...tbl.querySelectorAll('thead th')].map(h=>h.textContent.trim());
-  const mcols=heads.slice(6).map(h=>h.replace(/[^A-Za-z0-9.+−-]/g,''));
-  const byShort={}; MODELS.forEach(m=>{ byShort[(m.short||m.n).replace(/[^A-Za-z0-9.+−-]/g,'')]=m.k; });
-  let checked=0, bad=[];
-  [...tbl.querySelectorAll('tbody tr')].forEach(tr=>{
-    const c=[...tr.children]; const id=c[0].textContent.trim();
-    const p=PASSAGES.find(x=>x.id===id); if(!p) return;
-    mcols.forEach((mc,i)=>{
-      const k=byShort[mc]; if(!k) return;
-      const cell=c[6+i]; if(!cell) return;
+  const norm=t=>t.replace(/[^A-Za-z0-9.+−-]/g,'');
+  const heads=[...tbl.querySelectorAll('thead th')].map(h=>norm(h.textContent));
+  const byShort={}; MODELS.forEach(m=>{ byShort[norm(m.short||m.n)]=m.k; });
+  // locate the model columns by NAME, not by a hardcoded offset. slice(6) skipped the first
+  // model column entirely -- 1,300 of 1,400 cells -- and the Correct column with it.
+  const cols=[]; heads.forEach((h,i)=>{ if(byShort[h]!==undefined) cols.push({i, k:byShort[h]}); });
+  const correctCol=heads.length-1;
+  const rows=[...tbl.querySelectorAll('tbody tr')];
+  let checked=0, bad=[], ids=[];
+  rows.forEach(tr=>{
+    const c=[...tr.children]; const id=c[0].textContent.trim(); ids.push(id);
+    const p=PASSAGES.find(x=>x.id===id);
+    if(!p){ bad.push({id, err:'row id not in PASSAGES'}); return; }
+    let ok_n=0;
+    cols.forEach(function(col){
+      const cell=c[col.i]; if(!cell) return;
       const shown=cell.textContent.trim();
-      const v=(p.v||{})[k]; if(v===undefined) return;
+      const v=(p.v||{})[col.k]; if(v===undefined) return;
       checked++;
-      const ok = (shown==='✓') ? (v===p.ref) : (shown===v || (shown==='n/a'&&v==='n/a'));
-      if(!ok && bad.length<8) bad.push({id, model:k, shown, payload:v, ref:p.ref});
+      const match = (shown==='✓') ? (v===p.ref) : (shown===v || (shown==='n/a'&&v==='n/a'));
+      if(v===p.ref) ok_n++;
+      if(!match && bad.length<8) bad.push({id, model:col.k, shown:shown, payload:v, ref:p.ref});
     });
+    const cc=((c[correctCol]||{}).textContent||'').trim();
+    const m=cc.match(/^([0-9]+)\s*\/\s*([0-9]+)$/);
+    if(!m){ if(bad.length<8) bad.push({id, err:'Correct cell unreadable: '+cc}); }
+    else if(+m[1]!==ok_n || +m[2]!==cols.length){
+      if(bad.length<8) bad.push({id, err:'Correct cell '+m[1]+'/'+m[2]+', payload gives '+ok_n+'/'+cols.length});
+    }
   });
-  return {checked, bad, cols:mcols.length};
+  return {checked:checked, bad:bad, cols:cols.length, rows:rows.length, ids:ids};
 }"""
 
-# scope to the ONE table under the composition heading: #sources holds three, and a
-# selector that swept all of them summed the percentages to 300% and called it a defect.
+# read the HEADERS too. A table can carry correct values under wrong labels -- 59 no-alert
+# passages were displayed as red lines -- and a body-only check cannot see it.
 COMP_JS = r"""() => {
-  const h=[...document.querySelectorAll('#sources h3, #sources h2, #sources h4')]
-    .find(e=>e.textContent.trim().startsWith('Sample composition by source arm'));
-  if(!h) return [];
-  let t=h.nextElementSibling;
-  while(t && t.tagName!=='TABLE') t=t.nextElementSibling;
-  if(!t) return [];
-  return [...t.querySelectorAll('tbody tr')].map(r=>[...r.children].map(c=>c.textContent.trim()))
-    .filter(r=>r.length===6 && /^\d+$/.test(r[1]));
+  const out=[];
+  [...document.querySelectorAll('#sources table')].forEach(t=>{
+    const heads=[...t.querySelectorAll('thead th')].map(h=>h.textContent.trim().toLowerCase());
+    const rows=[...t.querySelectorAll('tbody tr')].map(r=>[...r.children].map(c=>c.textContent.trim()));
+    const looks = heads.some(h=>h.indexOf('no alert')>=0) && heads.some(h=>h.indexOf('red line')>=0)
+               && heads.some(h=>h.indexOf('nuclear')>=0);
+    if(looks && rows.length) out.push({heads:heads, rows:rows});
+  });
+  return out;
 }"""
 
-SIT_JS = r"""() => ({id:(document.getElementById('sit-title')||{}).textContent||'',
-  rows:[...document.querySelectorAll('#sit-reveal tbody tr')].map(r=>[...r.children].map(c=>c.textContent.trim()).slice(0,2))})"""
+SIT_JS = r"""() => {
+  const sel=document.getElementById('sit-pick');
+  const idx=sel? +sel.value : 0;
+  const p=PASSAGES[idx];
+  const norm=x=>x.replace(/[^A-Za-z0-9.+−-]/g,'');
+  const byShort={}; MODELS.forEach(m=>{ byShort[norm(m.short||m.n)]=m.k; });
+  const LBL={None:'No alert', RLS:'Red line', NTS:'Nuclear signal', 'n/a':'unparsed'};
+  const rows=[...document.querySelectorAll('#sit-reveal tbody tr')].map(r=>[...r.children].map(c=>c.textContent.trim()));
+  const bad=[];
+  rows.forEach(r=>{
+    const k=byShort[norm(r[0])];
+    if(k===undefined){ bad.push('unknown configuration row: '+r[0]); return; }
+    const want=LBL[(p.v||{})[k]] || (p.v||{})[k];
+    if(r[1]!==want) bad.push(r[0]+': shows '+r[1]+', payload '+want);
+  });
+  const head=((document.querySelector('#sit-reveal div')||{}).textContent||'');
+  return {id:p.id, n:rows.length, bad:bad, refOK:head.indexOf(LBL[p.ref]||p.ref)>=0};
+}"""
 
 def main():
     try:
@@ -68,6 +98,20 @@ def main():
         print("playwright not installed; rendered checks skipped")
         return 0
     fails = []
+    import json, io as _io, os, collections
+    _here = os.path.dirname(os.path.abspath(__file__)); _repo = os.path.dirname(_here)
+    comp_want = {}
+    for c in (os.path.join(_repo, "data", "sample_representative_100.json"),
+              os.path.join(_here, "sample_representative_100.json"),
+              os.path.join(os.getcwd(), "bench", "sample_representative_100.json")):
+        if os.path.exists(c):
+            for _r in json.load(_io.open(c, encoding="utf-8")):
+                lab = "NTS" if _r["gold_nts"] == "Y" else ("RLS" if _r["gold_rls"] == "Y" else "None")
+                d = comp_want.setdefault(_r["database"], {"None": 0, "RLS": 0, "NTS": 0, "n": 0})
+                d[lab] += 1; d["n"] += 1
+            break
+    if not comp_want:
+        fails.append("sample_representative_100.json not found; refusing to skip the composition check")
     with sync_playwright() as pw:
         b = pw.chromium.launch(headless=True)
         pg = b.new_page(viewport={"width": 1600, "height": 1000})
@@ -82,34 +126,74 @@ def main():
         if r.get("err"):
             fails.append(r["err"])
         else:
-            print(f"  Cases: {r['checked']} cells across {r['cols']} model columns")
-            if r["checked"] < 1000:
-                fails.append(f"Cases checked only {r['checked']} cells; expected ~1,300")
+            print(f"  Cases: {r['checked']} cells across {r['cols']} model columns, {r['rows']} rows")
+            # exact counts, not a floor: a floor let a 1,300-of-1,400 probe look complete
+            if r["rows"] != 100:
+                fails.append(f"Cases has {r['rows']} rows; expected exactly 100")
+            if r["cols"] != 14:
+                fails.append(f"Cases exposes {r['cols']} model columns; expected exactly 14")
+            if r["checked"] != r["rows"] * r["cols"]:
+                fails.append(f"Cases compared {r['checked']} cells; expected {r['rows'] * r['cols']}")
+            if len(set(r["ids"])) != len(r["ids"]):
+                fails.append("Cases contains duplicate passage ids")
             for x in r["bad"]:
-                fails.append(f"Cases {x['id']} {x['model']}: shows {x['shown']!r}, payload {x['payload']!r}")
+                fails.append("Cases " + (x.get("err") or
+                    f"{x['id']} {x['model']}: shows {x['shown']!r}, payload {x['payload']!r}"))
 
         pg.click("text=Source Arms"); pg.wait_for_timeout(1800)
-        rows = pg.evaluate(COMP_JS)
-        if not rows:
-            fails.append("sample-composition table not rendered")
-        else:
-            tot = 0
-            for row in rows:
-                n, none_, rls, nts = int(row[1]), int(row[2]), int(row[3]), int(row[4])
-                if none_ + rls + nts != n:
-                    fails.append(f"composition {row[0]}: {none_}+{rls}+{nts} != {n}")
-                tot += float(row[5].rstrip("%"))
-            if not (99 <= tot <= 101):
+        tables = pg.evaluate(COMP_JS)
+        if not tables:
+            fails.append("no sample-composition table rendered")
+        for t in tables:
+            heads = t["heads"]
+            # map each class column by its HEADER, then compare against the canonical sample
+            def col(name):
+                for i, h in enumerate(heads):
+                    if name in h: return i
+                return -1
+            iN, iR, iX = col("no alert"), col("red line"), col("nuclear")
+            if min(iN, iR, iX) < 0:
+                fails.append(f"composition headers unreadable: {heads}")
+                continue
+            tot = 0.0
+            for row in t["rows"]:
+                arm = row[0].strip().lower().replace(" ", "_")
+                key = next((k for k in comp_want if k.lower().replace(" ", "_") == arm), None)
+                if key is None:
+                    if arm in ("total", "all", ""):   # a summary row is not an arm
+                        continue
+                    fails.append(f"composition row {row[0]!r} is not a known source arm")
+                    continue
+                w = comp_want[key]
+                got = {"None": int(row[iN]), "RLS": int(row[iR]), "NTS": int(row[iX])}
+                # the row's own total must equal both its parts and the canonical count
+                try: shown_n = int(row[1])
+                except ValueError: shown_n = None
+                if shown_n is not None:
+                    if shown_n != sum(got.values()):
+                        fails.append(f"composition {row[0]}: total {shown_n} != {'+'.join(str(v) for v in got.values())}")
+                    if shown_n != w["n"]:
+                        fails.append(f"composition {row[0]}: total {shown_n}, canonical {w['n']}")
+                if got != {"None": w["None"], "RLS": w["RLS"], "NTS": w["NTS"]}:
+                    fails.append(f"composition {row[0]}: page {got} under headers {heads[1:5]}, "
+                                 f"canonical {{'None': {w['None']}, 'RLS': {w['RLS']}, 'NTS': {w['NTS']}}}")
+                pcts = [c for c in row if c.strip().endswith("%")]
+                if pcts: tot += float(pcts[-1].rstrip("%"))
+            if tot and not (99 <= tot <= 101):
                 fails.append(f"composition percentages sum to {tot:g}%, not 100%")
-            print(f"  Source Arms: {len(rows)} rows, percentages sum to {tot:g}%")
+            print(f"  Source Arms: {len(t['rows'])} rows checked against canonical data (headers OK)")
 
         pg.click("text=Situation Room"); pg.wait_for_timeout(1800)
         try:
             pg.click('#sit-calls button[data-call="NTS"]'); pg.wait_for_timeout(1200)
             sr = pg.evaluate(SIT_JS)
-            if len(sr["rows"]) < 14:
-                fails.append(f"Situation Room revealed {len(sr['rows'])} configurations, expected 14")
-            print(f"  Situation Room: {len(sr['rows'])} configurations revealed")
+            if sr["n"] != 14:
+                fails.append(f"Situation Room revealed {sr['n']} configurations, expected exactly 14")
+            if not sr["refOK"]:
+                fails.append(f"Situation Room does not state the reference label for {sr['id']}")
+            for x in sr["bad"]:
+                fails.append("Situation Room " + x)
+            print(f"  Situation Room: {sr['n']} configurations, all calls compared against PASSAGES")
         except Exception as e:
             fails.append(f"Situation Room controls not usable: {str(e)[:90]}")
 

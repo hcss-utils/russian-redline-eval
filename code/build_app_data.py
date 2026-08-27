@@ -109,9 +109,30 @@ def _span_rate(k, m):
         return round(e["flagged"] / e["spans"], 4)
     return (m.get("naive_flagged") or m.get("fabricated"))["rate"]
 
+# SHORT names are the column headers on the Cases tab, so they must be UNIQUE. The rule
+# was n.split()[0], which gave 'Claude' to five configurations and collapsed fourteen
+# columns to seven names -- every rebuilt page then mapped Cases cells to the wrong
+# model. These are the curated reader-facing names.
+SHORT={
+ "fable_5": "Fable 5",
+ "opus_5_think": "Opus 5 +think",
+ "opus_5_nothink": "Opus 5 −think",
+ "sonnet_5": "Sonnet 5",
+ "haiku_4_5": "Haiku 4.5",
+ "gpt_5_6_sol": "GPT Sol",
+ "gpt_5_6_terra": "GPT Terra",
+ "gpt_5_6_luna": "GPT Luna",
+ "gemini_3_6_flash": "Gemini Flash",
+ "deepseek_v4_pro": "DS V4 Pro",
+ "deepseek_v4_flash": "DS V4 Flash",
+ "qwen3_7_max": "Qwen3.7",
+ "glm_5_2": "GLM-5.2",
+ "kimi_k3": "Kimi K3"
+}
+
 for k in keys:
     m=SCO["models"][k]; n,prov,slug=DISPLAY[k]
-    models.append(dict(k=SAFE(k), n=n, short=n.split()[0], prov=prov, slug=slug,
+    models.append(dict(k=SAFE(k), n=n, short=SHORT.get(SAFE(k), n.split()[0]), prov=prov, slug=slug,
         price=LIST[k], f1=f1(k,"rls"), rls=m["rls_incl"]["acc"], nts=m["nts_incl"]["acc"],
         rlsrec=m["rls_incl"]["recall"], ntsrec=m["nts_incl"]["recall"],
         fa=_fa(k), mn=_mn(k), cm=_cm(k), attempted=ATT[k], parsed=PARS[k], no_answer=ATT[k]-PARS[k],
