@@ -78,9 +78,17 @@ def _pred(r):
     if not r.get("parsed") or not v: return None
     return "NTS" if v.get("nts")=="Y" else ("RLS" if v.get("rls")=="Y" else "None")
 CM=collections.defaultdict(lambda: {a:{b:0 for b in _L} for a in _L})
+# A matrix over PARSED verdicts has a smaller denominator than the attempted run whenever
+# a configuration failed to return a usable answer. Five did (qwen3.7-max 11, opus-5-nothink
+# and glm-5.2 2 each, opus-5-think and kimi-k3 1 each; 17 of 2,800 overall). Carry both
+# counts so the page can state the denominator it is actually using instead of asserting 200.
+ATT=collections.Counter(); PARS=collections.Counter()
 for r in rows:
+    k=r.get("model_key"); ATT[k]+=1
     pr=_pred(r)
-    if pr is not None: CM[r["model_key"]][_ref(r)][pr]+=1
+    if pr is not None:
+        PARS[k]+=1
+        CM[k][_ref(r)][pr]+=1
 def _cm(k):  return [[CM[k][a][b] for b in _L] for a in _L]
 def _fa(k):  return CM[k]["None"]["NTS"]+CM[k]["RLS"]["NTS"]   # nuclear alert, reference is not NTS
 def _mn(k):  return CM[k]["NTS"]["None"]+CM[k]["NTS"]["RLS"]   # real nuclear signal not called NTS
@@ -90,7 +98,7 @@ for k in keys:
     models.append(dict(k=SAFE(k), n=n, short=n.split()[0], prov=prov, slug=slug,
         price=LIST[k], f1=f1(k,"rls"), rls=m["rls_incl"]["acc"], nts=m["nts_incl"]["acc"],
         rlsrec=m["rls_incl"]["recall"], ntsrec=m["nts_incl"]["recall"],
-        fa=_fa(k), mn=_mn(k), cm=_cm(k),
+        fa=_fa(k), mn=_mn(k), cm=_cm(k), attempted=ATT[k], parsed=PARS[k], no_answer=ATT[k]-PARS[k],
         flag_rate=(m.get("naive_flagged") or m.get("fabricated"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
         consis=m["rep_consistency"], secs=m["mean_secs"], cost=m["est_cost"], flip=None))
 
