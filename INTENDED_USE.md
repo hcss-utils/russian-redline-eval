@@ -26,8 +26,7 @@ configurations separate 7.8x more widely than static accuracy, and the ranking i
 
 - **Do not use single-model output as a basis for escalation judgements.** The measured value of these
   systems here is triage and recall, not adjudication.
-- **Verify every quotation programmatically.** This is a substring check and costs nothing. On this
-  benchmark it changes the ranking entirely.
+- **Verify every quotation programmatically.** This is a substring check and costs nothing. Reading the flagged spans changes the interpretation entirely: the ordering reflects markup handling, not honesty.
 - **The reference labels are provisional** — single-adjudicator, and coded under a construct that has since
   been widened. Treat measured accuracy as agreement with a provisional reference, not as correctness.
 - **The sample is not prevalence-representative.** Rare classes are deliberately over-sampled so they are

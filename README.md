@@ -6,7 +6,7 @@
 > inventions**. 238 were formatting only, of which 154 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
 > sentence, which the model correctly dropped; the remainder were ellipses, spliced fragments, and 6
 > single-word slips. The naive flag rate is **18.5%**; the real defect rate is **0.39%**,
-> and **11 of 14** configurations are at exactly zero. Method: `bench/classify_flagged_spans.py`.
+> and **11 of 14** configurations are at exactly zero. Method: `code/classify_flagged_spans.py`.
 
 
 **What should a decision-maker trust a model to do here, and what should they not?**
@@ -53,7 +53,7 @@ same speech act as a red line, and the models split on it.
 | `prompt/` | the frozen system prompt and user template, with hashes |
 | `data/` | **`benchmark_100.json`** and **`control_50.json`** — passages WITH text, per-item SHA-256, channel, date, source arm and URL where the publisher exposes one; the 15 excluded contested items; corpus marginals; English reading aids |
 | `code/` | sampler, model registry, runner, scorer, cost model |
-| `results/` | **all 3,496 per-decision records** (2,800 benchmark + 700 control) with rationales, confidences, evidence spans and verbatim checks; plus derived scores |
+| `results/` | **all 3,500 per-decision records** (2,800 benchmark + 700 control) with rationales, confidences, evidence spans and verbatim checks; plus derived scores |
 | `RESULTS.md` | the measured findings |
 | `REPRESENTATIVENESS.md` | how the sample matches the corpus, and where it does not |
 | `CODEBOOK_VERSION_FINDING.md` | how the benchmark was nearly run on a superseded codebook |
