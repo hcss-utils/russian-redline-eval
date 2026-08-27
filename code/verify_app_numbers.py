@@ -192,6 +192,20 @@ def main(app_path):
             fails.append("app_data.json not found, so PASSAGES could not be reconciled "
                          "(run build_app_data.py first)")
 
+    # --- 2d. the evidence-span payload -------------------------------------
+    # A rebuild once emptied EV -- 183 KB of cited spans down to 60 bytes -- and every gate
+    # stayed green, because nothing checked that it had any content.
+    em = re.search(r"const EV=(\{.*?\});\s*\n", app, re.S)
+    if not em:
+        fails.append("EV payload not found in the app")
+    elif app_data:
+        want = sum(len(sum((p_.get("ev") or {}).values(), [])) for p_ in app_data["passages"])
+        shown = len(re.findall(r'"layer"\s*:', em.group(1)))
+        if want and shown == 0:
+            fails.append(f"EV payload is empty; the producer emitted {want} evidence spans")
+        elif want and shown != want:
+            fails.append(f"EV carries {shown} evidence spans; the producer emitted {want}")
+
     # --- 3. the citation decomposition ------------------------------------
     per = collections.defaultdict(collections.Counter)
     for r in cats["records"]: per[r["model"]][r["tier"]] += 1

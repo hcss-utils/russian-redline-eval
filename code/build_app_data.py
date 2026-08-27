@@ -147,7 +147,7 @@ passages=[]
 for i,(cid,per) in enumerate(sorted(byitem.items()), 1):
     s=SAMP[cid]
     ref = "NTS" if s["gold_nts"]=="Y" else ("RLS" if s["gold_rls"]=="Y" else "None")
-    verd={}; just={}; flagged={}
+    verd={}; just={}; flagged={}; ev={}
     for k in keys:
         r=per.get(k)
         if not r: verd[SAFE(k)]="n/a"; continue
@@ -157,11 +157,19 @@ for i,(cid,per) in enumerate(sorted(byitem.items()), 1):
         if rat: just[SAFE(k)]=rat
         if r.get("rls_ev_verbatim") is False or r.get("nts_ev_verbatim") is False:
             flagged[SAFE(k)]=True
+        # the cited evidence span and whether it is verbatim. Dropping this emptied the
+        # evidence chips on every rebuilt page -- 183 KB of payload down to 60 bytes, with
+        # no error, because nothing checked that EV had any content.
+        for layer,flag in (("rls","rls_ev_verbatim"),("nts","nts_ev_verbatim")):
+            span=v.get(layer+"_evidence")
+            if span and str(span).strip() and str(span).strip().lower()!="null":
+                ev.setdefault(SAFE(k),[]).append({"layer":layer,"t":str(span).strip(),
+                                                  "ok":bool(r.get(flag))})
     agree=sum(1 for k in keys if verd.get(SAFE(k))==ref)
     passages.append(dict(id=f"#{i:03d}", cid=cid, ref=ref, sp=s.get("src") or "n/a",
         yr=(s.get("date") or "")[:4] or "n/a", ru=TXT[cid], en=None,
         cue=(s.get("database") or ""), agree=agree, n_models=len(keys),
-        v=verd, j=just, flagged=flagged, tokens=s["tokens"]))
+        v=verd, j=just, flagged=flagged, ev=ev, tokens=s["tokens"]))
 
 out=dict(generated_from=os.path.basename(RES), n_records=SCO["n_records"], spend=SCO["spend_usd"],
          n_items=len(passages), n_models=len(keys), models=models, passages=passages)

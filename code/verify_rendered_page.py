@@ -138,7 +138,11 @@ SIT_JS = r"""() => {
     idFromTitle: (title.match(/#\d+/)||[null])[0],
     payloadId: p.id,
     titleHasSpeaker: p.sp? title.indexOf(p.sp)>=0 : true,
-    bodyMatches: body.length>0 && (p.ru||'').trim().indexOf(body.slice(0,60))>=0,
+    // EQUALITY after whitespace normalisation, not containment: a containment test is
+    // satisfied by a single character that happens to occur in the passage.
+    bodyMatches: (function(){ const n=x=>x.replace(/\s+/g,' ').trim();
+                              return n(body)===n(p.ru||''); })(),
+    bodyLen: body.length, wantLen: (p.ru||'').length,
     shownRef: shownRef,
     wantRef: LBL[p.ref]||p.ref,
     n: rows.length, keys: keys, bad: bad
@@ -263,7 +267,8 @@ def main():
             if not sr["titleHasSpeaker"]:
                 fails.append("Situation Room title does not name the passage's speaker")
             if not sr["bodyMatches"]:
-                fails.append("Situation Room body text is not the selected passage's text")
+                fails.append(f"Situation Room body is not the passage text "
+                             f"({sr['bodyLen']} chars shown, {sr['wantLen']} expected)")
             if sr["shownRef"] != sr["wantRef"]:
                 fails.append(f"Situation Room reference: shows {sr['shownRef']!r}, payload {sr['wantRef']!r}")
             # exact unique key SET, not a row count: 14 copies of one configuration passed before

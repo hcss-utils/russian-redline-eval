@@ -55,6 +55,10 @@ CASES = [
     ("Situation Room shows the wrong passage",
      r"(title\.textContent=)'Passage '\+p\.id",
      r"\g<1>'Passage #999'+''"),
+    # Sol's round-20 probe: a containment test is satisfied by one matching character
+    ("Situation Room body reduced to one matching character",
+     r"text\.textContent=p\.ru\|\|'';",
+     "text.textContent='\u0417';"),
     ("Situation Room reference is wrong but the label appears elsewhere",
      r"('<b>Reference label: '\+esc\(LBL\[ref\]\|\|ref\)\+'\.</b> )",
      r"'<b>Reference label: No alert.</b> '+esc(LBL[ref]||ref)+' '+"),
