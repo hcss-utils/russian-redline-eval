@@ -6,34 +6,36 @@ feeds it the six defects that were actually found on this project's dashboard,
 each reconstructed by tampering with a copy of the live page, and asserts that
 each one is caught. Run: python3 code/test_verify_app_numbers.py <app/index.html>
 """
-import io, sys, subprocess, os, tempfile
+import io, re, sys, subprocess, os, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CHECKER = os.path.join(HERE, "verify_app_numbers.py")
 
+# Each case is (label, regex, replacement). REGEX, not an exact string: the deployed page
+# serialises its payloads as JSON ("cm": [[...]]) while the injector emits JS literals
+# (cm:[[...]]), so exact anchors matched one and silently SKIPPED on the other -- nine of
+# seventeen cases, which made a rebuilt page report 8/17 and look like a checker failure.
+# A skip is still reported as a stale test, never as a pass.
 CASES = [
-    ("stale SEQ decision count",      '"n_decisions": 816', '"n_decisions": 624'),
-    ("stale SEQ catch count",         '"caught": 14',       '"caught": 13'),
-    ("invented / negative matrix",    '"cm":[[124,8,0],[1,31,0],[0,2,34]]',
-                                      '"cm":[[63,2,1],[1,15,0],[3,-3,18]]'),
-    ("false alerts = missed nuclear", '"fa":0,"mn":2',      '"fa":2,"mn":2'),
-    ("stale citation totals",         '"A": 238, "B": 33',  '"A": 239, "B": 32'),
+    ("stale SEQ decision count",   r'(n_decisions"?\s*:\s*)816',        r'\g<1>624'),
+    ("stale SEQ catch count",      r'("?caught"?\s*:\s*)14\b',          r'\g<1>13'),
+    ("invented / negative matrix", r'("?cm"?\s*:\s*)\[\[124,.*?\]\]',
+                                   r'\g<1>[[63,2,1],[1,15,0],[3,-3,18]]'),
+    ("false alerts = missed nuclear", r'("?fa"?\s*:\s*)1(,\s*"?mn"?\s*:\s*)0', r'\g<1>0\g<2>0'),
+    ("stale citation totals",      r'("?A"?\s*:\s*)238(,\s*"?B"?\s*:\s*)33', r'\g<1>239\g<2>32'),
     ("fabricated error-table cell",
-     '<tr><td style="text-align:left">False NTS alert</td><td>1 <span',
-     '<tr><td style="text-align:left">False NTS alert</td><td>18 <span'),
-    # added after extending the checker to the leaderboard scalars
-    ("stale leaderboard accuracy",     '"rls":0.9,',        '"rls":0.87,'),
-    ("stale per-span flag rate",       '"flag_rate":0.422', '"flag_rate":0.402'),
-    ("cm total disagrees with parsed", '"parsed":189',      '"parsed":200'),
-    # Sol's round-16 counterexample: a STATIC displayed figure, in prose rather than a payload
-    ("static cost headline",           'Measured cost: $22.38', 'Measured cost: $99.99'),
-    ("static total-cost tile",         '$22.38</div><div class="kpi-label">total cost',
-                                       '$99.99</div><div class="kpi-label">total cost'),
-    ("static decisions tile",          '2,800</div><div class="kpi-label">scored decisions',
-                                       '9,999</div><div class="kpi-label">scored decisions'),
-    # fail-closed: deleting a payload must FAIL, not silently skip
-    ("FABX payload deleted",           'FABX=',              'FABX_REMOVED='),
-    ("MODELS payload deleted",         'const MODELS=',      'const MODELS_REMOVED='),
+     r'(<tr><td style="text-align:left">False NTS alert</td><td[^>]*>)1(\s*<span)', r'\g<1>18\g<2>'),
+    ("stale leaderboard accuracy", r'("?rls"?\s*:\s*)0\.9\b',          r'\g<1>0.87'),
+    ("stale per-span flag rate",   r'("?flag_rate"?\s*:\s*)0\.422',     r'\g<1>0.402'),
+    ("cm total disagrees with parsed", r'("?parsed"?\s*:\s*)189',        r'\g<1>200'),
+    ("static cost headline",       r'Measured cost: \$22\.38',           'Measured cost: $99.99'),
+    ("static total-cost tile",     r'\$22\.38(</div><div class="kpi-label">total cost)', r'$99.99\g<1>'),
+    ("static decisions tile",      r'2,800(</div><div class="kpi-label">scored decisions)', r'9,999\g<1>'),
+    ("FABX payload deleted",       r'FABX\s*=',                          'FABX_REMOVED='),
+    ("MODELS payload deleted",     r'const MODELS\s*=',                  'const MODELS_REMOVED='),
+    ("passage #001 reference tampered", r'(P\("#001",")NTS(")',          r'\g<1>None\g<2>'),
+    ("passage flag mappings dropped",   r'\{"[a-z0-9_.]+"\s*:\s*true\}', '{}'),
+    ("PASSAGES payload deleted",   r'const PASSAGES\s*=',                'const PASSAGES_REMOVED='),
 ]
 
 def run(path):
@@ -47,12 +49,12 @@ def main(app):
     print("ok    clean app passes")
     bad = 0
     for label, find, repl in CASES:
-        if find not in src:
+        if not re.search(find, src):
             print(f"SKIP  {label}: anchor absent (serialisation changed?) -- test is stale, not the app")
             bad += 1
             continue
         with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as fh:
-            fh.write(src.replace(find, repl, 1)); tmp = fh.name
+            fh.write(re.sub(find, repl, src, count=1)); tmp = fh.name
         rc = run(tmp); os.unlink(tmp)
         if rc == 0:
             print(f"FAIL  {label}: checker did NOT catch it"); bad += 1

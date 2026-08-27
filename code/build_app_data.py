@@ -93,13 +93,29 @@ def _cm(k):  return [[CM[k][a][b] for b in _L] for a in _L]
 def _fa(k):  return CM[k]["None"]["NTS"]+CM[k]["RLS"]["NTS"]   # nuclear alert, reference is not NTS
 def _mn(k):  return CM[k]["NTS"]["None"]+CM[k]["NTS"]["RLS"]   # real nuclear signal not called NTS
 
+# TWO RATES SHARE THE NAME "naive-flag rate" and differ by DENOMINATOR: scores.json's
+# naive_flagged is per RECORD (a decision carrying at least one flagged span, 2.5-45.8%),
+# while the leaderboard and Findings text quote per SPAN (1.7-42.2%). Emitting the record
+# rate into a column the page labels with the span rate put the producer and the page in
+# disagreement -- invisible until the two were compared. Emit the SPAN rate; the record
+# rate stays available in scores.json under its own name.
+try:
+    _CIT = json.load(io.open(_data("citation_check_summary.json"), encoding="utf-8"))["per_model"]
+except Exception:
+    _CIT = {}
+def _span_rate(k, m):
+    e = _CIT.get(k)
+    if e and e.get("spans"):
+        return round(e["flagged"] / e["spans"], 4)
+    return (m.get("naive_flagged") or m.get("fabricated"))["rate"]
+
 for k in keys:
     m=SCO["models"][k]; n,prov,slug=DISPLAY[k]
     models.append(dict(k=SAFE(k), n=n, short=n.split()[0], prov=prov, slug=slug,
         price=LIST[k], f1=f1(k,"rls"), rls=m["rls_incl"]["acc"], nts=m["nts_incl"]["acc"],
         rlsrec=m["rls_incl"]["recall"], ntsrec=m["nts_incl"]["recall"],
         fa=_fa(k), mn=_mn(k), cm=_cm(k), attempted=ATT[k], parsed=PARS[k], no_answer=ATT[k]-PARS[k],
-        flag_rate=(m.get("naive_flagged") or m.get("fabricated"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
+        flag_rate=_span_rate(k, m), refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
         consis=m["rep_consistency"], secs=m["mean_secs"], cost=m["est_cost"], flip=None))
 
 # passages: first rep only, per model verdict

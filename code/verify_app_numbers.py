@@ -28,11 +28,27 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 
 def data(name):
-    for c in (os.path.join(REPO, "results", name), os.path.join(REPO, "data", name)):
+    # published layout keeps inputs in results/ and data/; the active bench/ route keeps them
+    # beside the scripts. Search both, so the same checker runs on either.
+    for c in (os.path.join(REPO, "results", name), os.path.join(REPO, "data", name),
+              os.path.join(HERE, name), os.path.join(REPO, "bench", name),
+              os.path.join(os.getcwd(), "bench", name), name):
         if os.path.exists(c): return c
     raise SystemExit(f"cannot find {name}")
 
 def jload(p): return json.load(io.open(p, encoding="utf-8"))
+
+def _parse_js_array(lit):
+    """Parse a JS array literal that may use unquoted keys and single-quoted strings."""
+    try: return json.loads(lit)
+    except Exception: pass
+    t = re.sub(r"([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:", r'\1"\2":', lit)
+    t = re.sub(r":\s*'((?:[^'\\]|\\.)*)'", lambda m: ": " + json.dumps(m.group(1).replace("\\'", "'")), t)
+    t = re.sub(r",\s*([}\]])", r"\1", t)
+    try: return json.loads(t)
+    except Exception: return None
+
+
 def jlines(p): return [json.loads(l) for l in io.open(p, encoding="utf-8") if l.strip()]
 
 def ref_of(r):  return "NTS" if r["gold_nts"] == "Y" else ("RLS" if r["gold_rls"] == "Y" else "None")
@@ -74,8 +90,14 @@ def main(app_path):
     mm = re.search(r"const MODELS=(\[.*?\]);\s*\n", app, re.S)
     if not mm: fails.append("MODELS payload not found in the app")
     if mm:
-        try: models = json.loads(mm.group(1))
-        except Exception: models = []
+        # The payload is JSON on the hand-finished page and a JS OBJECT LITERAL from the
+        # injector (unquoted keys, single-quoted strings). Swallowing the parse error made
+        # every MODELS check -- cm, fa/mn, the leaderboard scalars -- silently SKIP on a
+        # rebuilt page, so the checker passed the exact rebuild it was meant to police.
+        models = _parse_js_array(mm.group(1))
+        if models is None:
+            fails.append("MODELS payload could not be parsed; refusing to skip its checks")
+            models = []
         for mo in models:
             key = mo.get("slug") or mo.get("k", "").replace("_", "-")
             src = next((k for k in cm if k.replace("-", "_").replace(".", "_") == mo.get("k")), None)
@@ -129,6 +151,47 @@ def main(app_path):
                     fails.append(f"MODELS[{src}]: cm totals {sum(sum(r) for r in mo['cm'])} "
                                  f"but parsed is {mo['parsed']}")
 
+    # --- 2c. the PASSAGES payload itself ------------------------------------
+    # This was NOT checked at all. Changing passage #001's reference label from NTS to
+    # None -- which alters what the Cases table and the Situation Room show a reader --
+    # left this verifier printing OK. Fourteen historical tamper cases proved fourteen
+    # anchors, not the property. Reconcile the whole payload against the producer's output.
+    app_data = None
+    for c in (os.path.join(REPO, "app_data.json"), os.path.join(HERE, "app_data.json"),
+              os.path.join(REPO, "bench", "app_data.json"), "bench/app_data.json"):
+        if os.path.exists(c): app_data = jload(c); break
+    pm = re.search(r"const PASSAGES=(.*?);\s*\n", app, re.S)
+    if not pm:
+        fails.append("PASSAGES payload not found in the app")
+    else:
+        lit = pm.group(1)
+        # the payload is emitted through P(...) helpers, so reconcile field by field on the
+        # literal rather than trying to evaluate it: id, ref and the per-model verdicts.
+        ids = re.findall(r'P\("(#\d+)","([A-Za-z/]+)"', lit)
+        if not ids:
+            fails.append("PASSAGES literal present but no P(id,ref,...) entries could be read")
+        elif app_data:
+            want = {p_["id"]: p_["ref"] for p_ in app_data["passages"]}
+            if len(ids) != len(want):
+                fails.append(f"PASSAGES has {len(ids)} entries, producer emitted {len(want)}")
+            for pid, ref in ids:
+                if pid not in want:
+                    fails.append(f"PASSAGES {pid} is not in the producer output")
+                elif want[pid] != ref:
+                    fails.append(f"PASSAGES {pid}.ref: page {ref!r}, producer {want[pid]!r}")
+            # the flag maps must survive injection: the rebuilt page once dropped all of them
+            # count the individual model:true mappings, not the maps. The serialisation
+            # writes '"haiku_4_5": true' WITH a space; a ':true' pattern silently counted 0
+            # and would have reported a correct page as having lost every flag.
+            shown_flags = len(re.findall(r'"[a-z0-9_.]+"\s*:\s*true', lit))
+            want_flags = sum(len(p_.get("flagged") or {}) for p_ in app_data["passages"])
+            if shown_flags != want_flags:
+                fails.append(f"PASSAGES carries {shown_flags} flag mappings; "
+                             f"the producer emitted {want_flags}")
+        else:
+            fails.append("app_data.json not found, so PASSAGES could not be reconciled "
+                         "(run build_app_data.py first)")
+
     # --- 3. the citation decomposition ------------------------------------
     per = collections.defaultdict(collections.Counter)
     for r in cats["records"]: per[r["model"]][r["tier"]] += 1
@@ -146,8 +209,17 @@ def main(app_path):
 
     # --- 3b. "Error patterns by source type" -------------------------------
     # This table once claimed 54 false nuclear alerts against a measured total of 2.
-    samp_p = os.path.join(REPO, "data", "sample_representative_100.json")
-    if os.path.exists(samp_p):
+    # Use the resolver, not a hardcoded path. This was os.path.join(REPO, "data", ...),
+    # so under the bench/ layout the file was "absent" and BOTH the error-pattern and
+    # composition checks silently skipped -- the checker passed a page still carrying the
+    # fabricated 18/24/12 table. An input it cannot find is a failure, not a pass.
+    try:
+        samp_p = data("sample_representative_100.json")
+    except SystemExit:
+        samp_p = None
+        fails.append("sample_representative_100.json not found; refusing to skip the "
+                     "error-pattern and composition checks")
+    if samp_p:
         samp = {str(r["chunk_id"]): r for r in jload(samp_p)}
         def arm(db): return "Telegram" if db == "telegram_official" else ("Kremlin" if db == "kremlin" else "Duma/FC")
         pat = collections.defaultdict(collections.Counter)
@@ -167,15 +239,19 @@ def main(app_path):
                 fails.append(f"error-pattern row {label!r} is absent from the page")
                 continue
             shown = [int(x) for x in re.findall(r"<td[^>]*>(\d+)\s*<span", row.group(1))]
+            if not shown:  # the pre-repair table had bare <td>18</td> cells with no rate
+                shown = [int(x) for x in re.findall(r"<td[^>]*>(\d+)</td>", row.group(1))][:3]
             want = [c["Telegram"], c["Kremlin"], c["Duma/FC"]]
-            if shown and shown != want:
+            if not shown:
+                fails.append(f"error-pattern row {label!r}: cells unreadable, refusing to skip")
+            elif shown != want:
                 fails.append(f"error-pattern row {label!r}: app shows {shown}, data gives {want}")
 
     # --- 3c. sample composition by source arm ------------------------------
     # This table showed its class counts TRANSPOSED under their own headers (RLS/NTS/None
     # where the headers said No alert/Red line/Nuclear signal) and percentages summing
     # to 102% (92+7+3+0). Both were visible on the page and neither was checked.
-    if os.path.exists(samp_p):
+    if samp_p:
         comp = collections.defaultdict(collections.Counter)
         for r in samp.values():
             lab = "NTS" if r["gold_nts"] == "Y" else ("RLS" if r["gold_rls"] == "Y" else "None")
