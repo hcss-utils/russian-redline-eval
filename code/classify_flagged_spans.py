@@ -86,7 +86,7 @@ def main():
         c,why=classify(r["span"], r["passage"], others)
         r["category"], r["why"] = c, why
         cats[c]+=1; ex[c].append(r)
-    io.open("bench/fabrication_categories.json","w",encoding="utf-8").write(
+    io.open("bench/flagged_span_categories.json","w",encoding="utf-8").write(
         json.dumps({"n":len(rec),"counts":dict(cats),"records":rec},ensure_ascii=False,indent=1))
     ORDER=["whitespace_only","case_or_yo","source_markup","punctuation_only","ellipsis_join","spliced","edge_trim",
            "translation","paraphrase_major","ellipsis_partial","other_passage","paraphrase_partial","invented"]

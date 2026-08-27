@@ -6,7 +6,7 @@
 > inventions**. 239 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
 > sentence, which the model correctly dropped; the remainder were ellipses, spliced fragments, and 6
 > single-word slips. The naive flag rate is **18.5%**; the real defect rate is **0.39%**,
-> and **11 of 14** configurations are at exactly zero. Method: `bench/classify_fabrications.py`.
+> and **11 of 14** configurations are at exactly zero. Method: `bench/classify_flagged_spans.py`.
 
 
 **What should a decision-maker trust a model to do here, and what should they not?**
@@ -138,7 +138,7 @@ The dominant category is the source channel's own Telegram markup (`__bold__`, `
 
 **The usable finding is methodological:** a naive verbatim check reports **18.5%** fabrication on this corpus, and the true rate is **0**. If you are building a citation-faithfulness eval, normalise source markup and whitespace, allow ellipses and splices, and **read your positives before you publish a rate**.
 
-Reproduce: `python code/classify_fabrications.py` against `results/fabrication_categories.json`, which carries the category and the reason for every flagged span.
+Reproduce: `python code/classify_flagged_spans.py` against `results/flagged_span_categories.json`, which carries the category and the reason for every flagged span.
 
 ## What we did not measure, and do not claim
 

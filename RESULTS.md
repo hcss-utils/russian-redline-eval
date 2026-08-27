@@ -6,7 +6,7 @@
 > inventions**. 239 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
 > sentence, which the model correctly dropped; the remainder were ellipses, spliced fragments, and 6
 > single-word slips. The naive flag rate is **18.5%**; the real defect rate is **0.39%**,
-> and **11 of 14** configurations are at exactly zero. Method: `bench/classify_fabrications.py`.
+> and **11 of 14** configurations are at exactly zero. Method: `bench/classify_flagged_spans.py`.
 
 
 **2800 records** = 100 items x 14 configs x Russian x 2 reps. Parsed 2783, errors 7, unparsed 10. **Measured spend $22.38.**
