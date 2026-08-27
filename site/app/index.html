@@ -5,22 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RedLineBench — Russian red-line &amp; nuclear-signal detection</title>
 <style>
+:root{
+  /* THE TYPE SCALE -- eight steps, defined once; nothing below sets a literal rem size.
+     Before 2026-08-27 the page rendered 29 distinct sizes across 95 tag/class/size/weight
+     combinations, and prose list items inherited the 16px default, so bullets outranked
+     the 14px headings that introduced them. */
+  --fs-hero: 1.875rem;  /* 30px  KPI figures                */
+  --fs-xl:   1.25rem;   /* 20px  banner title, section h2   */
+  --fs-lg:   1rem;      /* 16px  modal headings             */
+  --fs-md:   .875rem;   /* 14px  h3                         */
+  --fs-base: .8125rem;  /* 13px  body prose and list items  */
+  --fs-sm:   .75rem;    /* 12px  tables, captions           */
+  --fs-xs:   .6875rem;  /* 11px  chips, sublabels           */
+  --fs-xxs:  .625rem;   /* 10px  chart labels -- the floor  */
+}
+.panel li,.insight li,.why-list li{font-size:var(--fs-base);line-height:1.55}
+.panel p,.insight p{font-size:var(--fs-base)}
+.panel h2{font-size:var(--fs-xl)}
+.panel h3,.panel h3.m-h,.panel h3.cmp-h{font-size:var(--fs-md)}
+
 :root{--bg:#0d1f3c;--db:#1a3761;--gold:#dbad50;--lb:#82a0bc;--wh:#e8edf3;--red:#e74c3c;--green:#2ecc71;--border:#1e3a5f;--card:#132844}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--wh);min-height:100vh}
 
 /* status banner */
-.status-banner{background:repeating-linear-gradient(45deg,#e74c3c,#e74c3c 20px,#c0392b 20px,#c0392b 40px);color:white;text-align:center;padding:.7rem;font-weight:800;font-size:1rem;letter-spacing:2px;text-transform:uppercase;position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.status-banner{background:repeating-linear-gradient(45deg,#e74c3c,#e74c3c 20px,#c0392b 20px,#c0392b 40px);color:white;text-align:center;padding:.7rem;font-weight:800;font-size:var(--fs-lg);letter-spacing:2px;text-transform:uppercase;position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 
 /* Header */
 .header{display:flex;align-items:center;gap:1rem;padding:1rem 2rem;border-bottom:1px solid var(--border)}
-.header h1{font-size:1.3rem;color:var(--gold)}
-.header .sub{color:var(--lb);font-size:.8rem}
-.header .badge{background:var(--red);color:white;font-size:.6rem;padding:.2rem .5rem;border-radius:3px;font-weight:700;text-transform:uppercase;margin-left:.5rem}
+.header h1{font-size:var(--fs-xl);color:var(--gold)}
+.header .sub{color:var(--lb);font-size:var(--fs-base)}
+.header .badge{background:var(--red);color:white;font-size:var(--fs-xxs);padding:.2rem .5rem;border-radius:3px;font-weight:700;text-transform:uppercase;margin-left:.5rem}
 
 /* Tabs */
 .tabs{display:flex;flex-wrap:wrap;gap:2px;padding:0 2rem;background:var(--card);border-bottom:1px solid var(--border)}
-.tab{padding:.7rem 1rem;cursor:pointer;font-size:.78rem;color:var(--lb);font-weight:600;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex:0 0 auto}
+.tab{padding:.7rem 1rem;cursor:pointer;font-size:var(--fs-sm);color:var(--lb);font-weight:600;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex:0 0 auto}
 .tab:hover{color:var(--wh)}
 .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 
@@ -31,11 +50,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 /* KPI strip */
 .kpi-strip{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.8rem 1.2rem;text-align:center;min-width:130px;flex:1}
-.kpi-num{font-size:1.8rem;font-weight:700;color:var(--gold)}.kpi-label{font-size:.65rem;color:var(--lb);margin-top:.2rem}
+.kpi-num{font-size:var(--fs-hero);font-weight:700;color:var(--gold)}.kpi-label{font-size:var(--fs-xxs);color:var(--lb);margin-top:.2rem}
 .kpi-num.red{color:var(--red)}.kpi-num.green{color:var(--green)}
 
 /* Leaderboard table */
-.lb-table{width:100%;border-collapse:collapse;font-size:.75rem;margin-bottom:1.5rem}
+.lb-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm);margin-bottom:1.5rem}
 .lb-table th{background:var(--card);border:1px solid var(--border);padding:.5rem;color:var(--gold);font-weight:600;text-align:center;position:sticky;top:0}
 .lb-table td{border:1px solid var(--border);padding:.4rem .5rem;text-align:center}
 .lb-table tr:nth-child(even){background:rgba(255,255,255,.02)}
@@ -46,36 +65,36 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 /* Situation room */
 .sit-room{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:1.5rem;margin:1rem 0}
 .sit-room h3{color:var(--gold);margin-bottom:.8rem}
-.passage{background:rgba(255,255,255,.03);border-left:3px solid var(--gold);padding:.8rem 1rem;margin:.5rem 0;font-size:.82rem;line-height:1.6;font-style:italic}
+.passage{background:rgba(255,255,255,.03);border-left:3px solid var(--gold);padding:.8rem 1rem;margin:.5rem 0;font-size:var(--fs-base);line-height:1.6;font-style:italic}
 .passage .ru{color:var(--lb)}
-.model-verdict{display:inline-block;padding:.15rem .5rem;border-radius:3px;font-size:.68rem;font-weight:700;margin:.2rem .3rem}
+.model-verdict{display:inline-block;padding:.15rem .5rem;border-radius:3px;font-size:var(--fs-xs);font-weight:700;margin:.2rem .3rem}
 .v-alert{background:rgba(231,76,60,.2);color:var(--red)}.v-routine{background:rgba(46,204,113,.15);color:var(--green)}.v-nuclear{background:rgba(219,173,80,.2);color:var(--gold)}
 
 /* Insight callout */
 .insight{background:var(--card);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;padding:.9rem 1.2rem;margin:1rem 0}
-.insight h3{color:var(--gold);font-size:.88rem;margin-bottom:.3rem}.insight p{font-size:.8rem;line-height:1.55}
+.insight h3{color:var(--gold);font-size:var(--fs-md);margin-bottom:.3rem}.insight p{font-size:var(--fs-base);line-height:1.55}
 
 /* Footer */
-.footer{padding:1rem 2rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--lb);text-align:center;margin-top:2rem}
+.footer{padding:1rem 2rem;border-top:1px solid var(--border);font-size:var(--fs-xxs);color:var(--lb);text-align:center;margin-top:2rem}
 
 /* chart frame */
-.chart-frame{background:var(--card);border:1px solid var(--border);border-radius:8px;height:280px;display:flex;align-items:center;justify-content:center;color:var(--lb);font-size:.85rem;margin:1rem 0}
+.chart-frame{background:var(--card);border:1px solid var(--border);border-radius:8px;height:280px;display:flex;align-items:center;justify-content:center;color:var(--lb);font-size:var(--fs-base);margin:1rem 0}
 
 /* Modals */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
 .modal{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:1.5rem 2rem;max-width:780px;width:94%;max-height:85vh;overflow-y:auto;position:relative}
-.modal h3{color:var(--gold);font-size:1rem;margin-bottom:.8rem}
-.modal h4{color:var(--wh);font-size:.88rem;margin:1rem 0 .4rem}
-.modal p,.modal li{font-size:.82rem;line-height:1.6;margin-bottom:.4rem;color:var(--wh)}
+.modal h3{color:var(--gold);font-size:var(--fs-lg);margin-bottom:.8rem}
+.modal h4{color:var(--wh);font-size:var(--fs-md);margin:1rem 0 .4rem}
+.modal p,.modal li{font-size:var(--fs-base);line-height:1.6;margin-bottom:.4rem;color:var(--wh)}
 .modal ul{padding-left:1.2rem;margin-bottom:.6rem}
 .modal .term{color:var(--gold);font-weight:600}
 .modal .warn{color:var(--red);font-weight:600}
-.modal-close{position:absolute;top:.7rem;right:1rem;cursor:pointer;color:var(--lb);font-size:1.2rem;background:none;border:none}
+.modal-close{position:absolute;top:.7rem;right:1rem;cursor:pointer;color:var(--lb);font-size:var(--fs-xl);background:none;border:none}
 .modal-close:hover{color:var(--wh)}
 
 /* Info buttons */
-.info-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-size:.7rem;font-weight:700;cursor:pointer;margin-left:.4rem;background:none;vertical-align:middle;transition:all .12s;flex-shrink:0}
+.info-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-size:var(--fs-xs);font-weight:700;cursor:pointer;margin-left:.4rem;background:none;vertical-align:middle;transition:all .12s;flex-shrink:0}
 .info-btn:hover{background:var(--gold);color:var(--bg)}
 
 /* Column help */
@@ -90,34 +109,34 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
     html,body{overflow-x:hidden}
     .content{padding:1rem .9rem}
     .tabs{padding:0 .6rem}
-    .tab{padding:.6rem .75rem;font-size:.72rem}
+    .tab{padding:.6rem .75rem;font-size:var(--fs-xs)}
     .kpi-strip{gap:.6rem}
     .kpi{flex:1 1 44%;min-width:0}
-    table{font-size:.7rem}
+    table{font-size:var(--fs-xs)}
     th,td{padding:.4rem .45rem}
-    h1{font-size:1.35rem}
-    h2{font-size:1.05rem}
+    h1{font-size:var(--fs-xl)}
+    h2{font-size:var(--fs-lg)}
 }
 @media (max-width:430px){
     .kpi{flex:1 1 100%}
-    .tab{padding:.55rem .6rem;font-size:.7rem}
+    .tab{padding:.55rem .6rem;font-size:var(--fs-xs)}
 }
 
 /* ═══ RLB-UPGRADE-V2 ═══ */
 /* ═══ Sortable column headers (all tabs) ═══ */
 th.sortable{cursor:pointer;user-select:none;position:relative}
 th.sortable:hover{color:var(--gold)}
-.sort-ind{opacity:.35;font-size:.62rem;margin-left:.28rem}
+.sort-ind{opacity:.35;font-size:var(--fs-xxs);margin-left:.28rem}
 /* ═══ Header: Home / back-to-overview ═══ */
 .hdr-main{flex:1;min-width:0}
 .home-btn{flex:0 0 auto;display:inline-block;text-decoration:none;white-space:nowrap;
           color:var(--gold);border:1px solid var(--gold);border-radius:6px;
-          padding:.4rem .75rem;font-size:.72rem;font-weight:600;transition:all .15s}
+          padding:.4rem .75rem;font-size:var(--fs-xs);font-weight:600;transition:all .15s}
 .home-btn:hover{background:var(--gold);color:#13233f}
-@media (max-width:520px){.home-btn{padding:.35rem .55rem;font-size:.66rem}}
+@media (max-width:520px){.home-btn{padding:.35rem .55rem;font-size:var(--fs-xxs)}}
 
 .col-lab{border-bottom:none;cursor:pointer}
-.col-info{cursor:help;color:var(--gold);opacity:.55;font-size:.72rem;margin-left:.28rem}
+.col-info{cursor:help;color:var(--gold);opacity:.55;font-size:var(--fs-xs);margin-left:.28rem}
 .col-info:hover{opacity:1}
 th[data-dir="asc"] .sort-ind,th[data-dir="desc"] .sort-ind{opacity:1;color:var(--gold)}
 
@@ -128,73 +147,73 @@ tr.prow:hover{background:rgba(219,173,80,.07)}
 .ptip{position:absolute;z-index:2000;display:none;max-width:520px;width:calc(100vw - 24px);
       background:var(--card);border:1px solid var(--gold);border-radius:8px;padding:.75rem .85rem;
       box-shadow:0 10px 30px rgba(0,0,0,.55);pointer-events:none}
-.ptip-h{color:var(--gold);font-size:.72rem;font-weight:700;margin-bottom:.4rem}
-.ptip-ru{font-size:.72rem;color:var(--wh);margin-bottom:.3rem;line-height:1.45}
-.ptip-en{font-size:.72rem;color:var(--lb);font-style:italic;margin-bottom:.45rem;line-height:1.45}
-.ptip-ref{font-size:.72rem;margin-bottom:.35rem}
-.ptip-why{font-size:.7rem;color:var(--lb);line-height:1.5}
-.ptip-more{font-size:.66rem;color:var(--gold);margin-top:.45rem}
+.ptip-h{color:var(--gold);font-size:var(--fs-xs);font-weight:700;margin-bottom:.4rem}
+.ptip-ru{font-size:var(--fs-xs);color:var(--wh);margin-bottom:.3rem;line-height:1.45}
+.ptip-en{font-size:var(--fs-xs);color:var(--lb);font-style:italic;margin-bottom:.45rem;line-height:1.45}
+.ptip-ref{font-size:var(--fs-xs);margin-bottom:.35rem}
+.ptip-why{font-size:var(--fs-xs);color:var(--lb);line-height:1.5}
+.ptip-more{font-size:var(--fs-xxs);color:var(--gold);margin-top:.45rem}
 
 /* ═══ Compare: model selector ═══ */
 .msel{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .8rem;margin-bottom:1rem}
 .msel-head{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem}
-.msel-title{font-size:.78rem;color:var(--wh);font-weight:700}
-.msel-badge{background:var(--gold);color:#13233f;border-radius:10px;padding:.05rem .45rem;font-size:.7rem;margin-left:.25rem}
+.msel-title{font-size:var(--fs-sm);color:var(--wh);font-weight:700}
+.msel-badge{background:var(--gold);color:#13233f;border-radius:10px;padding:.05rem .45rem;font-size:var(--fs-xs);margin-left:.25rem}
 .msel-btns{display:flex;gap:.35rem;flex-wrap:wrap}
 .mbtn{background:transparent;color:var(--lb);border:1px solid var(--border);border-radius:5px;
-      padding:.25rem .5rem;font-size:.68rem;cursor:pointer;font-family:inherit}
+      padding:.25rem .5rem;font-size:var(--fs-xs);cursor:pointer;font-family:inherit}
 .mbtn:hover{color:var(--gold);border-color:var(--gold)}
 .msel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.4rem}
 .mchip{display:flex;align-items:center;gap:.4rem;background:var(--bg);border:1px solid var(--border);
-       border-radius:6px;padding:.35rem .5rem;cursor:pointer;font-size:.7rem}
+       border-radius:6px;padding:.35rem .5rem;cursor:pointer;font-size:var(--fs-xs)}
 .mchip:hover{border-color:var(--gold)}
 .mchip:has(input:checked){border-color:var(--gold);background:rgba(219,173,80,.08)}
 .mchip input{accent-color:var(--gold);cursor:pointer;flex:0 0 auto}
 .mchip-n{color:var(--wh);font-weight:600;flex:1;min-width:0}
-.mchip-p{color:var(--lb);font-size:.62rem}
-.mchip-f1{color:var(--gold);font-size:.62rem;font-weight:700}
-.cmp-h{color:var(--gold);font-size:.86rem;margin:1.1rem 0 .5rem}
-.cmp-sub{color:var(--lb);font-size:.66rem;font-weight:400;margin-left:.4rem}
+.mchip-p{color:var(--lb);font-size:var(--fs-xxs)}
+.mchip-f1{color:var(--gold);font-size:var(--fs-xxs);font-weight:700}
+.cmp-h{color:var(--gold);font-size:var(--fs-base);margin:1.1rem 0 .5rem}
+.cmp-sub{color:var(--lb);font-size:var(--fs-xxs);font-weight:400;margin-left:.4rem}
 .cmp-mat-wrap{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.6rem}
 .cmp-card{flex:1 1 300px;min-width:270px;max-width:420px;background:var(--card);border:1px solid var(--border);
           border-radius:8px;padding:.7rem .8rem}
-.cmp-card h3{color:var(--gold);font-size:.8rem;margin-bottom:.5rem}
+.cmp-card h3{color:var(--gold);font-size:var(--fs-base);margin-bottom:.5rem}
 .cmp-card table{margin-bottom:.4rem}
-.cmp-foot{font-size:.66rem;color:var(--lb)}
+.cmp-foot{font-size:var(--fs-xxs);color:var(--lb)}
 
 /* ═══ Filters ═══ */
 .f-sel{background:var(--card);color:var(--wh);border:1px solid var(--border);
-       padding:.3rem .5rem;border-radius:4px;font-size:.7rem;font-family:inherit}
+       padding:.3rem .5rem;border-radius:4px;font-size:var(--fs-xs);font-family:inherit}
 
 /* ═══ Situation Room ═══ */
-.sit-choice{cursor:pointer;border:1px solid transparent;font-family:inherit;font-size:.7rem}
+.sit-choice{cursor:pointer;border:1px solid transparent;font-family:inherit;font-size:var(--fs-xs)}
 .sit-choice.picked{outline:2px solid var(--gold);outline-offset:1px}
 .sit-feedback{margin-top:.8rem;padding:.6rem .7rem;background:var(--bg);border-left:3px solid var(--gold);
-              border-radius:4px;font-size:.74rem;color:var(--lb);line-height:1.55}
+              border-radius:4px;font-size:var(--fs-sm);color:var(--lb);line-height:1.55}
 .sit-reveal{margin-top:.9rem}
 .sit-row{display:grid;grid-template-columns:150px auto 62px 1fr;gap:.5rem;align-items:center;
-         padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.7rem}
+         padding:.35rem 0;border-bottom:1px solid var(--border);font-size:var(--fs-xs)}
 .sit-m{color:var(--wh);font-weight:600}
-.sit-ok{font-size:.64rem;font-weight:700}
+.sit-ok{font-size:var(--fs-xxs);font-weight:700}
 .is-ok{color:var(--green)}.is-bad{color:var(--red)}
-.sit-j{color:var(--lb);font-size:.67rem;line-height:1.45}
+.sit-j{color:var(--lb);font-size:var(--fs-xxs);line-height:1.45}
 
 /* ═══ Method ═══ */
-.m-h{color:var(--gold);font-size:.88rem;margin:1.3rem 0 .45rem;padding-bottom:.25rem;border-bottom:1px solid var(--border)}
-.m-p{font-size:.76rem;color:var(--lb);line-height:1.65;margin-bottom:.7rem}
+.m-h{color:var(--gold);font-size:var(--fs-md);margin:1.3rem 0 .45rem;padding-bottom:.25rem;border-bottom:1px solid var(--border)}
+.m-p{font-size:var(--fs-sm);color:var(--lb);line-height:1.65;margin-bottom:.7rem}
 .m-p strong{color:var(--wh)}
 .m-tbl{max-width:100%;margin-bottom:.8rem}
 .m-tbl td{vertical-align:top}
-.m-ul{font-size:.76rem;color:var(--lb);line-height:1.65;margin:0 0 .8rem 1.1rem}
+.m-ul{font-size:var(--fs-sm);color:var(--lb);line-height:1.65;margin:0 0 .8rem 1.1rem}
 .m-ul li{margin-bottom:.3rem}
 .m-ul strong{color:var(--wh)}
 .m-code{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.7rem .8rem;
-        font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:.68rem;color:var(--lb);
+        font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:var(--fs-xs);color:var(--lb);
         line-height:1.5;overflow-x:auto;margin-bottom:.7rem;white-space:pre}
-code{font-family:ui-monospace,Consolas,monospace;font-size:.7rem;color:var(--gold)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:var(--fs-xs);color:var(--gold)}
 
 /* ═══ Passage modal body ═══ */
-.pm-body h3{color:var(--gold);font-size:.92rem;margin-bottom:.6rem}
+.pm-body h3{color:var(--gold);font-size:var(--fs-md);margin-bottom:.6rem}
 .pm-body h4{color:var(--gold)}
 @media (max-width:820px){
     .sit-row{grid-template-columns:1fr;gap:.15rem;padding:.5rem 0}
@@ -213,11 +232,11 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.7rem;color:var(--gol
 .logo-hcss,.logo-ccny{filter:brightness(0) invert(1)}
 .logo-gt{height:40px;background:#fff;border-radius:4px;padding:3px 6px}
 .logo-ct{filter:none;border-radius:4px}
-.inst-title{flex:1 1 auto;text-align:center;color:var(--gold);font-size:1.15rem;font-weight:700;
+.inst-title{flex:1 1 auto;text-align:center;color:var(--gold);font-size:var(--fs-xl);font-weight:700;
   letter-spacing:.2px;line-height:1.25;min-width:0}
-.inst-title .inst-sub{display:block;color:var(--lb);font-size:.72rem;font-weight:400;margin-top:.15rem}
+.inst-title .inst-sub{display:block;color:var(--lb);font-size:var(--fs-xs);font-weight:400;margin-top:.15rem}
 @media (max-width:900px){.inst-bar{padding:.6rem 1rem;gap:.8rem;flex-wrap:wrap}.logo{height:30px;max-width:110px}
-  .inst-title{font-size:.95rem;order:-1;flex-basis:100%}}
+  .inst-title{font-size:var(--fs-md);order:-1;flex-basis:100%}}
 .why-list{margin:.7rem 0 .9rem;padding-left:1.15rem}
 .why-list li{margin-bottom:.55rem;line-height:1.6}
 .why-list li::marker{color:var(--gold)}
@@ -226,51 +245,51 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.7rem;color:var(--gol
 .hl{background:#ffe600;color:#1a1a2e;padding:1px 2px;border-radius:2px}
 .hl-nts{background:#ff9d3d;color:#1a1a2e}
 .ev-bar{display:flex;flex-wrap:wrap;gap:.3rem;margin:.5rem 0 .2rem}
-.ev-chip{font-size:.68rem;padding:.18rem .5rem;border-radius:4px;background:var(--db);
+.ev-chip{font-size:var(--fs-xs);padding:.18rem .5rem;border-radius:4px;background:var(--db);
   border:1px solid var(--border);color:var(--lb);cursor:pointer;user-select:none}
 .ev-chip:hover,.ev-chip.on{border-color:var(--gold);color:var(--gold)}
 .ev-chip.fab{border-color:var(--red);color:#ffb3ab}
-.ev-note{font-size:.7rem;color:var(--lb);margin:.35rem 0 0}
+.ev-note{font-size:var(--fs-xs);color:var(--lb);margin:.35rem 0 0}
 .ev-fabq{border-left:3px solid var(--red);padding:.4rem .6rem;margin:.4rem 0;background:rgba(231,76,60,.08);
-  font-size:.76rem;color:#ffd9d4}
+  font-size:var(--fs-sm);color:#ffd9d4}
 
 /* charts */
 .vz{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;margin:1rem 0}
-.vz h3{color:var(--gold);font-size:.9rem;margin-bottom:.15rem}
-.vz .vz-sub{font-size:.7rem;color:var(--lb);margin-bottom:.7rem}
+.vz h3{color:var(--gold);font-size:var(--fs-md);margin-bottom:.15rem}
+.vz .vz-sub{font-size:var(--fs-xs);color:var(--lb);margin-bottom:.7rem}
 .vz svg{width:100%;height:auto;display:block;overflow:visible}
-.vz-legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.68rem;color:var(--lb);margin-top:.5rem}
+.vz-legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:var(--fs-xs);color:var(--lb);margin-top:.5rem}
 .vz-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:-1px}
 .vz-tip{position:fixed;z-index:2000;background:#0b1930;border:1px solid var(--gold);border-radius:6px;
-  padding:.45rem .6rem;font-size:.72rem;color:var(--wh);pointer-events:none;display:none;max-width:280px;
+  padding:.45rem .6rem;font-size:var(--fs-xs);color:var(--wh);pointer-events:none;display:none;max-width:280px;
   box-shadow:0 6px 20px rgba(0,0,0,.5)}
 .vz-cell:hover,.vz-bar:hover{stroke:#fff;stroke-width:1.2}
 .vzfab{color:#ffb3ab}
-.inst-tag{display:block;font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);opacity:.9;margin-top:.15rem}
-.ev-rawnote{margin-top:.6rem;font-size:.68rem;color:var(--lb);opacity:.85;font-style:italic}
+.inst-tag{display:block;font-size:var(--fs-xxs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);opacity:.9;margin-top:.15rem}
+.ev-rawnote{margin-top:.6rem;font-size:var(--fs-xs);color:var(--lb);opacity:.85;font-style:italic}
 .ev-rawnote code{font-style:normal;background:rgba(255,255,255,.07);padding:0 3px;border-radius:3px}
 
 .sq{background:var(--card);border:1px solid var(--line,#26456e);border-radius:10px;padding:1.1rem 1.3rem;margin:1.1rem 0}
-.sq h3{color:var(--gold);font-size:.95rem;margin:0 0 .25rem}
-.sq-sub{color:var(--lb);font-size:.76rem;margin-bottom:.9rem}
+.sq h3{color:var(--gold);font-size:var(--fs-md);margin:0 0 .25rem}
+.sq-sub{color:var(--lb);font-size:var(--fs-sm);margin-bottom:.9rem}
 .sq-key{display:flex;gap:1.4rem;flex-wrap:wrap;margin:.2rem 0 1rem}
-.sq-key b{color:var(--gold);font-size:1.5rem;display:block;line-height:1.1}
-.sq-key span{color:var(--lb);font-size:.7rem}
+.sq-key b{color:var(--gold);font-size:var(--fs-xl);display:block;line-height:1.1}
+.sq-key span{color:var(--lb);font-size:var(--fs-xs)}
 .sq-grid{overflow-x:auto}
-.sq-track{border-collapse:separate;border-spacing:2px;font-size:.62rem}
+.sq-track{border-collapse:separate;border-spacing:2px;font-size:var(--fs-xxs)}
 .sq-track th{color:var(--lb);font-weight:600;text-align:left;padding:0 .3rem;white-space:nowrap}
 .sq-cell{width:15px;height:15px;border-radius:3px}
 .sq-sig{outline:2px solid var(--gold);outline-offset:1px}
-.sq-leg{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.7rem;font-size:.7rem;color:var(--lb)}
+.sq-leg{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.7rem;font-size:var(--fs-xs);color:var(--lb)}
 .sq-leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:-1px}
-.ex-t{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:.76rem}.ex-t td{padding:.3rem .5rem;border-bottom:1px solid var(--line,#26456e);vertical-align:top}.ex-t td:first-child{white-space:nowrap;color:var(--lb);width:4.5rem}.ex-t td:last-child{white-space:nowrap;text-align:right;width:6rem}.ex-n{color:var(--lb);opacity:.8}.ex-y{color:var(--gold);font-weight:700}.gl-i{display:inline-block;margin-left:.28rem;width:13px;height:13px;line-height:13px;text-align:center;border:1px solid var(--gold);border-radius:50%;color:var(--gold);font-size:.6rem;cursor:pointer;opacity:.75;vertical-align:1px;font-style:normal;font-weight:700}.gl-i:hover{opacity:1;background:var(--gold);color:var(--bg)}
+.ex-t{width:100%;border-collapse:collapse;margin:.6rem 0;font-size:var(--fs-sm)}.ex-t td{padding:.3rem .5rem;border-bottom:1px solid var(--line,#26456e);vertical-align:top}.ex-t td:first-child{white-space:nowrap;color:var(--lb);width:4.5rem}.ex-t td:last-child{white-space:nowrap;text-align:right;width:6rem}.ex-n{color:var(--lb);opacity:.8}.ex-y{color:var(--gold);font-weight:700}.gl-i{display:inline-block;margin-left:.28rem;width:13px;height:13px;line-height:13px;text-align:center;border:1px solid var(--gold);border-radius:50%;color:var(--gold);font-size:var(--fs-xxs);cursor:pointer;opacity:.75;vertical-align:1px;font-style:normal;font-weight:700}.gl-i:hover{opacity:1;background:var(--gold);color:var(--bg)}
 </style>
 </head>
 <body>
 
 <div class="inst-bar"><div class="rb-logo-group rb-logo-left"><a href="https://www.gatech.edu" target="_blank" rel="noopener" title="Georgia Institute of Technology — Sam Nunn School of International Affairs"><img src="gt.svg" alt="Georgia Institute of Technology" class="logo logo-gt"></a><a href="https://www.hcss.nl" target="_blank" rel="noopener" title="The Hague Centre for Strategic Studies"><img src="hcss_logo.svg" alt="The Hague Centre for Strategic Studies" class="logo logo-hcss"></a></div><div class="inst-title">RedLineBench<span class="inst-tag">Russian red-line &amp; nuclear-signal detection</span><span class="inst-sub">Can frontier AI advisers tell a genuine signal from routine, retrospective, quoted or deliberately vague rhetoric?</span></div><div class="rb-logo-group rb-logo-right"><a href="https://www.chinatalk.media/p/25k-contest-evals-for-the-situation" target="_blank" rel="noopener" title="ChinaTalk — Evals for the Situation Room"><img src="chinatalk_logo.png" alt="ChinaTalk" class="logo logo-ct"></a><a href="https://www.carnegie.org" target="_blank" rel="noopener" title="Carnegie Corporation of New York"><img src="ccny_logo.svg" alt="Carnegie Corporation of New York" class="logo logo-ccny"></a></div></div><div class="header">
     <div class="hdr-main">
-        <h1 style="font-size:1rem">Measured run <span class="badge">14 models</span></h1>
+        <h1 style="font-size:var(--fs-lg)">Measured run <span class="badge">14 models</span></h1>
     </div>
     <a class="home-btn" href="https://github.com/hcss-utils/russian-redline-eval" target="_blank" rel="noopener" style="margin-right:.5rem" title="Prompt, data, code and every per-decision record">Code &amp; data on GitHub</a>
 </div>
@@ -294,10 +313,10 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.7rem;color:var(--gol
 
 
 
-<div class="content"><div class="panel active" id="brief"><div class="kpi-strip"><div class="kpi"><div class="kpi-num">2,800</div><div class="kpi-label">scored decisions<i class="gl-i" data-gl="mc-tile-decisions" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num">100</div><div class="kpi-label">real passages<i class="gl-i" data-gl="mc-tile-passages" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num">14</div><div class="kpi-label">models, native APIs<i class="gl-i" data-gl="mc-native" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num red">283</div><div class="kpi-label">flagged by a naive check<i class="gl-i" data-gl="mc-tile-fab" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num">$22.38</div><div class="kpi-label">total cost</div></div></div>
+<div class="content"><div class="panel active" id="brief"><div class="insight" id="why-it-matters"><h3>Why this matters</h3><p><em><strong>Red lines are how nuclear-armed states tell each other where the limits are.</strong></em> They are the working mechanism of deterrence: a boundary named, a consequence attached, and an adversary expected to read both correctly. When that reading fails, it fails in one of two directions, and both are dangerous.</p><ul class="why-list"><li><strong>Miss a real signal</strong> and a genuine warning is filed as noise. The state that issued it believes it has communicated a limit; the state that received it does not know a limit exists. Deterrence does not fail loudly here — it fails <em>silently</em>, and the discovery comes after the boundary has already been crossed.</li><li><strong>Treat bluster as a real signal</strong> and the error runs the other way: concessions offered to a threat nobody meant, or a counter-move made against a danger that was never there. In a crisis, an adviser that cries wolf does not merely fail to help — it <em>manufactures</em> escalation out of rhetoric.</li><li><strong>The volume is already past human reach.</strong> Hundreds of thousands of official statements, channels and transcripts, judged faster than people can read them. That is precisely the gap language models are being brought in to fill.</li></ul><p><em><strong>Which is why the finding here is not the leaderboard.</strong></em> On the judgement itself these models are close to each other and mostly right.</p><ul class="why-list"><li><strong>A fabricated citation would not be a mistake an analyst could catch.</strong> It is a plausible sentence, attributed to a real official, on a real date, that was never said.</li><li><strong>The analyst checks the citation, and the citation reads true.</strong></li></ul><p><strong>A wrong answer gets corrected. A well-evidenced wrong answer gets believed, and then briefed upward.</strong></p></div>
 <div id="lead-vz"></div>
-<h2 style="color:var(--gold);font-size:1.1rem;margin-bottom:.6rem">What should a decision-maker trust a model to do here — and what should they not?</h2>
-<p style="font-size:.72rem;color:var(--lb);margin:-.2rem 0 .8rem">100 passages &times; 14 models &times; 2 repetitions &middot; Russian only &middot; reference labels provisional &middot; $22.38 measured</p><div class="insight"><h3>The short answer</h3>
+<h2 style="color:var(--gold);font-size:var(--fs-xl);margin-bottom:.6rem">What should a decision-maker trust a model to do here — and what should they not?</h2>
+<p style="font-size:var(--fs-xs);color:var(--lb);margin:-.2rem 0 .8rem">100 passages &times; 14 models &times; 2 repetitions &middot; Russian only &middot; reference labels provisional &middot; $22.38 measured</p><div class="insight"><h3>The short answer</h3>
 <p><em><strong>The models do not invent quotations. A naive check says they do.</strong></em>
 Fourteen frontier configurations judged 100 real Russian official statements, twice each.
 On the judgement itself they are <strong>indistinguishable</strong> — every model lands between
@@ -308,9 +327,7 @@ fabricated, from 1.7% up to 42.2% by model.
 <strong>We then read all 283 flagged spans. None was invented.</strong>
 238 were the source channel's own Telegram markup inside the quoted sentence, which the model
 correctly dropped; the rest were ellipses, spliced fragments and 6 single-word slips.
-<strong>11 of 14 configurations have a zero real-defect rate.</strong></p></div>
-
-<div class="insight" id="why-it-matters"><h3>Why this matters</h3><p><em><strong>Red lines are how nuclear-armed states tell each other where the limits are.</strong></em> They are the working mechanism of deterrence: a boundary named, a consequence attached, and an adversary expected to read both correctly. When that reading fails, it fails in one of two directions, and both are dangerous.</p><ul class="why-list"><li><strong>Miss a real signal</strong> and a genuine warning is filed as noise. The state that issued it believes it has communicated a limit; the state that received it does not know a limit exists. Deterrence does not fail loudly here — it fails <em>silently</em>, and the discovery comes after the boundary has already been crossed.</li><li><strong>Treat bluster as a real signal</strong> and the error runs the other way: concessions offered to a threat nobody meant, or a counter-move made against a danger that was never there. In a crisis, an adviser that cries wolf does not merely fail to help — it <em>manufactures</em> escalation out of rhetoric.</li><li><strong>The volume is already past human reach.</strong> Hundreds of thousands of official statements, channels and transcripts, judged faster than people can read them. That is precisely the gap language models are being brought in to fill.</li></ul><p><em><strong>Which is why the finding here is not the leaderboard.</strong></em> On the judgement itself these models are close to each other and mostly right.</p><ul class="why-list"><li><strong>A fabricated citation would not be a mistake an analyst could catch.</strong> It is a plausible sentence, attributed to a real official, on a real date, that was never said.</li><li><strong>The analyst checks the citation, and the citation reads true.</strong></li></ul><p><strong>A wrong answer gets corrected. A well-evidenced wrong answer gets believed, and then briefed upward.</strong></p></div><h3 class="m-h">What we did</h3>
+<strong>11 of 14 configurations have a zero real-defect rate.</strong></p></div><p style="font-size:var(--fs-sm);color:var(--lb);margin:1.4rem 0 .5rem">What the run cost, now that every number in it has been introduced.</p><div class="kpi-strip"><div class="kpi"><div class="kpi-num">2,800</div><div class="kpi-label">scored decisions<i class="gl-i" data-gl="mc-tile-decisions" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num">100</div><div class="kpi-label">real passages<i class="gl-i" data-gl="mc-tile-passages" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num">14</div><div class="kpi-label">models, native APIs<i class="gl-i" data-gl="mc-native" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num red">283</div><div class="kpi-label">flagged by a naive check<i class="gl-i" data-gl="mc-tile-fab" title="What does this mean?">i</i></div></div><div class="kpi"><div class="kpi-num">$22.38</div><div class="kpi-label">total cost</div></div></div><h3 class="m-h">What we did</h3>
 <p class="m-p">We sampled 100 passages, matched to the <strong>274,236 chunks of ≥50 tokens</strong> (92.5% of the 296,381-chunk corpus) of Russian
 official communications — Kremlin transcripts, Ministry of Defence and MFA channels, State Duma and Federation
 Council records — matched to the corpus on source arm, chunk-length quartile and time period. Each passage was
@@ -365,12 +382,12 @@ with rationales and evidence spans, the scorer and this page's generator are pub
 
 <div class="insight"><h3>The leaderboard is not the finding</h3><p>Every model scores between <strong>0.890</strong> and <strong>0.945</strong> on red-line accuracy and every 95% interval overlaps several others — at 100 items the standard error is ±3 points, so models within about 8 points are indistinguishable. <em>This was predicted from the power arithmetic before the run was dispatched.</em> What separates them is whether the quoted span survives a <strong>verbatim check</strong>: each model must cite a verbatim span from the passage, checked mechanically as a substring test. That rate runs from <strong>1.7%</strong> to <strong>42.2%</strong> — an 25-fold spread.</p><p style="margin-top:.5rem">Reference labels are <strong>provisional</strong> — single-adjudicator, coded before Codebook Amendment 1, and no inter-rater kappa is quoted. Russian only: no translation-robustness arm was run, because a verdict flip between our translation and the original cannot be attributed to the model.</p></div>
 
-<h2 style="color:var(--gold);font-size:1rem;margin:1.2rem 0 .8rem">Core Leaderboard</h2>
+<h2 style="color:var(--gold);font-size:var(--fs-lg);margin:1.2rem 0 .8rem">Core Leaderboard</h2>
 
 <table class="lb-table"><thead><tr><th>Rank</th><th>Model</th><th>Provider</th><th>Naive-flag rate</th><th>Missed nuclear</th><th>RLS acc [95% CI]<i class="gl-i" data-gl="mc-ci" title="What does this mean?">i</i></th><th>NTS acc</th><th>Refusals</th><th>Consistency<i class="gl-i" data-gl="mc-consistency" title="What does this mean?">i</i></th><th>Latency<i class="gl-i" data-gl="mc-latency" title="What does this mean?">i</i></th><th>Cost</th></tr></thead><tbody><tr><td>1</td><td><strong>GPT-5.6 Sol</strong></td><td>OpenAI</td><td class="best"><strong>1.7%</strong></td><td>0/36</td><td>0.895 <span style="opacity:.6;font-size:.85em">[0.84–0.93]</span></td><td>1.000</td><td>—</td><td>0.990</td><td>6.3s</td><td>$1.67</td></tr><tr><td>2</td><td><strong>Claude Fable 5</strong></td><td>Anthropic</td><td class="best"><strong>2.6%</strong></td><td>2/36</td><td>0.915 <span style="opacity:.6;font-size:.85em">[0.87–0.95]</span></td><td>0.990</td><td>—</td><td>0.990</td><td>9.7s</td><td>$7.00</td></tr><tr><td>3</td><td><strong>Claude Opus 5 (thinking)</strong></td><td>Anthropic</td><td class="best"><strong>3.3%</strong></td><td>3/35</td><td>0.910 <span style="opacity:.6;font-size:.85em">[0.86–0.94]</span></td><td>0.985</td><td>—</td><td>1.000</td><td>6.7s</td><td>$3.22</td></tr><tr><td>4</td><td><strong>Kimi K3</strong></td><td>Moonshot</td><td class="best"><strong>3.7%</strong></td><td>3/36</td><td>0.930 <span style="opacity:.6;font-size:.85em">[0.89–0.96]</span></td><td>0.985</td><td>—</td><td>0.980</td><td>18.4s</td><td>$0.61</td></tr><tr><td>5</td><td><strong>Claude Opus 5 (no thinking)</strong></td><td>Anthropic</td><td class="best"><strong>5.2%</strong></td><td>4/36</td><td>0.934 <span style="opacity:.6;font-size:.85em">[0.89–0.96]</span></td><td>0.980</td><td>—</td><td>1.000</td><td>4.3s</td><td>$2.23</td></tr><tr><td>6</td><td><strong>GPT-5.6 Terra</strong></td><td>OpenAI</td><td><strong>8.4%</strong></td><td>4/36</td><td>0.910 <span style="opacity:.6;font-size:.85em">[0.86–0.94]</span></td><td>0.980</td><td>—</td><td>0.980</td><td>3.4s</td><td>$0.73</td></tr><tr><td>7</td><td><strong>Gemini 3.6 Flash</strong></td><td>Google</td><td><strong>20.8%</strong></td><td>3/36</td><td>0.940 <span style="opacity:.6;font-size:.85em">[0.90–0.96]</span></td><td>0.985</td><td>—</td><td>1.000</td><td>6.0s</td><td>$0.94</td></tr><tr><td>8</td><td><strong>GLM-5.2</strong></td><td>Zhipu AI</td><td><strong>23.6%</strong></td><td>4/35</td><td>0.919 <span style="opacity:.6;font-size:.85em">[0.87–0.95]</span></td><td>0.980</td><td>—</td><td>0.990</td><td>15.3s</td><td>$0.55</td></tr><tr><td>9</td><td><strong>Claude Sonnet 5</strong></td><td>Anthropic</td><td><strong>24.5%</strong></td><td>3/36</td><td>0.945 <span style="opacity:.6;font-size:.85em">[0.90–0.97]</span></td><td>0.985</td><td>—</td><td>0.990</td><td>5.3s</td><td>$1.81</td></tr><tr><td>10</td><td><strong>DeepSeek V4 Pro</strong></td><td>DeepSeek</td><td><strong>28.0%</strong></td><td>8/36</td><td>0.910 <span style="opacity:.6;font-size:.85em">[0.86–0.94]</span></td><td>0.960</td><td>—</td><td>0.980</td><td>28.8s</td><td>$0.71</td></tr><tr><td>11</td><td><strong>Qwen3.7-Max</strong></td><td>Alibaba</td><td><strong>28.6%</strong></td><td>4/34</td><td>0.942 <span style="opacity:.6;font-size:.85em">[0.90–0.97]</span></td><td>0.979</td><td>6</td><td>0.978</td><td>24.2s</td><td>$1.94</td></tr><tr><td>12</td><td><strong>DeepSeek V4 Flash</strong></td><td>DeepSeek</td><td style="color:var(--red)"><strong>33.3%</strong></td><td>4/36</td><td>0.915 <span style="opacity:.6;font-size:.85em">[0.87–0.95]</span></td><td>0.975</td><td>—</td><td>0.990</td><td>14.2s</td><td>$0.21</td></tr><tr><td>13</td><td><strong>GPT-5.6 Luna</strong></td><td>OpenAI</td><td style="color:var(--red)"><strong>37.3%</strong></td><td>2/36</td><td>0.890 <span style="opacity:.6;font-size:.85em">[0.84–0.93]</span></td><td>0.990</td><td>—</td><td>1.000</td><td>4.5s</td><td>$0.11</td></tr><tr><td>14</td><td><strong>Claude Haiku 4.5</strong></td><td>Anthropic</td><td style="color:var(--red)"><strong>42.2%</strong></td><td>0/36</td><td>0.900 <span style="opacity:.6;font-size:.85em">[0.85–0.93]</span></td><td>0.995</td><td>—</td><td>1.000</td><td>3.2s</td><td>$0.65</td></tr></tbody></table><div id="seq-host"></div>
 <div id="vz-host"></div>
 
-<div style="font-size:.68rem;color:var(--lb);margin-top:.5rem">Cost buys nothing here. The cheapest configuration in the slate costs <strong>$0.11</strong> and the dearest <strong>$7.00</strong> — a 64-fold range — yet the naive flag rate spans 1.7% to 42.2% with no relationship to price &mdash; and none of it is invention.</div>
+<div style="font-size:var(--fs-xs);color:var(--lb);margin-top:.5rem">Cost buys nothing here. The cheapest configuration in the slate costs <strong>$0.11</strong> and the dearest <strong>$7.00</strong> — a 64-fold range — yet the naive flag rate spans 1.7% to 42.2% with no relationship to price &mdash; and none of it is invention.</div>
 
 <div class="insight">
     <h3>Ranking sensitivity</h3>
@@ -380,8 +397,8 @@ with rationales and evidence spans, the scorer and this page's generator are pub
 
 <!-- ═══ COMPARE MODELS ═══ -->
 <div class="panel" id="compare">
-<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Head-to-Head Model Comparison</h2>
-<p style="font-size:.78rem;color:var(--lb);margin-bottom:.8rem">Select any number of models &mdash; two, five, or all 14. Every view below recomputes for the current selection.</p>
+<h2 style="color:var(--gold);font-size:var(--fs-lg);margin-bottom:.4rem">Head-to-Head Model Comparison</h2>
+<p style="font-size:var(--fs-sm);color:var(--lb);margin-bottom:.8rem">Select any number of models &mdash; two, five, or all 14. Every view below recomputes for the current selection.</p>
 
 <div class="msel">
     <div class="msel-head">
@@ -409,16 +426,16 @@ with rationales and evidence spans, the scorer and this page's generator are pub
 </div>
 <!-- ═══ FAILURE ATLAS ═══ -->
 <div class="panel" id="failures">
-<h2 style="color:var(--gold);font-size:1rem;margin-bottom:1rem">Failure Atlas — Where Models Break</h2>
+<h2 style="color:var(--gold);font-size:var(--fs-lg);margin-bottom:1rem">Failure Atlas — Where Models Break</h2>
 <div class="kpi-strip">
     <div class="kpi"><div class="kpi-num red">44</div><div class="kpi-label">missed nuclear signals (all models, both reps)</div></div>
     <div class="kpi"><div class="kpi-num red">2</div><div class="kpi-label">false strategic alerts</div></div>
     <div class="kpi"><div class="kpi-num red">283</div><div class="kpi-label">spans flagged by a naive check</div></div>
     <div class="kpi"><div class="kpi-num red">6</div><div class="kpi-label">provider refusals</div></div>
 </div>
-<h3 style="color:var(--wh);font-size:.85rem;margin:.8rem 0 .5rem">Worst-performing passages — every model, ranked by total errors <span style="font-weight:400;color:var(--lb);font-size:.7rem">· hover a row for the passage and reference label, click for all 14 justifications</span></h3>
+<h3 style="color:var(--wh);font-size:var(--fs-base);margin:.8rem 0 .5rem">Worst-performing passages — every model, ranked by total errors <span style="font-weight:400;color:var(--lb);font-size:var(--fs-xs)">· hover a row for the passage and reference label, click for all 14 justifications</span></h3>
 <div id="fail-table"></div>
-<p style="font-size:.68rem;color:var(--lb);margin-bottom:.5rem"><strong>-</strong> = correct. <span style="color:var(--red)">Red</span> = model's wrong answer. Karaganov (#103) defeats ALL ten models — every one calls an analyst op-ed a nuclear signal. Medvedev (#198) and Lavrov (#037) are the top false-alert generators: retrospective and maximalist rhetoric that models cannot distinguish from live threats.</p>
+<p style="font-size:var(--fs-xs);color:var(--lb);margin-bottom:.5rem"><strong>-</strong> = correct. <span style="color:var(--red)">Red</span> = model's wrong answer. Karaganov (#103) defeats ALL ten models — every one calls an analyst op-ed a nuclear signal. Medvedev (#198) and Lavrov (#037) are the top false-alert generators: retrospective and maximalist rhetoric that models cannot distinguish from live threats.</p>
 <div class="insight">
     <h3>Operational risk surface</h3>
     <p>A missed nuclear signal is categorically worse than a missed conventional red line. This tab exposes exactly which passages each model misses, and whether the miss pattern is systematic (e.g. all models miss retrospective framing) or model-specific.</p>
@@ -427,9 +444,9 @@ with rationales and evidence spans, the scorer and this page's generator are pub
 
 <!-- ═══ CASE EXPLORER ═══ -->
 <div class="panel" id="cases">
-<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Case Explorer — Passage-Level Evidence</h2>
-<p style="font-size:.78rem;color:var(--lb);margin-bottom:.8rem"><em><strong>Hover any row for the passage, the reference label and why it was coded that way; click it for all 14 models' calls and their stated reasons.</strong></em> Every model appears as a column: <span style="color:var(--green)">&check;</span> means it matched the reference, otherwise the cell shows what it answered instead.</p>
-<div style="margin-bottom:.6rem;display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem;align-items:center">
+<h2 style="color:var(--gold);font-size:var(--fs-lg);margin-bottom:.4rem">Case Explorer — Passage-Level Evidence</h2>
+<p style="font-size:var(--fs-sm);color:var(--lb);margin-bottom:.8rem"><em><strong>Hover any row for the passage, the reference label and why it was coded that way; click it for all 14 models' calls and their stated reasons.</strong></em> Every model appears as a column: <span style="color:var(--green)">&check;</span> means it matched the reference, otherwise the cell shows what it answered instead.</p>
+<div style="margin-bottom:.6rem;display:flex;gap:.5rem;flex-wrap:wrap;font-size:var(--fs-xs);align-items:center">
 <span style="color:var(--lb)">Filter:</span>
 <select id="f-class" onchange="casesFilter()" class="f-sel">
 <option value="all">All classes</option><option value="None">No-alert (66)</option><option value="RLS">Conventional RLS (16)</option><option value="NTS">Nuclear NTS (18)</option></select>
@@ -438,22 +455,22 @@ with rationales and evidence spans, the scorer and this page's generator are pub
 <span id="cases-count" style="color:var(--lb)"></span>
 </div>
 <div id="cases-table"></div>
-<p style="font-size:.68rem;color:var(--lb)">All <strong>100</strong> passages from the measured run are shown here, with each model's quoted evidence span and confidence score.</p>
+<p style="font-size:var(--fs-xs);color:var(--lb)">All <strong>100</strong> passages from the measured run are shown here, with each model's quoted evidence span and confidence score.</p>
 </div>
 <!-- ═══ LANGUAGE SHIFT ═══ -->
 <div class="panel" id="sitroom">
-<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Situation Room — Play the Adviser</h2>
-<p style="font-size:.78rem;color:var(--lb);margin-bottom:1rem">Read a passage cold. Make your own call. Then see what all 14 models said, and why.</p>
+<h2 style="color:var(--gold);font-size:var(--fs-lg);margin-bottom:.4rem">Situation Room — Play the Adviser</h2>
+<p style="font-size:var(--fs-sm);color:var(--lb);margin-bottom:1rem">Read a passage cold. Make your own call. Then see what all 14 models said, and why.</p>
 
 <div class="sit-room">
   <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.8rem">
-    <label style="font-size:.78rem;color:var(--lb)">Passage</label>
-    <select id="sit-pick" style="background:var(--db);color:var(--wh);border:1px solid var(--lb);border-radius:4px;padding:.28rem .5rem;font-size:.8rem"></select>
-    <button id="sit-rand" class="mbtn" style="font-size:.75rem">Random</button>
+    <label style="font-size:var(--fs-sm);color:var(--lb)">Passage</label>
+    <select id="sit-pick" style="background:var(--db);color:var(--wh);border:1px solid var(--lb);border-radius:4px;padding:.28rem .5rem;font-size:var(--fs-base)"></select>
+    <button id="sit-rand" class="mbtn" style="font-size:var(--fs-sm)">Random</button>
   </div>
-  <h3 id="sit-title" style="color:var(--gold);font-size:.95rem;margin:.2rem 0"></h3>
-  <div id="sit-text" style="font-size:.9rem;white-space:pre-wrap;margin:.6rem 0"></div>
-  <div style="margin:.9rem 0 .4rem;font-size:.8rem;color:var(--lb)">Your call:</div>
+  <h3 id="sit-title" style="color:var(--gold);font-size:var(--fs-md);margin:.2rem 0"></h3>
+  <div id="sit-text" style="font-size:var(--fs-md);white-space:pre-wrap;margin:.6rem 0"></div>
+  <div style="margin:.9rem 0 .4rem;font-size:var(--fs-base);color:var(--lb)">Your call:</div>
   <div id="sit-calls" style="display:flex;gap:.5rem;flex-wrap:wrap">
     <button class="mbtn" data-call="None">No alert</button>
     <button class="mbtn" data-call="RLS">Red line</button>
@@ -489,14 +506,14 @@ document.addEventListener('DOMContentLoaded',function(){
       var fl=(p.flagged||{})[m.k]?' <span style="color:var(--gold)" title="a naive substring check flagged this quote; reading all 283 such spans found 0 inventions">flagged</span>':'';
       rows+='<tr><td style="text-align:left">'+esc(m.short||m.n||m.k)+'</td>'+
             '<td style="color:'+(v===ref?'#5fd3a0':'#e06c6c')+'">'+esc(LBL[v]||v)+'</td>'+
-            '<td style="text-align:left;font-size:.72rem;color:var(--lb)">'+esc(((p.j||{})[m.k]||'').slice(0,220))+fl+'</td></tr>';
+            '<td style="text-align:left;font-size:var(--fs-xs);color:var(--lb)">'+esc(((p.j||{})[m.k]||'').slice(0,220))+fl+'</td></tr>';
     });
     var hit = call===ref;
     reveal.innerHTML =
       '<div style="margin-top:1rem;padding:.7rem .9rem;border-left:3px solid '+(hit?'#5fd3a0':'#e06c6c')+';background:rgba(255,255,255,.03)">'+
       '<b>Reference label: '+esc(LBL[ref]||ref)+'.</b> You said <b>'+esc(LBL[call]||call)+'</b> — '+(hit?'match':'no match')+'. '+
       esc(agree)+' of '+esc(tot)+' configurations agreed with the reference on this passage.'+
-      '<div style="font-size:.72rem;color:var(--lb);margin-top:.35rem">Reference labels are human-adjudicated and provisional; see Method.</div></div>'+
+      '<div style="font-size:var(--fs-xs);color:var(--lb);margin-top:.35rem">Reference labels are human-adjudicated and provisional; see Method.</div></div>'+
       '<table class="tbl" style="margin-top:.7rem;width:100%"><thead><tr><th style="text-align:left">configuration</th><th>call</th><th style="text-align:left">its stated reason</th></tr></thead><tbody>'+rows+'</tbody></table>';
     reveal.style.display='block';
   }
@@ -510,34 +527,34 @@ document.addEventListener('DOMContentLoaded',function(){
 </script>
 <!-- ═══ SOURCE ARMS ═══ -->
 <div class="panel" id="sources">
-<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.5rem">Source Arms — Officialdom Corpus Breakdown</h2>
-<p style="font-size:.8rem;color:var(--lb);margin-bottom:1rem">The 100 benchmark passages are drawn from four arms of the Russian Officialdom corpus (276,120 documents / 296,381 chunks / 36 source identities). Model performance varies sharply by source type.</p>
+<h2 style="color:var(--gold);font-size:var(--fs-lg);margin-bottom:.5rem">Source Arms — Officialdom Corpus Breakdown</h2>
+<p style="font-size:var(--fs-base);color:var(--lb);margin-bottom:1rem">The 100 benchmark passages are drawn from four arms of the Russian Officialdom corpus (276,120 documents / 296,381 chunks / 36 source identities). Model performance varies sharply by source type.</p>
 
 <div class="kpi-strip"><div class="kpi"><div class="kpi-num">266,604</div><div class="kpi-label">Telegram Official chunks in corpus</div></div><div class="kpi"><div class="kpi-num">12,338</div><div class="kpi-label">Kremlin chunks in corpus</div></div><div class="kpi"><div class="kpi-num">10,553</div><div class="kpi-label">State Duma chunks in corpus</div></div><div class="kpi"><div class="kpi-num">6,886</div><div class="kpi-label">Federation Council chunks in corpus</div></div></div>
 
-<h3 style="color:var(--wh);font-size:.85rem;margin:1rem 0 .5rem"><h3 style="color:var(--gold);font-size:.95rem;margin:1.2rem 0 .5rem">Sample composition by source arm <span style="font-weight:400;color:var(--lb);font-size:.8em">— measured</span></h3><table class="lb-table"><thead><tr><th>Source arm</th><th>Passages</th><th>No alert</th><th>Red line</th><th>Nuclear signal</th><th>% of sample</th></tr></thead><tbody><tr><td>telegram_official</td><td>88</td><td>59</td><td>15</td><td>14</td><td>88%</td></tr><tr><td>kremlin</td><td>5</td><td>1</td><td>1</td><td>3</td><td>5%</td></tr><tr><td>state_duma</td><td>4</td><td>3</td><td>0</td><td>1</td><td>4%</td></tr><tr><td>federation_council</td><td>3</td><td>3</td><td>0</td><td>0</td><td>3%</td></tr></tbody></table>
+<h3 style="color:var(--wh);font-size:var(--fs-base);margin:1rem 0 .5rem"><h3 style="color:var(--gold);font-size:var(--fs-md);margin:1.2rem 0 .5rem">Sample composition by source arm <span style="font-weight:400;color:var(--lb);font-size:.85em">— measured</span></h3><table class="lb-table"><thead><tr><th>Source arm</th><th>Passages</th><th>No alert</th><th>Red line</th><th>Nuclear signal</th><th>% of sample</th></tr></thead><tbody><tr><td>telegram_official</td><td>88</td><td>59</td><td>15</td><td>14</td><td>88%</td></tr><tr><td>kremlin</td><td>5</td><td>1</td><td>1</td><td>3</td><td>5%</td></tr><tr><td>state_duma</td><td>4</td><td>3</td><td>0</td><td>1</td><td>4%</td></tr><tr><td>federation_council</td><td>3</td><td>3</td><td>0</td><td>0</td><td>3%</td></tr></tbody></table>
 
 <div class="insight">
     <h3>Why source arm matters</h3>
     <p><strong>Telegram Official</strong> passages are short (median 231 tokens) and context-poor — the model sees a single statement without the surrounding discussion. This is where most models perform best because the rhetoric is usually direct. <strong>Kremlin transcripts</strong> are longer and more nuanced — conditional language, retrospective framing, and diplomatic hedging live here. <strong>Duma/Federation Council</strong> material is longer-form than Telegram posts, and a benchmark passage is a chunk boundary rather than a whole document. Chunk length in this sample is matched to the corpus exactly by quartile, so length is not a confound between arms.</p>
 </div>
 
-<h3 style="color:var(--wh);font-size:.85rem;margin:1.2rem 0 .5rem">Benchmark passage distribution by source arm</h3>
+<h3 style="color:var(--wh);font-size:var(--fs-base);margin:1.2rem 0 .5rem">Benchmark passage distribution by source arm</h3>
 <table class="lb-table"><thead><tr><th style="text-align:left">Source arm</th><th>Passages</th><th>No alert</th><th>Red line</th><th>Nuclear signal</th><th>% of sample</th></tr></thead><tbody><tr><td style="text-align:left">Telegram Official</td><td>88</td><td>59</td><td>15</td><td>14</td><td>88.0%</td></tr><tr><td style="text-align:left">Kremlin</td><td>5</td><td>1</td><td>1</td><td>3</td><td>5.0%</td></tr><tr><td style="text-align:left">State Duma</td><td>4</td><td>3</td><td>0</td><td>1</td><td>4.0%</td></tr><tr><td style="text-align:left">Federation Council</td><td>3</td><td>3</td><td>0</td><td>0</td><td>3.0%</td></tr><tr><td style="text-align:left"><strong>Total</strong></td><td><strong>100</strong></td><td><strong>66</strong></td><td><strong>16</strong></td><td><strong>18</strong></td><td><strong>100%</strong></td></tr></tbody></table>
 
-<h3 style="color:var(--wh);font-size:.85rem;margin:1.2rem 0 .5rem">Error patterns by source type</h3>
+<h3 style="color:var(--wh);font-size:var(--fs-base);margin:1.2rem 0 .5rem">Error patterns by source type</h3>
 <table class="lb-table" style="max-width:650px">
 <thead><tr><th style="text-align:left"><span class="col-help" onclick="openModal('mc-failtype')">Failure type</span></th><th>Telegram</th><th><span class="col-help" onclick="openModal('mc-kremlin')">Kremlin</span></th><th>Duma/FC</th><th><span class="col-help" onclick="openModal('mc-domcause')">Dominant cause</span></th></tr></thead>
 <tbody>
-<tr><td style="text-align:left">False NTS alert</td><td>1 <span style="color:var(--lb);font-size:.72em">(0.0%)</span></td><td>0 <span style="color:var(--lb);font-size:.72em">(0.0%)</span></td><td class="worst">1 <span style="color:var(--lb);font-size:.72em">(0.5%)</span></td><td style="text-align:left;font-size:.68rem">Capability statements misread as threats; Medvedev bluster</td></tr><tr><td style="text-align:left">False RLS alert</td><td>52 <span style="color:var(--lb);font-size:.72em">(2.1%)</span></td><td class="worst">27 <span style="color:var(--lb);font-size:.72em">(19.6%)</span></td><td>15 <span style="color:var(--lb);font-size:.72em">(7.8%)</span></td><td style="text-align:left;font-size:.68rem">Retrospective/quoted doctrine; procedural &quot;eskalatsiya&quot;</td></tr><tr><td style="text-align:left">Missed RLS</td><td class="worst">23 <span style="color:var(--lb);font-size:.72em">(0.9%)</span></td><td>0 <span style="color:var(--lb);font-size:.72em">(0.0%)</span></td><td>0 <span style="color:var(--lb);font-size:.72em">(0.0%)</span></td><td style="text-align:left;font-size:.68rem">Veiled &quot;consequences&quot; without explicit boundary; denial framing</td></tr><tr><td style="text-align:left">Missed NTS</td><td>33 <span style="color:var(--lb);font-size:.72em">(1.3%)</span></td><td class="worst">11 <span style="color:var(--lb);font-size:.72em">(8.0%)</span></td><td>0 <span style="color:var(--lb);font-size:.72em">(0.0%)</span></td><td style="text-align:left;font-size:.68rem">Doctrinal boilerplate that IS a signal; conditional threats</td></tr><tr><td style="text-align:left">Naive-flagged citation</td><td>189 <span style="color:var(--lb);font-size:.72em">(7.7%)</span></td><td class="worst">17 <span style="color:var(--lb);font-size:.72em">(12.3%)</span></td><td>7 <span style="color:var(--lb);font-size:.72em">(3.6%)</span></td><td style="text-align:left;font-size:.68rem">Quoted span not found verbatim; reading all 283 found 0 invented</td></tr>
+<tr><td style="text-align:left">False NTS alert</td><td>1 <span style="color:var(--lb);font-size:.85em">(0.0%)</span></td><td>0 <span style="color:var(--lb);font-size:.85em">(0.0%)</span></td><td class="worst">1 <span style="color:var(--lb);font-size:.85em">(0.5%)</span></td><td style="text-align:left;font-size:var(--fs-xs)">Capability statements misread as threats; Medvedev bluster</td></tr><tr><td style="text-align:left">False RLS alert</td><td>52 <span style="color:var(--lb);font-size:.85em">(2.1%)</span></td><td class="worst">27 <span style="color:var(--lb);font-size:.85em">(19.6%)</span></td><td>15 <span style="color:var(--lb);font-size:.85em">(7.8%)</span></td><td style="text-align:left;font-size:var(--fs-xs)">Retrospective/quoted doctrine; procedural &quot;eskalatsiya&quot;</td></tr><tr><td style="text-align:left">Missed RLS</td><td class="worst">23 <span style="color:var(--lb);font-size:.85em">(0.9%)</span></td><td>0 <span style="color:var(--lb);font-size:.85em">(0.0%)</span></td><td>0 <span style="color:var(--lb);font-size:.85em">(0.0%)</span></td><td style="text-align:left;font-size:var(--fs-xs)">Veiled &quot;consequences&quot; without explicit boundary; denial framing</td></tr><tr><td style="text-align:left">Missed NTS</td><td>33 <span style="color:var(--lb);font-size:.85em">(1.3%)</span></td><td class="worst">11 <span style="color:var(--lb);font-size:.85em">(8.0%)</span></td><td>0 <span style="color:var(--lb);font-size:.85em">(0.0%)</span></td><td style="text-align:left;font-size:var(--fs-xs)">Doctrinal boilerplate that IS a signal; conditional threats</td></tr><tr><td style="text-align:left">Naive-flagged citation</td><td>189 <span style="color:var(--lb);font-size:.85em">(7.7%)</span></td><td class="worst">17 <span style="color:var(--lb);font-size:.85em">(12.3%)</span></td><td>7 <span style="color:var(--lb);font-size:.85em">(3.6%)</span></td><td style="text-align:left;font-size:var(--fs-xs)">Quoted span not found verbatim; reading all 283 found 0 invented</td></tr>
 </tbody>
 </table>
 </div>
 
 <!-- ═══ METHOD ═══ -->
 <div class="panel" id="method">
-<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Method — Exactly What We Do</h2>
-<p style="font-size:.78rem;color:var(--lb);margin-bottom:1rem">Everything below is the protocol as executed, written so a reader can reproduce or attack it. <em><strong>The scored run is complete</strong></em> — 2,800 decisions for $22.38, plus a 50-passage corpus-random control arm. Every figure on this site is derived from the raw output; where something was <em>not</em> measured, such as translation robustness, it is labelled NOT MEASURED rather than estimated.</p>
+<h2 style="color:var(--gold);font-size:var(--fs-lg);margin-bottom:.4rem">Method — Exactly What We Do</h2>
+<p style="font-size:var(--fs-sm);color:var(--lb);margin-bottom:1rem">Everything below is the protocol as executed, written so a reader can reproduce or attack it. <em><strong>The scored run is complete</strong></em> — 2,800 decisions for $22.38, plus a 50-passage corpus-random control arm. Every figure on this site is derived from the raw output; where something was <em>not</em> measured, such as translation robustness, it is labelled NOT MEASURED rather than estimated.</p>
 
 <div class="insight" style="border-left-color:var(--red)">
     <h3>Status of this page</h3>
@@ -608,7 +625,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <h3 class="m-h">13 &middot; Reproducibility</h3>
 <p class="m-p">One command rebuilds every public metric and case file from frozen artifacts. The deposited package contains: the frozen prompt and JSON schema; the 100-item set with per-item content hashes; the frozen English translations; the model manifest with dated slugs and resolved provider versions; raw and normalised outputs; the scoring code; the adjudication notes; and the cost ledger.</p>
 <h3 class="m-h">Downloads</h3>
-<p style="font-size:.8rem;color:var(--lb)">The full record — prompt, sample, per-decision output, scoring code — is published with the submission.</p>
+<p style="font-size:var(--fs-base);color:var(--lb)">The full record — prompt, sample, per-decision output, scoring code — is published with the submission.</p>
 </div>
 
 </div>
@@ -1488,8 +1505,8 @@ function vzAgree(){
     return 'rgb('+Math.round(a[0]+(b[0]-a[0])*t)+','+Math.round(a[1]+(b[1]-a[1])*t)+','+Math.round(a[2]+(b[2]-a[2])*t)+')';}
   var out='';
   ms.forEach(function(m,i){
-    out+='<text x="'+(padL+i*cell+cell/2)+'" y="'+(padT-9)+'" font-size="9.5" fill="'+VZ.ink+'" text-anchor="start" transform="rotate(-55 '+(padL+i*cell+cell/2)+' '+(padT-9)+')">'+esc2(m.short)+'</text>';
-    out+='<text x="'+(padL-9)+'" y="'+(padT+i*cell+cell/2+3.5)+'" font-size="9.5" fill="'+VZ.ink+'" text-anchor="end">'+esc2(m.short)+'</text>';
+    out+='<text x="'+(padL+i*cell+cell/2)+'" y="'+(padT-9)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="start" transform="rotate(-55 '+(padL+i*cell+cell/2)+' '+(padT-9)+')">'+esc2(m.short)+'</text>';
+    out+='<text x="'+(padL-9)+'" y="'+(padT+i*cell+cell/2+3.5)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="end">'+esc2(m.short)+'</text>';
   });
   ms.forEach(function(a,r){ ms.forEach(function(b,c){
     var v=M[r][c], x=padL+c*cell, y=padT+r*cell;
@@ -1497,9 +1514,9 @@ function vzAgree(){
     var t=(v-lo)/((hi-lo)||1);
     out+='<rect class="vz-cell" x="'+x+'" y="'+y+'" width="'+(cell-2)+'" height="'+(cell-2)+'" rx="2" fill="'+ramp(t)+'"'
       +' onmousemove="vzOn(event,\''+esc2(a.n)+' vs '+esc2(b.n)+'<br>agree on <b>'+(v*100).toFixed(0)+'%</b> of the 100 passages\')" onmouseleave="vzOff()"></rect>';
-    out+='<text x="'+(x+(cell-2)/2)+'" y="'+(y+(cell-2)/2+3)+'" font-size="8.5" fill="'+(t>0.5?'#0b1930':'#cfe0f0')+'" text-anchor="middle" pointer-events="none">'+(v*100).toFixed(0)+'</text>';
+    out+='<text x="'+(x+(cell-2)/2)+'" y="'+(y+(cell-2)/2+3)+'" font-size="10" fill="'+(t>0.5?'#0b1930':'#cfe0f0')+'" text-anchor="middle" pointer-events="none">'+(v*100).toFixed(0)+'</text>';
   });});
-  out+='<text x="'+padL+'" y="'+(H-2)+'" font-size="9" fill="'+VZ.ink+'">shading spans the observed range, '+(lo*100).toFixed(0)+'%'+String.fromCharCode(8211)+(hi*100).toFixed(0)+'% '+String.fromCharCode(183)+' diagonal omitted</text>';
+  out+='<text x="'+padL+'" y="'+(H-2)+'" font-size="10" fill="'+VZ.ink+'">shading spans the observed range, '+(lo*100).toFixed(0)+'%'+String.fromCharCode(8211)+(hi*100).toFixed(0)+'% '+String.fromCharCode(183)+' diagonal omitted</text>';
   return '<svg viewBox="0 0 '+W+' '+H+'" style="max-width:'+W+'px;display:block;margin:0 auto" role="img" aria-label="Pairwise model agreement matrix">'+out+'</svg>';
 }
 function vzScatter(){
@@ -1510,9 +1527,9 @@ function vzScatter(){
   var g='';
   for(var i=0;i<=4;i++){var yy=y0+(y1-y0)*i/4;
     g+='<line x1="'+pad+'" x2="'+(W-24)+'" y1="'+Y(yy)+'" y2="'+Y(yy)+'" stroke="'+VZ.grid+'"/>'
-      +'<text x="'+(pad-8)+'" y="'+(Y(yy)+3)+'" font-size="9.5" fill="'+VZ.ink+'" text-anchor="end">'+yy.toFixed(2)+'</text>';}
+      +'<text x="'+(pad-8)+'" y="'+(Y(yy)+3)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="end">'+yy.toFixed(2)+'</text>';}
   for(var j=0;j<=4;j++){var xx=x0+(x1-x0)*j/4;
-    g+='<text x="'+X(xx)+'" y="'+(H-pad+16)+'" font-size="9.5" fill="'+VZ.ink+'" text-anchor="middle">'+(xx*100).toFixed(0)+'%</text>';}
+    g+='<text x="'+X(xx)+'" y="'+(H-pad+16)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="middle">'+(xx*100).toFixed(0)+'%</text>';}
   g+='<text x="'+(W/2)+'" y="'+(H-8)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="middle">naive-flag rate →</text>';
   g+='<text x="14" y="'+(H/2)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="middle" transform="rotate(-90 14 '+(H/2)+')">red-line accuracy</text>';
   g+=MODELS.map(function(m){var col=m.flag_rate<=0.06?VZ.ok:(m.flag_rate>=0.30?VZ.flagged:VZ.wrong);
@@ -1533,7 +1550,7 @@ function vzScatter(){
       return false;}
     var yy=cy-11; if(bad(box(yy))){ yy=cy+18; if(bad(box(yy))) yy=cy-22; }
     placed.push(box(yy));
-    return '<text x="'+cx+'" y="'+yy+'" font-size="9" fill="'+VZ.ink+'" text-anchor="middle">'+esc2(m.short)+'</text>';}).join('');
+    return '<text x="'+cx+'" y="'+yy+'" font-size="10" fill="'+VZ.ink+'" text-anchor="middle">'+esc2(m.short)+'</text>';}).join('');
   return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Accuracy against the naive flag rate">'+g+'</svg>';
 }
 
@@ -1550,8 +1567,8 @@ function sqSlope(){
   var a=ms.map(function(m){return m.acc;}), c=ms.map(function(m){return m.caught/m.caught_n;});
   var a0=Math.min.apply(null,a),a1=Math.max.apply(null,a),c0=Math.min.apply(null,c),c1=Math.max.apply(null,c);
   function Y(v,lo,hi){return padT+(H-padT-padB)*(1-(v-lo)/((hi-lo)||1));}
-  var g='<text x="'+padL+'" y="18" font-size="10.5" fill="'+VZ.ink+'" text-anchor="middle">static accuracy</text>'
-       +'<text x="'+(W-padR)+'" y="18" font-size="10.5" fill="'+VZ.ink+'" text-anchor="middle">sequential catch rate</text>'
+  var g='<text x="'+padL+'" y="18" font-size="11" fill="'+VZ.ink+'" text-anchor="middle">static accuracy</text>'
+       +'<text x="'+(W-padR)+'" y="18" font-size="11" fill="'+VZ.ink+'" text-anchor="middle">sequential catch rate</text>'
        +'<line x1="'+padL+'" x2="'+padL+'" y1="'+padT+'" y2="'+(H-padB)+'" stroke="'+VZ.grid+'"/>'
        +'<line x1="'+(W-padR)+'" x2="'+(W-padR)+'" y1="'+padT+'" y2="'+(H-padB)+'" stroke="'+VZ.grid+'"/>';
   // labels de-collided: two models on the same accuracy land on the same y and overprint
@@ -1563,8 +1580,8 @@ function sqSlope(){
     var up=y2<y1, col=up?VZ.ok:VZ.flagged;
     g+='<line x1="'+padL+'" y1="'+y1+'" x2="'+(W-padR)+'" y2="'+y2+'" stroke="'+col+'" stroke-width="2" opacity=".85"/>'
       +'<circle cx="'+padL+'" cy="'+y1+'" r="4" fill="'+col+'"/><circle cx="'+(W-padR)+'" cy="'+y2+'" r="4" fill="'+col+'"/>'
-      +'<text x="'+(padL-9)+'" y="'+(LY+3.5)+'" font-size="9.5" fill="'+VZ.ink+'" text-anchor="end">'+esc2(m.n)+' '+m.acc.toFixed(3)+'</text>'
-      +'<text x="'+(W-padR+9)+'" y="'+(RY+3.5)+'" font-size="9.5" fill="'+VZ.ink+'">'+m.caught+'/'+m.caught_n+' '+esc2(m.n)+'</text>';
+      +'<text x="'+(padL-9)+'" y="'+(LY+3.5)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="end">'+esc2(m.n)+' '+m.acc.toFixed(3)+'</text>'
+      +'<text x="'+(W-padR+9)+'" y="'+(RY+3.5)+'" font-size="10" fill="'+VZ.ink+'">'+m.caught+'/'+m.caught_n+' '+esc2(m.n)+'</text>';
   });
   return '<svg viewBox="0 0 '+W+' '+H+'" style="max-width:'+W+'px;display:block;margin:0 auto" role="img" aria-label="Static accuracy against sequential catch rate">'+g+'</svg>';
 }
@@ -1642,8 +1659,8 @@ function fxDecomp(){
         +' onmousemove="vzOn(event,\''+esc2(m.n)+'<br>'+m[t]+' of '+m.flagged+' flagged spans<br>'+FXL[t]+'\')" onmouseleave="vzOff()"></rect>';
       x+=w;
     });
-    g+='<text x="'+(padL-8)+'" y="'+(y+11.5)+'" font-size="9.5" fill="'+VZ.ink+'" text-anchor="end">'+esc2(m.n)+'</text>'
-      +'<text x="'+(padL+bw+8)+'" y="'+(y+11.5)+'" font-size="9" fill="'+VZ.ink+'">'+m.flagged+' flagged</text>';
+    g+='<text x="'+(padL-8)+'" y="'+(y+11.5)+'" font-size="10" fill="'+VZ.ink+'" text-anchor="end">'+esc2(m.n)+'</text>'
+      +'<text x="'+(padL+bw+8)+'" y="'+(y+11.5)+'" font-size="10" fill="'+VZ.ink+'">'+m.flagged+' flagged</text>';
     y+=24;
   });
   return '<svg viewBox="0 0 '+W+' '+H+'" style="max-width:'+W+'px;display:block;margin:0 auto" role="img" aria-label="What the flagged spans actually were">'+g+'</svg>';
@@ -1668,20 +1685,20 @@ function openPassage(id){
         rows+='<tr><td class="model" style="text-align:left">'+m.n+'</td>'+
               '<td>'+verdictChip(got)+'</td>'+
               '<td class="'+(ok?'best':'worst')+'">'+(ok?'correct':'wrong')+'</td>'+
-              '<td style="text-align:left;font-size:.68rem;color:var(--lb)">'+justify(m.k,p)+'</td></tr>';
+              '<td style="text-align:left;font-size:var(--fs-xs);color:var(--lb)">'+justify(m.k,p)+'</td></tr>';
     });
     const n=MODELS.filter(m=>p.v[m.k]===p.ref).length;
     const box=document.getElementById('passage-modal');
     box.querySelector('.pm-body').innerHTML=
       '<h3>'+p.id+' &mdash; '+p.sp+', '+p.yr+'</h3>'+
       '<div class="passage" id="pm-passage"></div>'+'<div class="ev-bar" id="pm-evbar"></div><div id="pm-evnote"></div>'+
-      '<p style="margin:.8rem 0 .3rem;font-size:.8rem"><strong>Reference label:</strong> '+verdictChip(p.ref)+
+      '<p style="margin:.8rem 0 .3rem;font-size:var(--fs-base)"><strong>Reference label:</strong> '+verdictChip(p.ref)+
       '<span style="color:var(--lb);margin-left:.6rem">'+n+' of 14 models correct</span></p>'+
       '<div class="insight" style="margin:.6rem 0"><h3>Why the reference says '+p.ref+'</h3><p>'+p.why+'</p></div>'+
-      '<h4 style="color:var(--gold);font-size:.8rem;margin:.9rem 0 .4rem">Every model\'s call and its stated reason</h4>'+
+      '<h4 style="color:var(--gold);font-size:var(--fs-base);margin:.9rem 0 .4rem">Every model\'s call and its stated reason</h4>'+
       '<table class="lb-table"><thead><tr><th style="text-align:left">Model</th><th>Verdict</th><th>vs reference</th>'+
       '<th style="text-align:left">Model\'s justification</th></tr></thead><tbody>'+rows+'</tbody></table>'+
-      '<p style="font-size:.66rem;color:var(--lb)">Justifications are each model\'s own stated reason, verbatim from the run. '+
+      '<p style="font-size:var(--fs-xxs);color:var(--lb)">Justifications are each model\'s own stated reason, verbatim from the run. '+
       'This column carries the model\'s own returned rationale and its quoted evidence span, '+
       'with any span not found verbatim flagged for review &mdash; a screen, not a verdict.</p>';
     (function(){var bar=document.getElementById('pm-evbar');if(bar){var e=(typeof EV!=='undefined'&&EV[p.id])||{};bar.innerHTML='<span class="ev-chip on" data-mk="" onclick="evShow(\''+p.id+'\',null)">All cited spans</span>'+MODELS.filter(m=>e[m.k]).map(m=>'<span class="ev-chip'+(p.flagged&&p.flagged[m.k]?' fab':'')+'" data-mk="'+m.k+'" onclick="evShow(\''+p.id+'\',\''+m.k+'\')">'+m.short+(p.flagged&&p.flagged[m.k]?' &#9888;':'')+'</span>').join('');}evShow(p.id,null);})();box.classList.add('show');
@@ -1798,7 +1815,7 @@ function renderCompare(){
         });
         h+='</tr>';
     });
-    ag.innerHTML=h+'</tbody></table><p style="font-size:.66rem;color:var(--lb)">Computed over the 13 worked cases published on the Cases tab, not the full 298 &mdash; in the built app this runs over every item.</p>';
+    ag.innerHTML=h+'</tbody></table><p style="font-size:var(--fs-xxs);color:var(--lb)">Computed over the 13 worked cases published on the Cases tab, not the full 298 &mdash; in the built app this runs over every item.</p>';
     makeSortable(ag.querySelector('table'));
 }
 
@@ -1828,7 +1845,7 @@ function renderCases(filterCls,filterSp){
       MODELS.map(m=>'<th title="'+m.n+'">'+m.short+'</th>').join('')+
       '<th><span class="col-help" onclick="openModal(\'mc-agree\')">Correct</span></th></tr></thead><tbody>'+
       rows.map(p=>'<tr data-pid="'+p.id+'"><td style="text-align:left">'+p.id+'</td>'+
-        '<td style="text-align:left;font-size:.68rem">'+p.en.slice(0,68)+(p.en.length>68?'&hellip;':'')+'</td>'+
+        '<td style="text-align:left;font-size:var(--fs-xs)">'+p.en.slice(0,68)+(p.en.length>68?'&hellip;':'')+'</td>'+
         refCell(p)+'<td>'+p.sp+'</td><td>'+p.yr+'</td>'+
         MK.map(k=>vCell(p,k)).join('')+
         '<td class="'+(nOK(p)>=MK.length-2?'best':nOK(p)<=MK.length*0.3?'worst':'')+'">'+nOK(p)+'/'+MK.length+'</td></tr>').join('')+
@@ -1849,7 +1866,7 @@ function renderFailures(){
       '<th><span class="col-help" onclick="openModal(\'mc-ref\')">Ref</span></th>'+
       MODELS.map(m=>'<th title="'+m.n+'">'+m.short+'</th>').join('')+
       '<th>Errors</th></tr></thead><tbody>'+
-      rows.map(p=>'<tr data-pid="'+p.id+'"><td style="text-align:left;font-size:.68rem">'+p.id+' '+p.sp+
+      rows.map(p=>'<tr data-pid="'+p.id+'"><td style="text-align:left;font-size:var(--fs-xs)">'+p.id+' '+p.sp+
         ' &mdash; &ldquo;'+p.cue+'&rdquo;</td>'+refCell(p)+
         MK.map(k=>vCell(p,k)).join('')+
         '<td class="'+(nErr(p)>=8?'worst':nErr(p)<=2?'best':'')+'">'+nErr(p)+'</td></tr>').join('')+
@@ -1866,7 +1883,7 @@ function renderSitroom(){
                '<span class="sit-ok '+(ok?'is-ok':'is-bad')+'">'+(ok?'correct':'wrong')+'</span>'+
                '<span class="sit-j">'+justify(m.k,p)+'</span></div>';
     }).join('')+
-    '<p style="font-size:.7rem;color:var(--lb);margin-top:.6rem">Reference label: <strong>conventional red line</strong>. '+
+    '<p style="font-size:var(--fs-xs);color:var(--lb);margin-top:.6rem">Reference label: <strong>conventional red line</strong>. '+
     'The trigger and consequence are both named, but the consequence is <em>conventional</em> armed conflict &mdash; '+
     'eight of ten models escalate it to a nuclear signal. <a href="#" onclick="openPassage(\'#001\');return false" style="color:var(--gold)">Open the full case &rarr;</a></p>';
     host.style.display='none';
@@ -1894,7 +1911,7 @@ function renderManifest(){
         '<td style="text-align:left">'+m.prov+'</td>'+
         '<td style="text-align:left"><code>'+m.slug+'</code></td>'+
         '<td>'+m.ctx+'</td><td>'+m.price+'</td></tr>').join('')+
-      '</tbody></table><p style="font-size:.66rem;color:var(--lb)">Slugs and prices must be '+
+      '</tbody></table><p style="font-size:var(--fs-xxs);color:var(--lb)">Slugs and prices must be '+
       're-verified against each provider console immediately before dispatch; a slug that has '+
       'silently moved would make the run unattributable.</p>';
     makeSortable(h.querySelector('table'));
