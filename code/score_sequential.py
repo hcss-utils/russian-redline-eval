@@ -11,6 +11,22 @@ statement being ruled on?
 """
 import json, io, os, sys
 from collections import defaultdict
+import os as _os
+_HERE=_os.path.dirname(_os.path.abspath(__file__))
+_REPO=_os.path.dirname(_HERE)
+def _out(name):
+    """Write beside the inputs: results/ in the published layout, bench/ in the working tree."""
+    for d in (_os.path.join(_REPO,"results"), _os.path.join(_os.getcwd(),"bench")):
+        if _os.path.isdir(d): return _os.path.join(d,name)
+    return name
+
+def _data(name):
+    """Resolve a data file against the published layout (code/ + results/ + data/)."""
+    for c in (_os.path.join(_REPO,"data",name), _os.path.join(_REPO,"results",name),
+              _os.path.join(_REPO,"bench",name), _os.path.join(_HERE,name),
+              _os.path.join(_os.getcwd(),"bench",name), name):
+        if _os.path.exists(c): return c
+    return _os.path.join(_REPO,"data",name)
 
 def wilson(k,n,z=1.96):
     if n==0: return (0.0,0.0)
@@ -21,7 +37,7 @@ def main():
     src=sys.argv[1] if len(sys.argv)>1 else "bench/results_sequential.jsonl"
     rows=[json.loads(l) for l in io.open(src,encoding="utf-8") if l.strip()]
     rows=[r for r in rows if not r.get("error")]
-    seqs=json.load(io.open("bench/sequences.json",encoding="utf-8"))
+    seqs=json.load(io.open(_data("sequences.json"),encoding="utf-8"))
     sig={s["seq_id"]:s["signal_at"] for s in seqs["sequences"]}
     by=defaultdict(list)
     for r in rows: by[r["model"]].append(r)
@@ -48,7 +64,7 @@ def main():
           "naive_flagged_span":{"k":fab,"n":len(spans),"rate":fab/max(len(spans),1)},
           "cost":round(sum(r.get("cost",0) for r in rs),4),
         }
-    io.open("bench/scores_sequential.json","w",encoding="utf-8").write(json.dumps(out,indent=1,ensure_ascii=False))
+    io.open(_out("scores_sequential.json"),"w",encoding="utf-8").write(json.dumps(out,indent=1,ensure_ascii=False))
     print(f"{'model':22s} {'caught':>10s} {'cry-wolf':>10s} {'stuck-high':>12s} {'naive-flag':>11s} {'cost':>7s}")
     for mk,s in out.items():
         print(f"{mk:22s} {s['caught']['k']:>4d}/{s['caught']['n']:<5d} "

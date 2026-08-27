@@ -96,8 +96,10 @@ tokens >= 50, screened by the pipeline as non-candidates) and put to all
 **14 configurations**.
 
 ```
-700 decisions   0 alerts   $4. This bounds over-triggering on **pipeline-screened non-candidate traffic** only.01
+700 decisions   0 alerts   $4.01
 ```
+
+This bounds over-triggering on **pipeline-screened non-candidate traffic** only; it says nothing about unscreened traffic.
 
 ***Not one model raised a single red-line or nuclear alert on any of them.***
 
