@@ -21,6 +21,10 @@ CASES = [
     ("fabricated error-table cell",
      '<tr><td style="text-align:left">False NTS alert</td><td>1 <span',
      '<tr><td style="text-align:left">False NTS alert</td><td>18 <span'),
+    # added after extending the checker to the leaderboard scalars
+    ("stale leaderboard accuracy",     '"rls":0.9,',        '"rls":0.87,'),
+    ("stale per-span flag rate",       '"flag_rate":0.422', '"flag_rate":0.402'),
+    ("cm total disagrees with parsed", '"parsed":189',      '"parsed":200'),
 ]
 
 def run(path):

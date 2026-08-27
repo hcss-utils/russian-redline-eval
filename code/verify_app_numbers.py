@@ -88,6 +88,46 @@ def main(app_path):
                 for b in L:
                     if C[a][b] < 0: fails.append(f"cm[{src}][{a}][{b}] negative")
 
+    # --- 2b. every model-level scalar the leaderboard prints ---------------
+    # The leaderboard renders rls/nts/rlsrec/ntsrec/consis/cost/schema straight off
+    # MODELS. cm/fa/mn were checked above; these were not, and a stale one looks
+    # exactly like a fresh one.
+    if mm:
+        FIELDS = {"rls": lambda m: m["rls_incl"]["acc"], "nts": lambda m: m["nts_incl"]["acc"],
+                  "rlsrec": lambda m: m["rls_incl"]["recall"], "ntsrec": lambda m: m["nts_incl"]["recall"],
+                  "consis": lambda m: m["rep_consistency"], "cost": lambda m: m["est_cost"],
+                  "refus": lambda m: m["refusals"]}
+        # NOT flag_rate. Two different rates share that name and differ by DENOMINATOR:
+        # scores.json's naive_flagged is per RECORD (a scored decision carrying at least one
+        # flagged span, 2.5%-45.8%); the leaderboard shows per SPAN (1.7%-42.2%). Comparing
+        # them looks like a 14-model defect and is a units error in the checker. The
+        # per-span rate is verified below against citation_check_summary.json.
+        for mo in models:
+            src = next((k for k in scores["models"] if k.replace("-", "_").replace(".", "_") == mo.get("k")), None)
+            if not src: continue
+            sm = scores["models"][src]
+            for f, fn in FIELDS.items():
+                if f in mo:
+                    want = fn(sm)
+                    if isinstance(want, float) and isinstance(mo[f], (int, float)):
+                        if abs(want - mo[f]) > 5e-4:
+                            fails.append(f"MODELS[{src}].{f}: app {mo[f]}, data {want}")
+                    else:
+                        check(f"MODELS[{src}].{f}", want, mo[f])
+            # the leaderboard's per-SPAN flag rate, against its own denominator
+            cs = jload(data("citation_check_summary.json"))["per_model"].get(src)
+            if cs and "flag_rate" in mo and cs.get("spans"):
+                want = round(cs["flagged"] / cs["spans"], 4)
+                if abs(want - mo["flag_rate"]) > 5e-4:
+                    fails.append(f"MODELS[{src}].flag_rate (per span): app {mo['flag_rate']}, data {want}")
+            # a schema-OK percentage must reconcile with its own parse counts
+            if "parsed" in mo and "attempted" in mo:
+                if mo["parsed"] > mo["attempted"]:
+                    fails.append(f"MODELS[{src}]: parsed {mo['parsed']} exceeds attempted {mo['attempted']}")
+                if mo.get("cm") and sum(sum(r) for r in mo["cm"]) != mo["parsed"]:
+                    fails.append(f"MODELS[{src}]: cm totals {sum(sum(r) for r in mo['cm'])} "
+                                 f"but parsed is {mo['parsed']}")
+
     # --- 3. the citation decomposition ------------------------------------
     per = collections.defaultdict(collections.Counter)
     for r in cats["records"]: per[r["model"]][r["tier"]] += 1
