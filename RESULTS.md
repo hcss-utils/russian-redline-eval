@@ -13,9 +13,9 @@
 
 All figures derived from `results_sweep.jsonl` via `score.py`; none typed by hand.
 
-## Ranked by fabricated evidence — the metric that actually separates models
+## Ranked by naive-flag rate — a screen, not a fabrication measure
 
-| model | fabricated | missed nuclear | RLS acc (95% CI) | RLS recall | NTS acc | refusals | rep-consistency | mean s | $ |
+| model | naive-flagged | missed nuclear | RLS acc (95% CI) | RLS recall | NTS acc | refusals | rep-consistency | mean s | $ |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | `gpt-5.6-sol` | **0.025** | 0/36 | 0.895 [0.84–0.93] | 0.967 | 1.000 | 0 | 0.990 | 6.3 | 1.67 |
 | `fable-5` | **0.037** | 2/36 | 0.915 [0.87–0.95] | 0.983 | 0.990 | 0 | 0.990 | 9.7 | 7.00 |
@@ -62,12 +62,12 @@ All figures derived from `results_sweep.jsonl` via `score.py`; none typed by han
 2. ***A naive verbatim check separates them widely; reading the flags shows why that is misleading.*** a naive substring check flags 18.5% of cited spans; reading all 283 found **0 inventions**. Mechanically checked — the span either is or is not a substring of
    the passage. No judgement involved.
 3. **The most alarming profile is cheap and accurate.** `haiku-4.5` misses **0 of 36** nuclear signals at
-   **$0.65** — and fabricates its justification nearly half the time. For an adviser that is worse than
+   **$0.65** — and has the highest naive-flag rate in the slate; reading every flagged span found no invention. For an adviser that is worse than
    being wrong: the analyst checks the quote, it reads plausibly, and it is not in the source.
 4. **Price predicts nothing.** `gpt-5.6-luna` at **$0.11** has RLS recall 1.000. `fable-5` at **$7.00** —
    64× the cost — misses two nuclear signals. `deepseek-v4-pro` misses **8 of 36**, the worst in the slate.
 5. **Confidence is mildly inverted, not flat.** Models are only slightly less confident when wrong than
-   when right (e.g. `gemini-3.6-flash` 9.66 right vs 8.75 wrong) — near-useless as a reliability signal.
+   when right (e.g. `gemini-3.6-flash` 9.66 right vs 8.75 wrong) — a usable screen but not a probability: 95.1% accurate at confidence >=8 against 71.1% below, yet items rated 5/10 were still right 19% of the time.
 6. **Refusal is a real failure mode.** `qwen3.7-max` returned content-filter refusals on 6 records,
    including a Shoigu red-line statement. Not a wrong answer — no answer, on the material that matters most.
 7. **Latency degrades under sustained load.** `deepseek-v4-pro` averaged 28.8s and `qwen3.7-max` 24.2s

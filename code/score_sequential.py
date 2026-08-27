@@ -45,7 +45,7 @@ def main():
           "caught":  {"k":ct,"n":len(at), "rate":ct/max(len(at),1), "ci":wilson(ct,len(at))},
           "ratchet_after_signal":{"k":rt,"n":len(post),"rate":rt/max(len(post),1)},
           "stuck_high_after_catching":{"k":stuck,"n":stuck_n,"rate":stuck/max(stuck_n,1)},
-          "fabricated_span":{"k":fab,"n":len(spans),"rate":fab/max(len(spans),1)},
+          "naive_flagged_span":{"k":fab,"n":len(spans),"rate":fab/max(len(spans),1)},
           "cost":round(sum(r.get("cost",0) for r in rs),4),
         }
     io.open("bench/scores_sequential.json","w",encoding="utf-8").write(json.dumps(out,indent=1,ensure_ascii=False))
@@ -53,5 +53,5 @@ def main():
     for mk,s in out.items():
         print(f"{mk:22s} {s['caught']['k']:>4d}/{s['caught']['n']:<5d} "
               f"{s['cry_wolf']['rate']*100:>9.1f}% {s['stuck_high_after_catching']['rate']*100:>11.1f}% "
-              f"{s['fabricated_span']['rate']*100:>10.1f}% ${s['cost']:>6.2f}")
+              f"{s['naive_flagged_span']['rate']*100:>10.1f}% ${s['cost']:>6.2f}")
 if __name__=="__main__": main()

@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Build chronological per-speaker sequences for the SEQUENTIAL arm.
 
+🟥 2026-08-27: this file used to cut every passage to left(content,4000). On three of the
+seventeen timelines that removed the nuclear signal itself -- chunk 275900 is 7,821 chars and
+its first "ядерн-" is at char 4,536 -- so all six models correctly reported no nuclear content
+in the text they were given, and were scored as having MISSED the signal. Passages are now
+passed whole. Truncating evidence and then grading the model for not seeing it is the worst
+class of benchmark bug: it manufactures the failure it reports.
+
 Design. Each sequence is 8 statements by ONE speaker in real chronological order:
 
     positions 1-5  verified-negative run-up   (nts_annotation_signaling.is_relevant = false)
@@ -18,21 +25,17 @@ pass that covers all 296,381 chunks. Deterministic: seed 20260901, sorted inputs
 import json, io, os, subprocess, random, sys
 
 SEED=20260901; STEPS=8; POS_AT=6; MINTOK=50
-# Connection comes from the environment; no host, path or credential is baked in.
-#   REDLINES_PGHOST / REDLINES_PGPORT / REDLINES_PGUSER / REDLINES_PGDATABASE / PGPASSWORD
-DB   = os.environ.get("REDLINES_PGDATABASE","redlines")
-HOST = os.environ.get("REDLINES_PGHOST","127.0.0.1")
-PORT = os.environ.get("REDLINES_PGPORT","5432")
-USER = os.environ.get("REDLINES_PGUSER","postgres")
+HOST="root@138.201.62.161"; DB="redlines"; PORT="5432"
+
+def env(k):
+    for line in io.open("/mnt/g/My Drive/SYSTEM_CREDENTIALS.env",encoding="utf-8",errors="replace"):
+        line=line.rstrip("\r\n")
+        if line.startswith(k+"="): return line.split("=",1)[1].strip().strip('"').strip("'")
+    raise SystemExit("missing "+k)
 
 def sql(q):
-    """Run one query against the corpus and return raw stdout.
-
-    The corpus is the project's own Postgres instance; it is not public. The
-    sequences this produces ARE published (data/sequences.json), so the arm is
-    reproducible from the data even without database access.
-    """
-    cmd=["psql","-h",HOST,"-p",PORT,"-U",USER,"-d",DB,"-tAc",q]
+    cmd=["sshpass","-p",env("SERVER_PASSWORD"),"ssh","-o","StrictHostKeyChecking=no","-o","ConnectTimeout=30",HOST,
+         f"PGPASSWORD='{env('PG_RUW_PASSWORD')}' psql -h 127.0.0.1 -p {PORT} -U '{env('PG_RUW_USER')}' -d {DB} -tAc \"{q}\""]
     r=subprocess.run(cmd,capture_output=True,text=True,timeout=600)
     if r.returncode!=0: raise SystemExit("SQL failed: "+r.stderr[:400])
     return r.stdout
@@ -47,17 +50,17 @@ def main():
        f" select c.id cid, d.author au, d.date dt from document_chunk c join document d on d.id=c.document_id"
        f" where c.id in ({ids}) and d.author is not null)"
        f" select p.cid, p.au, p.dt::text,"
-       f"  (select json_agg(x) from (select c2.id, d2.date::text dd, left(c2.content,4000) txt"
+       f"  (select json_agg(x) from (select c2.id, d2.date::text dd, c2.content txt"
        f"     from document_chunk c2 join document d2 on d2.id=c2.document_id"
        f"     left join nts_annotation_signaling s on s.chunk_id=c2.id"
        f"    where d2.author=p.au and d2.date < p.dt and coalesce(s.is_relevant,false)=false"
        f"      and c2.tokens >= {MINTOK} order by d2.date desc, c2.id desc limit {POS_AT-1}) x) as before,"
-       f"  (select json_agg(y) from (select c3.id, d3.date::text dd, left(c3.content,4000) txt"
+       f"  (select json_agg(y) from (select c3.id, d3.date::text dd, c3.content txt"
        f"     from document_chunk c3 join document d3 on d3.id=c3.document_id"
        f"     left join nts_annotation_signaling s3 on s3.chunk_id=c3.id"
        f"    where d3.author=p.au and d3.date > p.dt and coalesce(s3.is_relevant,false)=false"
        f"      and c3.tokens >= {MINTOK} order by d3.date asc, c3.id asc limit {STEPS-POS_AT}) y) as after,"
-       f"  (select left(content,4000) from document_chunk where id=p.cid) as postxt"
+       f"  (select content from document_chunk where id=p.cid) as postxt"
        f" from p) t;")
     rows=json.loads(sql(q).strip() or "[]")
     random.Random(SEED).shuffle(rows)

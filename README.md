@@ -70,7 +70,10 @@ python code/score.py
 ```
 Append-only and resume-capable: re-running skips completed `(model, chunk, lang, rep)` work.
 
-## The sequential arm — does a raised alert ever come down?
+## The sequential arm
+
+> 🟥 **Corrected 2026-08-27.** An earlier version of this arm cut passages to 4,000 characters, which removed the nuclear signal from three of the seventeen timelines; the models correctly reported no nuclear content and were scored as misses. The sampler now passes passages whole and the affected decisions were re-run. Figures below are post-repair.
+ — does a raised alert ever come down?
 
 A static benchmark asks *is this passage a nuclear signal?* It cannot ask the question a
 decision-maker actually faces: **this speaker has been talking for weeks — is what they just said
@@ -88,10 +91,10 @@ NUCLEAR. It may raise or lower it freely.
 | configuration | caught | cry-wolf before the signal | stuck high after catching | fabricated span |
 |---|---|---|---|---|
 | haiku-4.5 | 14/17 | 3.5% | 17.9% | 36.4% |
-| gpt-5.6-sol | 13/17 | 3.5% | 3.8% | 0.0% |
-| opus-5-think | 12/17 | 2.4% | 4.2% | 2.9% |
-| deepseek-v4-pro | 11/17 | 2.4% | 9.1% | 9.4% |
-| fable-5 | 9/17 | 2.4% | 5.6% | 5.9% |
+| gpt-5.6-sol | 14/17 | 3.5% | 3.8% | 0.0% |
+| opus-5-think | 13/17 | 2.4% | 4.2% | 2.9% |
+| deepseek-v4-pro | 13/17 | 2.4% | 9.1% | 9.4% |
+| fable-5 | 10/17 | 2.4% | 5.6% | 5.9% |
 | gemini-3.6-flash | 8/17 | 1.2% | 0.0% | 25.0% |
 
 ### The finding
