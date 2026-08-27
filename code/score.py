@@ -2,7 +2,13 @@
 """RUBICON scorer. Every number derived from results_sweep.jsonl -- nothing hardcoded."""
 import json, io, collections, statistics, math, sys, os
 HERE=os.path.dirname(os.path.abspath(__file__))
-RES=os.path.join(HERE,"results_sweep.jsonl")
+_REPO=os.path.dirname(HERE)
+# published layout: code/ holds scripts, results/ holds data
+def _data(name):
+    for c in (os.path.join(_REPO,"results",name), os.path.join(_REPO,"data",name), os.path.join(HERE,name)):
+        if os.path.exists(c): return c
+    return os.path.join(_REPO,"results",name)
+RES=_data("results_sweep.jsonl")
 
 def strict(v,l):
     return 'Y' if (v.get(l)=='Y' and v.get(l+'_line_explicit')=='Y' and v.get(l+'_threat_explicit')=='Y') else 'N'
@@ -40,7 +46,7 @@ def main():
                                       "recall":round(rec,3) if rec is not None else None,
                                       "fpr":round(fpr,3) if fpr is not None else None,
                                       "missed":sum(1 for r in pos if pred(r)!="Y"),"n_pos":len(pos)}
-        # fabricated evidence
+        # naive_flagged evidence
         fab=sum(1 for r in v if r.get("rls_ev_verbatim") is False or r.get("nts_ev_verbatim") is False)
         claimed=sum(1 for r in v if r.get("rls_ev_verbatim") is not None or r.get("nts_ev_verbatim") is not None)
         d["naive_flagged"]={"n":fab,"of_claimed":claimed,"rate":round(fab/claimed,3) if claimed else None}
@@ -60,7 +66,7 @@ def main():
         d["mean_secs"]=round(statistics.mean([r["secs"] for r in v]),1) if v else None
         d["est_cost"]=round(sum(r.get("est_cost",0) or 0 for r in me),2)
         out["models"][mk]=d
-    json.dump(out, io.open(os.path.join(HERE,"scores.json"),"w",encoding="utf-8"), indent=1, ensure_ascii=False)
+    json.dump(out, io.open(_data("scores.json"),"w",encoding="utf-8"), indent=1, ensure_ascii=False)
 
     print(f"records {out['n_records']}  parsed {out['n_parsed']}  errors {out['n_errors']}  "
           f"unparsed {out['n_unparsed']}  items {out['n_items']}  spend ${out['spend_usd']}\n")

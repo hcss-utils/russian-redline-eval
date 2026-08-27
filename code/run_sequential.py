@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from run_bench import dispatch, load_env, rec_cost, parse_verdict, evidence_is_verbatim
 from bench_models import MODELS
 
-# six configurations spanning the fabrication range (2.5%-45.8%), the price range,
+# six configurations spanning the naive-flagging range (2.5%-45.8%), the price range,
 # and both US and Chinese labs
 SLATE = ["gpt-5.6-sol","fable-5","opus-5-think","gemini-3.6-flash","deepseek-v4-pro","haiku-4.5"]
 

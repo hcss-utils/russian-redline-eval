@@ -8,8 +8,14 @@ import os
 GOLD_DIR = os.environ.get("GOLD_DIR", "./gold_certification")
 
 HERE=os.path.dirname(os.path.abspath(__file__))
-RES=os.path.join(HERE,"results_sweep.jsonl")
-SCO=json.load(io.open(os.path.join(HERE,"scores.json"),encoding="utf-8"))
+_REPO=os.path.dirname(HERE)
+# published layout: code/ holds scripts, results/ holds data
+def _data(name):
+    for c in (os.path.join(_REPO,"results",name), os.path.join(_REPO,"data",name), os.path.join(HERE,name)):
+        if os.path.exists(c): return c
+    return os.path.join(_REPO,"results",name)
+RES=_data("results_sweep.jsonl")
+SCO=json.load(io.open(_data("scores.json"),encoding="utf-8"))
 SAMP={r["chunk_id"]:r for r in json.load(io.open(os.path.join(HERE,"sample_representative_100.json"),encoding="utf-8"))}
 raw=io.open("" + GOLD_DIR + "/scripts/gold298_rows.json",encoding="utf-8").read()
 TXT={r["chunk_id"]:r["content"] for r in json.loads(raw[raw.index("["):])}
@@ -53,7 +59,7 @@ for k in keys:
         price=LIST[k], f1=f1(k,"rls"), rls=m["rls_incl"]["acc"], nts=m["nts_incl"]["acc"],
         rlsrec=m["rls_incl"]["recall"], ntsrec=m["nts_incl"]["recall"],
         fa=m["nts_incl"]["missed"], mn=m["nts_incl"]["missed"],
-        fabr=(m.get("naive_flagged") or m.get("fabricated"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
+        fabr=(m.get("naive_flagged") or m.get("naive_flagged"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
         consis=m["rep_consistency"], secs=m["mean_secs"], cost=m["est_cost"], flip=None))
 
 # passages: first rep only, per model verdict

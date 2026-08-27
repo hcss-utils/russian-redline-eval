@@ -6,7 +6,7 @@
   ratchet      still NUCLEAR on the screened-negative steps AFTER the signal
                -- i.e. an alert that went up and never came back down
 
-Also carries the fabrication check forward: was the cited span verbatim in the
+Also carries the naive-flagging check forward: was the cited span verbatim in the
 statement being ruled on?
 """
 import json, io, os, sys
