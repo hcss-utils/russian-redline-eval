@@ -171,6 +171,32 @@ def main(app_path):
             if shown and shown != want:
                 fails.append(f"error-pattern row {label!r}: app shows {shown}, data gives {want}")
 
+    # --- 3c. sample composition by source arm ------------------------------
+    # This table showed its class counts TRANSPOSED under their own headers (RLS/NTS/None
+    # where the headers said No alert/Red line/Nuclear signal) and percentages summing
+    # to 102% (92+7+3+0). Both were visible on the page and neither was checked.
+    if os.path.exists(samp_p):
+        comp = collections.defaultdict(collections.Counter)
+        for r in samp.values():
+            lab = "NTS" if r["gold_nts"] == "Y" else ("RLS" if r["gold_rls"] == "Y" else "None")
+            comp[r["database"]][lab] += 1
+            comp[r["database"]]["n"] += 1
+        N = len(samp)
+        pct_sum = 0
+        for a, c in comp.items():
+            row = re.search(r"<tr><td[^>]*>" + re.escape(a) + r"</td><td>(\d+)</td><td>(\d+)</td>"
+                            r"<td>(\d+)</td><td>(\d+)</td><td>(\d+)%</td></tr>", app)
+            if not row:
+                fails.append(f"sample-composition row {a!r} is absent from the page")
+                continue
+            got = [int(x) for x in row.groups()]
+            want = [c["n"], c["None"], c["RLS"], c["NTS"], c["n"] * 100 // N]
+            if got != want:
+                fails.append(f"sample composition {a}: page {got}, data {want}")
+            pct_sum += got[4]
+        if comp and not (99 <= pct_sum <= 101):
+            fails.append(f"sample-composition percentages sum to {pct_sum}%, not 100%")
+
     # --- 4. headline KPI tiles --------------------------------------------
     missed = sum(1 for r in rows if ref_of(r) == "NTS" and pred_of(r) not in (None, "NTS"))
     false_nts = sum(1 for r in rows if ref_of(r) != "NTS" and pred_of(r) == "NTS")
