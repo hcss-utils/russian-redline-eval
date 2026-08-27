@@ -18,6 +18,8 @@ decisions for $22.38. On the judgement itself they are **statistically indisting
 lands between 0.890 and 0.945 red-line accuracy, across a 64× price range. But each model must also quote
 the span of text justifying its call, and we check mechanically whether that quote exists in the passage.
 
+> **Two denominators, one name.** The table below reports the naive-flag rate **per record** (2.5%–45.8%): the share of scored decisions carrying at least one flagged span. Elsewhere in this repository the same check is reported **per span** (18.5% overall, 1.7%–42.2% by configuration): the share of the 1,532 individually cited spans that the substring test did not locate. Both are correct; they range over different things. **Neither is a rate of invention — that rate is zero.**
+
 | | naive-flag rate | missed nuclear | cost |
 |---|---:|---:|---:|
 | GPT-5.6 Sol | **2.5%** | 0/36 | $1.67 |
@@ -59,6 +61,8 @@ same speech act as a red line, and the models split on it.
 | `CODEBOOK_VERSION_FINDING.md` | how the benchmark was nearly run on a superseded codebook |
 
 ## Reproducing
+
+> **One script is not reproducible from this repository, by design.** `code/build_app_data.py` rebuilds the internal dashboard payload and needs the unreleased reference annotations (`gold298_rows.json`), which are colleagues' unpublished work. It exits with that message rather than a traceback. **Everything this benchmark claims is reproducible without it** — `code/score.py` and `code/score_sequential.py` run against the published `results/` and regenerate the scores byte-identically.
 
 ```
 export CREDENTIALS_ENV=~/.rubicon.env     # your own provider keys; none are in this repo

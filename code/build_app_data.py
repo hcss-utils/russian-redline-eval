@@ -7,6 +7,18 @@ import os
 # files in this repo are the outputs, so nothing here is needed to re-score.
 GOLD_DIR = os.environ.get("GOLD_DIR", "./gold_certification")
 
+# This script rebuilds the INTERNAL dashboard payload and needs the unreleased
+# reference annotations. They are colleagues' unpublished work and are not in
+# this repository. Fail with an explanation rather than a traceback -- and note
+# that nothing the benchmark CLAIMS depends on this script.
+if not os.path.exists(os.path.join(GOLD_DIR, "scripts", "gold298_rows.json")):
+    raise SystemExit(
+        "build_app_data.py needs the internal reference set (gold298_rows.json), which is not\n"
+        "published: it is colleagues' unreleased annotation work. Everything this benchmark\n"
+        "CLAIMS is reproducible without it -- use code/score.py and code/score_sequential.py,\n"
+        "which run against the published results/. Set GOLD_DIR if you hold that data.")
+
+
 HERE=os.path.dirname(os.path.abspath(__file__))
 _REPO=os.path.dirname(HERE)
 # published layout: code/ holds scripts, results/ holds data
@@ -16,7 +28,7 @@ def _data(name):
     return os.path.join(_REPO,"results",name)
 RES=_data("results_sweep.jsonl")
 SCO=json.load(io.open(_data("scores.json"),encoding="utf-8"))
-SAMP={r["chunk_id"]:r for r in json.load(io.open(os.path.join(HERE,"sample_representative_100.json"),encoding="utf-8"))}
+SAMP={r["chunk_id"]:r for r in json.load(io.open(_data("sample_representative_100.json"),encoding="utf-8"))}
 raw=io.open("" + GOLD_DIR + "/scripts/gold298_rows.json",encoding="utf-8").read()
 TXT={r["chunk_id"]:r["content"] for r in json.loads(raw[raw.index("["):])}
 
