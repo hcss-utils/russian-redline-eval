@@ -72,6 +72,23 @@ python code/score.py
 ```
 Append-only and resume-capable: re-running skips completed `(model, chunk, lang, rep)` work.
 
+### Rebuilding the dashboard
+
+The page at <https://rubase.org/redline-eval/> is generated from `results/` and `data/` — nothing on
+it is typed by hand — and the route is published:
+
+```
+git archive HEAD | tar -x -C /tmp/x
+cd /tmp/x/site && DEPLOYED_PAGE=app/index.html bash bench/rebuild.sh
+```
+
+It runs five gates and **refuses to finish** if any fails: the app audit; a numeric reconciliation of
+every figure in the page source against `results/`; a rendered reconciliation in a real browser of
+every figure a reader *sees* against the payload the page loads; an adversarial acceptance suite for
+each checker (**20** and **14** reconstructed defects, each of which must be caught); and a byte
+comparison against the deployed page. See [`site/README.md`](site/README.md) for why the two
+acceptance suites exist — every gate here was, at some point, reporting success while doing nothing.
+
 ## The sequential arm
 
 > 🟥 **Corrected 2026-08-27.** An earlier version of this arm cut passages to 4,000 characters, which removed the nuclear signal from three of the seventeen timelines; the models correctly reported no nuclear content and were scored as misses. The sampler now passes passages whole and the affected decisions were re-run. Figures below are post-repair.
