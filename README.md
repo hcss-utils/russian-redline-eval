@@ -18,7 +18,7 @@ decisions for $22.38. On the judgement itself they are **statistically indisting
 lands between 0.890 and 0.945 red-line accuracy, across a 64× price range. But each model must also quote
 the span of text justifying its call, and we check mechanically whether that quote exists in the passage.
 
-| | fabricated quote | missed nuclear | cost |
+| | naive-flag rate | missed nuclear | cost |
 |---|---:|---:|---:|
 | GPT-5.6 Sol | **2.5%** | 0/36 | $1.67 |
 | Claude Fable 5 | 3.7% | 2/36 | $7.00 |
@@ -88,7 +88,7 @@ NUCLEAR. It may raise or lower it freely.
 
 **816 decisions, $6.54.**
 
-| configuration | caught | cry-wolf before the signal | stuck high after catching | fabricated span |
+| configuration | caught | cry-wolf before the signal | stuck high after catching | naive-flagged span |
 |---|---|---|---|---|
 | haiku-4.5 | 14/17 | 3.5% | 17.9% | 36.4% |
 | gpt-5.6-sol | 14/17 | 3.5% | 3.8% | 0.0% |

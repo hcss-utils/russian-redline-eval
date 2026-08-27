@@ -13,7 +13,7 @@
 
 All figures derived from `results_sweep.jsonl` via `score.py`; none typed by hand.
 
-## Ranked by naive-flag rate — a screen, not a fabrication measure
+## Ranked by naive-flag rate — a screen, not a measure of invention
 
 | model | naive-flagged | missed nuclear | RLS acc (95% CI) | RLS recall | NTS acc | refusals | rep-consistency | mean s | $ |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -32,7 +32,7 @@ All figures derived from `results_sweep.jsonl` via `score.py`; none typed by han
 | `gpt-5.6-luna` | **0.369** | 2/36 | 0.890 [0.84–0.93] | 1.000 | 0.990 | 0 | 1.000 | 4.5 | 0.11 |
 | `haiku-4.5` | **0.458** | 0/36 | 0.900 [0.85–0.93] | 0.933 | 0.995 | 0 | 1.000 | 3.2 | 0.65 |
 
-**Fabrication spread: 0.025 to 0.458 — 18x.**
+**Naive-flag spread: 0.017 to 0.422 by configuration. Reading every flagged span found 0 inventions.**
 
 **Accuracy spread: 0.890 to 0.945** — every model's 95% interval overlaps several others. The leaderboard does not separate them, exactly as pre-registered before the run.
 
@@ -102,8 +102,7 @@ tokens >= 50, screened by the pipeline as non-candidates) and put to all
 ***Not one model raised a single red-line or nuclear alert on any of them.***
 
 This is load-bearing for the headline finding: the models are appropriately **quiet on noise** and
-accurate on signal, and a naive check flags up to 42.2% of their quotes, none of which is an invention. The
-fabrication is therefore not a side-effect of over-triggering.
+accurate on signal, and a naive check flags up to 42.2% of their quotes, none of which is an invention. The flags are therefore not an artefact of over-triggering either.
 
 **Boundary:** at a corpus nuclear prevalence of 2.563%, roughly one of 50 random chunks might genuinely
 carry a signal, so a zero here is consistent with either good calibration or slight under-triggering;

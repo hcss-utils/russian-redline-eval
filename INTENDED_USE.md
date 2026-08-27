@@ -16,7 +16,7 @@ justification is actually present in the passage.**
 ## The result most relevant to deployment
 
 Accuracy does not separate these models; **faithfulness does, by an order of magnitude.** Several models
-reach near-identical verdict accuracy while fabricating the supporting quotation on a large fraction of
+reach near-identical verdict accuracy while a naive substring check flags their supporting quotation on a large fraction of
 records. Any deployment that surfaces a model's cited evidence to an analyst — which is the normal design
 for decision support — inherits that failure directly, and it is invisible unless the citation is checked
 against the source automatically.
