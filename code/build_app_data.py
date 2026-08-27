@@ -67,12 +67,30 @@ def f1(mk, layer):
     return round(2*p*rc/(p+rc),3) if p+rc else 0.0
 
 models=[]
+# Confusion matrix, false nuclear alerts and missed nuclear signals, DERIVED from every
+# decision record. These were previously invented in the app from fixed ratios
+# (fa*0.65, rest*0.6) with a remainder cell that could go negative, and `fa` was wrongly
+# set to the `missed` count, so False Alerts equalled Missed Nuclear for every model.
+_L=["None","RLS","NTS"]
+def _ref(r):  return "NTS" if r["gold_nts"]=="Y" else ("RLS" if r["gold_rls"]=="Y" else "None")
+def _pred(r):
+    v=r.get("verdict")
+    if not r.get("parsed") or not v: return None
+    return "NTS" if v.get("nts")=="Y" else ("RLS" if v.get("rls")=="Y" else "None")
+CM=collections.defaultdict(lambda: {a:{b:0 for b in _L} for a in _L})
+for r in rows:
+    pr=_pred(r)
+    if pr is not None: CM[r["model_key"]][_ref(r)][pr]+=1
+def _cm(k):  return [[CM[k][a][b] for b in _L] for a in _L]
+def _fa(k):  return CM[k]["None"]["NTS"]+CM[k]["RLS"]["NTS"]   # nuclear alert, reference is not NTS
+def _mn(k):  return CM[k]["NTS"]["None"]+CM[k]["NTS"]["RLS"]   # real nuclear signal not called NTS
+
 for k in keys:
     m=SCO["models"][k]; n,prov,slug=DISPLAY[k]
     models.append(dict(k=SAFE(k), n=n, short=n.split()[0], prov=prov, slug=slug,
         price=LIST[k], f1=f1(k,"rls"), rls=m["rls_incl"]["acc"], nts=m["nts_incl"]["acc"],
         rlsrec=m["rls_incl"]["recall"], ntsrec=m["nts_incl"]["recall"],
-        fa=m["nts_incl"]["missed"], mn=m["nts_incl"]["missed"],
+        fa=_fa(k), mn=_mn(k), cm=_cm(k),
         flag_rate=(m.get("naive_flagged") or m.get("fabricated"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
         consis=m["rep_consistency"], secs=m["mean_secs"], cost=m["est_cost"], flip=None))
 
