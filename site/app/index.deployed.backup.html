@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RedLineBench — MOCKUP</title>
+<style>
+:root{--bg:#0d1f3c;--db:#1a3761;--gold:#dbad50;--lb:#82a0bc;--wh:#e8edf3;--red:#e74c3c;--green:#2ecc71;--border:#1e3a5f;--card:#132844}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--wh);min-height:100vh}
+
+/* MOCKUP BANNER */
+.mockup-banner{background:repeating-linear-gradient(45deg,#e74c3c,#e74c3c 20px,#c0392b 20px,#c0392b 40px);color:white;text-align:center;padding:.7rem;font-weight:800;font-size:1rem;letter-spacing:2px;text-transform:uppercase;position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+
+/* Header */
+.header{display:flex;align-items:center;gap:1rem;padding:1rem 2rem;border-bottom:1px solid var(--border)}
+.header h1{font-size:1.3rem;color:var(--gold)}
+.header .sub{color:var(--lb);font-size:.8rem}
+.header .badge{background:var(--red);color:white;font-size:.6rem;padding:.2rem .5rem;border-radius:3px;font-weight:700;text-transform:uppercase;margin-left:.5rem}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;padding:0 2rem;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.tab{padding:.7rem 1.2rem;cursor:pointer;font-size:.78rem;color:var(--lb);font-weight:600;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex:0 0 auto}
+.tab:hover{color:var(--wh)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* Content */
+.content{padding:1.5rem 2rem;max-width:1400px}
+.panel{display:none}.panel.active{display:block;overflow-x:auto}
+
+/* KPI strip */
+.kpi-strip{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.8rem 1.2rem;text-align:center;min-width:130px;flex:1}
+.kpi-num{font-size:1.8rem;font-weight:700;color:var(--gold)}.kpi-label{font-size:.65rem;color:var(--lb);margin-top:.2rem}
+.kpi-num.red{color:var(--red)}.kpi-num.green{color:var(--green)}
+
+/* Leaderboard table */
+.lb-table{width:100%;border-collapse:collapse;font-size:.75rem;margin-bottom:1.5rem}
+.lb-table th{background:var(--card);border:1px solid var(--border);padding:.5rem;color:var(--gold);font-weight:600;text-align:center;position:sticky;top:0}
+.lb-table td{border:1px solid var(--border);padding:.4rem .5rem;text-align:center}
+.lb-table tr:nth-child(even){background:rgba(255,255,255,.02)}
+.lb-table .model{text-align:left;font-weight:600;color:var(--wh)}
+.lb-table .best{background:rgba(46,204,113,.12);color:var(--green);font-weight:700}
+.lb-table .worst{background:rgba(231,76,60,.08);color:var(--red)}
+
+/* Situation room */
+.sit-room{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:1.5rem;margin:1rem 0}
+.sit-room h3{color:var(--gold);margin-bottom:.8rem}
+.passage{background:rgba(255,255,255,.03);border-left:3px solid var(--gold);padding:.8rem 1rem;margin:.5rem 0;font-size:.82rem;line-height:1.6;font-style:italic}
+.passage .ru{color:var(--lb)}
+.model-verdict{display:inline-block;padding:.15rem .5rem;border-radius:3px;font-size:.68rem;font-weight:700;margin:.2rem .3rem}
+.v-alert{background:rgba(231,76,60,.2);color:var(--red)}.v-routine{background:rgba(46,204,113,.15);color:var(--green)}.v-nuclear{background:rgba(219,173,80,.2);color:var(--gold)}
+
+/* Insight callout */
+.insight{background:var(--card);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;padding:.9rem 1.2rem;margin:1rem 0}
+.insight h3{color:var(--gold);font-size:.88rem;margin-bottom:.3rem}.insight p{font-size:.8rem;line-height:1.55}
+
+/* Footer */
+.footer{padding:1rem 2rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--lb);text-align:center;margin-top:2rem}
+
+/* Placeholder chart */
+.chart-placeholder{background:var(--card);border:1px solid var(--border);border-radius:8px;height:280px;display:flex;align-items:center;justify-content:center;color:var(--lb);font-size:.85rem;margin:1rem 0}
+
+/* Modals */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:1.5rem 2rem;max-width:780px;width:94%;max-height:85vh;overflow-y:auto;position:relative}
+.modal h3{color:var(--gold);font-size:1rem;margin-bottom:.8rem}
+.modal h4{color:var(--wh);font-size:.88rem;margin:1rem 0 .4rem}
+.modal p,.modal li{font-size:.82rem;line-height:1.6;margin-bottom:.4rem;color:var(--wh)}
+.modal ul{padding-left:1.2rem;margin-bottom:.6rem}
+.modal .term{color:var(--gold);font-weight:600}
+.modal .warn{color:var(--red);font-weight:600}
+.modal-close{position:absolute;top:.7rem;right:1rem;cursor:pointer;color:var(--lb);font-size:1.2rem;background:none;border:none}
+.modal-close:hover{color:var(--wh)}
+
+/* Info buttons */
+.info-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-size:.7rem;font-weight:700;cursor:pointer;margin-left:.4rem;background:none;vertical-align:middle;transition:all .12s;flex-shrink:0}
+.info-btn:hover{background:var(--gold);color:var(--bg)}
+
+/* Column help */
+.col-help{cursor:help;border-bottom:1px dotted var(--gold)}
+
+/* ═══ Narrow screens ═══
+   Without these the page laid out 800px wide inside a 390px phone: the body
+   scrolled sideways and four of the eight tabs (Language, Situation Room,
+   Source Arms, Method) sat entirely off-screen and could not be reached.
+   Wide tables now scroll inside their own panel instead of dragging the page. */
+@media (max-width:820px){
+    html,body{overflow-x:hidden}
+    .content{padding:1rem .9rem}
+    .tabs{padding:0 .6rem}
+    .tab{padding:.6rem .75rem;font-size:.72rem}
+    .kpi-strip{gap:.6rem}
+    .kpi{flex:1 1 44%;min-width:0}
+    table{font-size:.7rem}
+    th,td{padding:.4rem .45rem}
+    h1{font-size:1.35rem}
+    h2{font-size:1.05rem}
+}
+@media (max-width:430px){
+    .kpi{flex:1 1 100%}
+    .tab{padding:.55rem .6rem;font-size:.7rem}
+}
+
+/* ═══ RLB-UPGRADE-V2 ═══ */
+/* ═══ Sortable column headers (all tabs) ═══ */
+th.sortable{cursor:pointer;user-select:none;position:relative}
+th.sortable:hover{color:var(--gold)}
+.sort-ind{opacity:.35;font-size:.62rem;margin-left:.28rem}
+/* ═══ Header: Home / back-to-overview ═══ */
+.hdr-main{flex:1;min-width:0}
+.home-btn{flex:0 0 auto;display:inline-block;text-decoration:none;white-space:nowrap;
+          color:var(--gold);border:1px solid var(--gold);border-radius:6px;
+          padding:.4rem .75rem;font-size:.72rem;font-weight:600;transition:all .15s}
+.home-btn:hover{background:var(--gold);color:#13233f}
+@media (max-width:520px){.home-btn{padding:.35rem .55rem;font-size:.66rem}}
+
+.col-lab{border-bottom:none;cursor:pointer}
+.col-info{cursor:help;color:var(--gold);opacity:.55;font-size:.72rem;margin-left:.28rem}
+.col-info:hover{opacity:1}
+th[data-dir="asc"] .sort-ind,th[data-dir="desc"] .sort-ind{opacity:1;color:var(--gold)}
+
+/* ═══ Passage rows: hover tooltip + click-through ═══ */
+tr.prow{cursor:pointer}
+tr.prow:hover{background:rgba(219,173,80,.07)}
+.ok-cell{color:var(--green)}
+.ptip{position:absolute;z-index:2000;display:none;max-width:520px;width:calc(100vw - 24px);
+      background:var(--card);border:1px solid var(--gold);border-radius:8px;padding:.75rem .85rem;
+      box-shadow:0 10px 30px rgba(0,0,0,.55);pointer-events:none}
+.ptip-h{color:var(--gold);font-size:.72rem;font-weight:700;margin-bottom:.4rem}
+.ptip-ru{font-size:.72rem;color:var(--wh);margin-bottom:.3rem;line-height:1.45}
+.ptip-en{font-size:.72rem;color:var(--lb);font-style:italic;margin-bottom:.45rem;line-height:1.45}
+.ptip-ref{font-size:.72rem;margin-bottom:.35rem}
+.ptip-why{font-size:.7rem;color:var(--lb);line-height:1.5}
+.ptip-more{font-size:.66rem;color:var(--gold);margin-top:.45rem}
+
+/* ═══ Compare: model selector ═══ */
+.msel{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .8rem;margin-bottom:1rem}
+.msel-head{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem}
+.msel-title{font-size:.78rem;color:var(--wh);font-weight:700}
+.msel-badge{background:var(--gold);color:#13233f;border-radius:10px;padding:.05rem .45rem;font-size:.7rem;margin-left:.25rem}
+.msel-btns{display:flex;gap:.35rem;flex-wrap:wrap}
+.mbtn{background:transparent;color:var(--lb);border:1px solid var(--border);border-radius:5px;
+      padding:.25rem .5rem;font-size:.68rem;cursor:pointer;font-family:inherit}
+.mbtn:hover{color:var(--gold);border-color:var(--gold)}
+.msel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.4rem}
+.mchip{display:flex;align-items:center;gap:.4rem;background:var(--bg);border:1px solid var(--border);
+       border-radius:6px;padding:.35rem .5rem;cursor:pointer;font-size:.7rem}
+.mchip:hover{border-color:var(--gold)}
+.mchip:has(input:checked){border-color:var(--gold);background:rgba(219,173,80,.08)}
+.mchip input{accent-color:var(--gold);cursor:pointer;flex:0 0 auto}
+.mchip-n{color:var(--wh);font-weight:600;flex:1;min-width:0}
+.mchip-p{color:var(--lb);font-size:.62rem}
+.mchip-f1{color:var(--gold);font-size:.62rem;font-weight:700}
+.cmp-h{color:var(--gold);font-size:.86rem;margin:1.1rem 0 .5rem}
+.cmp-sub{color:var(--lb);font-size:.66rem;font-weight:400;margin-left:.4rem}
+.cmp-mat-wrap{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.6rem}
+.cmp-card{flex:1 1 300px;min-width:270px;max-width:420px;background:var(--card);border:1px solid var(--border);
+          border-radius:8px;padding:.7rem .8rem}
+.cmp-card h3{color:var(--gold);font-size:.8rem;margin-bottom:.5rem}
+.cmp-card table{margin-bottom:.4rem}
+.cmp-foot{font-size:.66rem;color:var(--lb)}
+
+/* ═══ Filters ═══ */
+.f-sel{background:var(--card);color:var(--wh);border:1px solid var(--border);
+       padding:.3rem .5rem;border-radius:4px;font-size:.7rem;font-family:inherit}
+
+/* ═══ Situation Room ═══ */
+.sit-choice{cursor:pointer;border:1px solid transparent;font-family:inherit;font-size:.7rem}
+.sit-choice.picked{outline:2px solid var(--gold);outline-offset:1px}
+.sit-feedback{margin-top:.8rem;padding:.6rem .7rem;background:var(--bg);border-left:3px solid var(--gold);
+              border-radius:4px;font-size:.74rem;color:var(--lb);line-height:1.55}
+.sit-reveal{margin-top:.9rem}
+.sit-row{display:grid;grid-template-columns:150px auto 62px 1fr;gap:.5rem;align-items:center;
+         padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.7rem}
+.sit-m{color:var(--wh);font-weight:600}
+.sit-ok{font-size:.64rem;font-weight:700}
+.is-ok{color:var(--green)}.is-bad{color:var(--red)}
+.sit-j{color:var(--lb);font-size:.67rem;line-height:1.45}
+
+/* ═══ Method ═══ */
+.m-h{color:var(--gold);font-size:.88rem;margin:1.3rem 0 .45rem;padding-bottom:.25rem;border-bottom:1px solid var(--border)}
+.m-p{font-size:.76rem;color:var(--lb);line-height:1.65;margin-bottom:.7rem}
+.m-p strong{color:var(--wh)}
+.m-tbl{max-width:100%;margin-bottom:.8rem}
+.m-tbl td{vertical-align:top}
+.m-ul{font-size:.76rem;color:var(--lb);line-height:1.65;margin:0 0 .8rem 1.1rem}
+.m-ul li{margin-bottom:.3rem}
+.m-ul strong{color:var(--wh)}
+.m-code{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.7rem .8rem;
+        font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:.68rem;color:var(--lb);
+        line-height:1.5;overflow-x:auto;margin-bottom:.7rem;white-space:pre}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.7rem;color:var(--gold)}
+
+/* ═══ Passage modal body ═══ */
+.pm-body h3{color:var(--gold);font-size:.92rem;margin-bottom:.6rem}
+.pm-body h4{color:var(--gold)}
+@media (max-width:820px){
+    .sit-row{grid-template-columns:1fr;gap:.15rem;padding:.5rem 0}
+    .ptip{max-width:calc(100vw - 20px)}
+    .msel-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:430px){.msel-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="mockup-banner">MOCKUP — NOT REAL DATA — FOR LAYOUT AND CONCEPT REVIEW ONLY</div>
+
+<div class="header">
+    <div class="hdr-main">
+        <h1>RedLineBench <span class="badge">Mockup</span></h1>
+        <div class="sub">Can AI advisers distinguish genuine Russian nuclear signals from noise? A multinational model benchmark.</div>
+    </div>
+    <a class="home-btn" href="https://rubase.org/" title="Back to the RuBase Deliverables overview">&#8592; RuBase Deliverables</a>
+</div>
+
+<div class="tabs">
+    <div class="tab active" onclick="showPanel('findings')">Findings <button class="info-btn" onclick="event.stopPropagation();openModal('mi-findings')">?</button></div>
+    <div class="tab" onclick="showPanel('compare')">Compare <button class="info-btn" onclick="event.stopPropagation();openModal('mi-compare')">?</button></div>
+    <div class="tab" onclick="showPanel('failures')">Failure Atlas <button class="info-btn" onclick="event.stopPropagation();openModal('mi-failures')">?</button></div>
+    <div class="tab" onclick="showPanel('cases')">Cases <button class="info-btn" onclick="event.stopPropagation();openModal('mi-cases')">?</button></div>
+    <div class="tab" onclick="showPanel('language')">Language <button class="info-btn" onclick="event.stopPropagation();openModal('mi-language')">?</button></div>
+    <div class="tab" onclick="showPanel('sitroom')">Situation Room <button class="info-btn" onclick="event.stopPropagation();openModal('mi-sitroom')">?</button></div>
+    <div class="tab" onclick="showPanel('sources')">Source Arms <button class="info-btn" onclick="event.stopPropagation();openModal('mi-sources')">?</button></div>
+    <div class="tab" onclick="showPanel('method')">Method <button class="info-btn" onclick="event.stopPropagation();openModal('mi-method')">?</button></div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="content">
+
+<!-- ═══ FINDINGS ═══ -->
+<div class="panel active" id="findings">
+<div class="kpi-strip">
+    <div class="kpi"><div class="kpi-num">298</div><div class="kpi-label">benchmark passages <button class="info-btn" onclick="openModal('mi-298')">?</button></div></div>
+    <div class="kpi"><div class="kpi-num">10</div><div class="kpi-label">frontier models <button class="info-btn" onclick="openModal('mi-10models')">?</button></div></div>
+    <div class="kpi"><div class="kpi-num">17,880</div><div class="kpi-label">scored decisions <button class="info-btn" onclick="openModal('mi-17880')">?</button></div></div>
+    <div class="kpi"><div class="kpi-num">2</div><div class="kpi-label">languages (RU / EN) <button class="info-btn" onclick="openModal('mi-langs')">?</button></div></div>
+    <div class="kpi"><div class="kpi-num red">$101</div><div class="kpi-label">projected cost <button class="info-btn" onclick="openModal('mi-cost')">?</button></div></div>
+
+
+
+
+
+</div>
+
+<div class="insight">
+    <h3>Provisional — reference labels not yet independently validated</h3>
+    <p>The 298 reference labels are challenge-enriched provisional expert labels. Mikhail has completed <strong>103 of 189</strong> model-assisted Expert Review passages. Adam's independent blind pass has not been returned. Results below use these provisional labels and will change after adjudication.</p>
+</div>
+
+<h2 style="color:var(--gold);font-size:1rem;margin:1.2rem 0 .8rem">Core Leaderboard</h2>
+
+<table class="lb-table">
+<thead><tr>
+    <th><span class="col-help" onclick="openModal('mc-rank')">Rank</span></th><th><span class="col-help" onclick="openModal('mc-model')">Model</span></th><th><span class="col-help" onclick="openModal('mc-provider')">Provider</span></th>
+    <th><span class="col-help" onclick="openModal('mc-f1')">Macro-F1</span></th>
+    <th><span class="col-help" onclick="openModal('mc-rlsr')">RLS Recall</span></th>
+    <th><span class="col-help" onclick="openModal('mc-ntsr')">NTS Recall</span></th>
+    <th><span class="col-help" onclick="openModal('mc-false')">False Alerts</span></th>
+    <th><span class="col-help" onclick="openModal('mc-missed')">Missed Nuclear</span></th>
+    <th><span class="col-help" onclick="openModal('mc-schema')">Schema OK</span></th>
+    <th><span class="col-help" onclick="openModal('mc-flips')">RU↔EN Flips</span></th>
+    <th><span class="col-help" onclick="openModal('mc-costcol')">Cost</span></th>
+</tr></thead>
+
+
+
+
+
+
+
+
+<tbody>
+<tr><td>1</td><td class="model">Claude Fable 5</td><td>Anthropic</td><td class="best">0.81</td><td class="best">0.88</td><td class="best">0.82</td><td>9</td><td>2</td><td>99.7%</td><td>4.1%</td><td>$14.20</td></tr>
+<tr><td>2</td><td class="model">GPT-5.6 Sol</td><td>OpenAI</td><td>0.79</td><td>0.85</td><td>0.79</td><td>12</td><td>3</td><td class="best">100%</td><td>5.7%</td><td>$12.40</td></tr>
+<tr><td>3</td><td class="model">DeepSeek V4 Pro</td><td>DeepSeek</td><td>0.76</td><td>0.82</td><td>0.75</td><td>14</td><td>3</td><td>98.9%</td><td>6.2%</td><td>$8.90</td></tr>
+<tr><td>4</td><td class="model">Qwen3.7-Max</td><td>Alibaba</td><td>0.74</td><td>0.79</td><td>0.71</td><td>18</td><td>4</td><td>97.3%</td><td>8.4%</td><td>$7.60</td></tr>
+<tr><td>5</td><td class="model">Gemini 3.6 Flash</td><td>Google</td><td>0.73</td><td>0.81</td><td>0.68</td><td>11</td><td>5</td><td>99.1%</td><td>9.1%</td><td>$3.80</td></tr>
+<tr><td>6</td><td class="model">GLM-5.2</td><td>Zhipu AI</td><td>0.69</td><td>0.74</td><td>0.64</td><td>22</td><td>5</td><td>96.1%</td><td>11.3%</td><td>$6.20</td></tr>
+<tr><td>7</td><td class="model">Kimi K3</td><td>Moonshot</td><td>0.67</td><td>0.72</td><td>0.61</td><td>19</td><td>6</td><td>95.8%</td><td>12.7%</td><td>$5.40</td></tr>
+<tr><td>8</td><td class="model">MiniMax M3</td><td>MiniMax</td><td>0.65</td><td>0.70</td><td>0.57</td><td>24</td><td>7</td><td>94.2%</td><td>14.5%</td><td>$4.80</td></tr>
+<tr><td>9</td><td class="model">Solar Pro 3</td><td>Upstage</td><td>0.62</td><td>0.68</td><td>0.54</td><td>27</td><td>8</td><td>93.7%</td><td>15.8%</td><td>$5.10</td></tr>
+<tr><td>10</td><td class="model">GigaChat 3 Ultra</td><td>Sber</td><td class="worst">0.51</td><td class="worst">0.58</td><td class="worst">0.39</td><td class="worst">38</td><td class="worst">11</td><td class="worst">87.4%</td><td class="worst">22.3%</td><td>$3.20</td></tr>
+</tbody>
+</table>
+
+<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.2rem;margin:1rem 0">
+<h3 style="color:var(--gold);font-size:.85rem;margin-bottom:.8rem">Accuracy–Cost Frontier (notional)</h3>
+<svg viewBox="0 0 600 280" style="width:100%;max-width:600px">
+  <rect x="60" y="10" width="520" height="240" fill="none" stroke="var(--border)" stroke-width="1"/>
+  <!-- axes -->
+  <text x="300" y="270" fill="var(--lb)" font-size="10" text-anchor="middle">Cost per run ($)</text>
+  <text x="15" y="130" fill="var(--lb)" font-size="10" text-anchor="middle" transform="rotate(-90,15,130)">Macro-F1</text>
+  <!-- grid lines -->
+  <line x1="60" y1="50" x2="580" y2="50" stroke="var(--border)" stroke-dasharray="3"/>
+  <line x1="60" y1="130" x2="580" y2="130" stroke="var(--border)" stroke-dasharray="3"/>
+  <line x1="60" y1="210" x2="580" y2="210" stroke="var(--border)" stroke-dasharray="3"/>
+  <text x="55" y="54" fill="var(--lb)" font-size="8" text-anchor="end">0.85</text>
+  <text x="55" y="134" fill="var(--lb)" font-size="8" text-anchor="end">0.65</text>
+  <text x="55" y="214" fill="var(--lb)" font-size="8" text-anchor="end">0.45</text>
+  <text x="120" y="258" fill="var(--lb)" font-size="8" text-anchor="middle">$3</text>
+  <text x="300" y="258" fill="var(--lb)" font-size="8" text-anchor="middle">$8</text>
+  <text x="520" y="258" fill="var(--lb)" font-size="8" text-anchor="middle">$14</text>
+  <!-- frontier curve -->
+  <path d="M 100 190 Q 200 100 350 65 Q 450 50 520 42" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="5" opacity=".5"/>
+  <!-- model dots -->
+  <circle cx="520" cy="42" r="6" fill="var(--gold)" opacity=".9"/><text x="520" y="35" fill="var(--wh)" font-size="7" text-anchor="middle">Claude</text>
+  <circle cx="460" cy="52" r="6" fill="#3498db"/><text x="460" y="45" fill="var(--wh)" font-size="7" text-anchor="middle">GPT-5.6</text>
+  <circle cx="330" cy="75" r="6" fill="#2ecc71"/><text x="330" y="68" fill="var(--wh)" font-size="7" text-anchor="middle">DeepSeek</text>
+  <circle cx="280" cy="88" r="6" fill="#9b59b6"/><text x="280" y="81" fill="var(--wh)" font-size="7" text-anchor="middle">Qwen</text>
+  <circle cx="100" cy="95" r="5" fill="#e67e22"/><text x="100" y="88" fill="var(--wh)" font-size="7" text-anchor="middle">Gemini</text>
+  <circle cx="230" cy="115" r="5" fill="var(--lb)"/><text x="230" y="108" fill="var(--wh)" font-size="7" text-anchor="middle">GLM</text>
+  <circle cx="200" cy="125" r="5" fill="var(--lb)"/><text x="200" y="118" fill="var(--wh)" font-size="7" text-anchor="middle">Kimi</text>
+  <circle cx="175" cy="140" r="5" fill="var(--lb)"/><text x="175" y="133" fill="var(--wh)" font-size="7" text-anchor="middle">MiniMax</text>
+  <circle cx="190" cy="155" r="5" fill="var(--lb)"/><text x="190" y="148" fill="var(--wh)" font-size="7" text-anchor="middle">Solar</text>
+  <circle cx="90" cy="190" r="5" fill="var(--red)"/><text x="90" y="204" fill="var(--wh)" font-size="7" text-anchor="middle">GigaChat</text>
+</svg>
+<p style="font-size:.68rem;color:var(--lb);margin-top:.5rem">Gemini 3.6 Flash is the cost-efficiency leader: 90% of Claude's F1 at 27% of the cost. GigaChat is cheapest but misses 11 of 28 nuclear signals.</p>
+</div>
+
+<div class="insight">
+    <h3>Ranking sensitivity</h3>
+    <p>Rankings shown under equal miss/false-alarm weight. Toggle between <strong>1:1</strong>, <strong>3:1</strong>, and <strong>10:1</strong> miss-vs-false-alarm penalties. A model that looks best at 1:1 may drop under nuclear-miss-heavy weighting.</p>
+</div>
+</div>
+
+<!-- ═══ COMPARE MODELS ═══ -->
+<div class="panel" id="compare">
+<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Head-to-Head Model Comparison</h2>
+<p style="font-size:.78rem;color:var(--lb);margin-bottom:.8rem">Select any number of models &mdash; two, five, or all ten. Every view below recomputes for the current selection.</p>
+
+<div class="msel">
+    <div class="msel-head">
+        <span class="msel-title">Models in comparison <span id="msel-count" class="msel-badge">3</span></span>
+        <span class="msel-btns">
+            <button class="mbtn" onclick="selModels('all')">All 10</button>
+            <button class="mbtn" onclick="selModels('top5')">Top 5</button>
+            <button class="mbtn" onclick="selModels('bottom5')">Bottom 5</button>
+            <button class="mbtn" onclick="selModels('extremes')">Best vs worst</button>
+            <button class="mbtn" onclick="selModels('none')">Clear</button>
+        </span>
+    </div>
+    <div class="msel-grid" id="msel-grid"></div>
+</div>
+
+<div id="cmp-empty" class="insight" style="display:none"><h3>No models selected</h3><p>Tick at least one model above to populate the comparison.</p></div>
+
+<div id="cmp-metrics"></div>
+<div id="cmp-matrices" class="cmp-mat-wrap"></div>
+<div id="cmp-agree"></div>
+
+<div class="insight" style="margin-top:1rem">
+    <h3>Pattern</h3>
+    <p><em><strong>The failure modes are not symmetric, and that is the finding.</strong></em> <em>Claude Fable 5</em> and <em>GPT-5.6 Sol</em> are conservative &mdash; they miss a few signals but rarely false-alarm. <em>GigaChat 3 Ultra</em> and <em>Solar Pro 3</em> over-trigger: they call Medvedev's bluster a nuclear signal and miss Shoigu's doctrinal boilerplate because it is <em>too</em> formulaic to pattern-match. The Chinese models (<em>GLM-5.2</em>, <em>Kimi K3</em>, <em>MiniMax M3</em>) cluster in the middle but carry the highest language-flip rates, suggesting their Russian comprehension degrades more under translation. Add all ten to the selection and the diagonal splits into two visibly different shapes.</p>
+</div>
+</div>
+<!-- ═══ FAILURE ATLAS ═══ -->
+<div class="panel" id="failures">
+<h2 style="color:var(--gold);font-size:1rem;margin-bottom:1rem">Failure Atlas — Where Models Break</h2>
+<div class="kpi-strip">
+    <div class="kpi"><div class="kpi-num red">54</div><div class="kpi-label">missed nuclear signals (across all models)</div></div>
+    <div class="kpi"><div class="kpi-num red">194</div><div class="kpi-label">false strategic alerts</div></div>
+    <div class="kpi"><div class="kpi-num red">31</div><div class="kpi-label">fabricated evidence spans</div></div>
+    <div class="kpi"><div class="kpi-num">1,847</div><div class="kpi-label">language decision flips (RU vs EN)</div></div>
+</div>
+<h3 style="color:var(--wh);font-size:.85rem;margin:.8rem 0 .5rem">Worst-performing passages — every model, ranked by total errors <span style="font-weight:400;color:var(--lb);font-size:.7rem">· hover a row for the passage and reference label, click for all ten justifications</span></h3>
+<div id="fail-table"></div>
+<p style="font-size:.68rem;color:var(--lb);margin-bottom:.5rem"><strong>-</strong> = correct. <span style="color:var(--red)">Red</span> = model's wrong answer. Karaganov (#103) defeats ALL ten models — every one calls an analyst op-ed a nuclear signal. Medvedev (#198) and Lavrov (#037) are the top false-alert generators: retrospective and maximalist rhetoric that models cannot distinguish from live threats.</p>
+<div class="insight">
+    <h3>Operational risk surface</h3>
+    <p>A missed nuclear signal is categorically worse than a missed conventional red line. This tab exposes exactly which passages each model misses, and whether the miss pattern is systematic (e.g. all models miss retrospective framing) or model-specific.</p>
+</div>
+</div>
+
+<!-- ═══ CASE EXPLORER ═══ -->
+<div class="panel" id="cases">
+<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Case Explorer — Passage-Level Evidence</h2>
+<p style="font-size:.78rem;color:var(--lb);margin-bottom:.8rem"><em><strong>Hover any row for the passage, the reference label and why it was coded that way; click it for all ten models' calls and their stated reasons.</strong></em> Every model appears as a column: <span style="color:var(--green)">&check;</span> means it matched the reference, otherwise the cell shows what it answered instead.</p>
+<div style="margin-bottom:.6rem;display:flex;gap:.5rem;flex-wrap:wrap;font-size:.72rem;align-items:center">
+<span style="color:var(--lb)">Filter:</span>
+<select id="f-class" onchange="casesFilter()" class="f-sel">
+<option value="all">All classes</option><option value="None">No-alert (193 in full set)</option><option value="RLS">Conventional RLS (77)</option><option value="NTS">Nuclear NTS (28)</option></select>
+<select id="f-speaker" onchange="casesFilter()" class="f-sel">
+<option value="all">All speakers</option><option>Putin</option><option>Lavrov</option><option>Medvedev</option><option>Shoigu</option><option>Patrushev</option><option>Peskov</option><option>Zakharova</option><option>Duma</option><option>analyst</option></select>
+<span id="cases-count" style="color:var(--lb)"></span>
+</div>
+<div id="cases-table"></div>
+<p style="font-size:.68rem;color:var(--lb)">These are the worked cases carried by the mockup. The built app exposes all <strong>298</strong> passages with the same interaction, plus each model's quoted evidence span and confidence score.</p>
+</div>
+<!-- ═══ LANGUAGE SHIFT ═══ -->
+<div class="panel" id="language">
+<h2 style="color:var(--gold);font-size:1rem;margin-bottom:1rem">Language Shift — Russian vs English</h2>
+<div class="kpi-strip">
+    <div class="kpi"><div class="kpi-num red">1,124</div><div class="kpi-label">RU→EN decision flips</div></div>
+    <div class="kpi"><div class="kpi-num">723</div><div class="kpi-label">EN→RU decision flips</div></div>
+    <div class="kpi"><div class="kpi-num green">15,333</div><div class="kpi-label">language-stable decisions</div></div>
+</div>
+<h3 style="color:var(--wh);font-size:.85rem;margin:.8rem 0 .5rem">RU→EN transition matrix (all models pooled, notional)</h3>
+<table class="lb-table" style="max-width:450px">
+<thead><tr><th></th><th><span class="col-help" onclick="openModal('mc-en-none')">EN: None</span></th><th><span class="col-help" onclick="openModal('mc-en-rls')">EN: RLS</span></th><th><span class="col-help" onclick="openModal('mc-en-nts')">EN: NTS</span></th><th><span class="col-help" onclick="openModal('mc-total-ru')">Total RU</span></th></tr></thead>
+<tbody>
+<tr><td class="model">RU: None</td><td class="best">5,348</td><td class="worst">312</td><td class="worst">120</td><td>5,780</td></tr>
+<tr><td class="model">RU: RLS</td><td class="worst">187</td><td class="best">1,983</td><td class="worst">140</td><td>2,310</td></tr>
+<tr><td class="model">RU: NTS</td><td class="worst">44</td><td class="worst">121</td><td class="best">675</td><td>840</td></tr>
+<tr><td class="model" style="color:var(--gold)">Total EN</td><td>5,579</td><td>2,416</td><td>935</td><td style="color:var(--gold)">8,930</td></tr>
+</tbody>
+</table>
+<p style="font-size:.68rem;color:var(--lb);margin-top:.3rem">Of 8,930 paired decisions, <strong>924 (10.3%)</strong> flip when the same passage is presented in English instead of Russian. The dominant direction: Russian text triggers <strong>more NTS calls</strong> (840 RU vs 935 EN), likely because English translations flatten connotations that models read as nuclear signals in the original.</p>
+
+<h3 style="color:var(--wh);font-size:.85rem;margin:1.2rem 0 .5rem">Flip rate by model</h3>
+<table class="lb-table" style="max-width:500px">
+<thead><tr><th><span class="col-help" onclick="openModal('mc-model')">Model</span></th><th><span class="col-help" onclick="openModal('mc-stable')">Stable</span></th><th>RU→EN flips</th><th><span class="col-help" onclick="openModal('mc-fliprate')">Flip rate</span></th></tr></thead>
+<tbody>
+<tr><td class="model">Claude Fable 5</td><td>856</td><td>37</td><td class="best">4.1%</td></tr>
+<tr><td class="model">GPT-5.6 Sol</td><td>842</td><td>51</td><td>5.7%</td></tr>
+<tr><td class="model">DeepSeek V4 Pro</td><td>838</td><td>55</td><td>6.2%</td></tr>
+<tr><td class="model">Qwen3.7-Max</td><td>818</td><td>75</td><td>8.4%</td></tr>
+<tr><td class="model">Gemini 3.6 Flash</td><td>812</td><td>81</td><td>9.1%</td></tr>
+<tr><td class="model">GLM-5.2</td><td>792</td><td>101</td><td>11.3%</td></tr>
+<tr><td class="model">Kimi K3</td><td>780</td><td>113</td><td>12.7%</td></tr>
+<tr><td class="model">MiniMax M3</td><td>764</td><td>129</td><td>14.5%</td></tr>
+<tr><td class="model">Solar Pro 3</td><td>752</td><td>141</td><td>15.8%</td></tr>
+<tr><td class="model">GigaChat 3 Ultra</td><td>694</td><td class="worst">199</td><td class="worst">22.3%</td></tr>
+</tbody>
+</table>
+<div class="insight">
+    <h3>Translation is not neutral</h3>
+    <p>Russian strategic rhetoric carries connotations that English translations flatten or distort. This tab shows where language changes the model's decision, not to declare one language superior, but to expose where translation risk concentrates.</p>
+</div>
+</div>
+
+<!-- ═══ SITUATION ROOM ═══ -->
+<div class="panel" id="sitroom">
+<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Situation Room — Play the Adviser</h2>
+<p style="font-size:.78rem;color:var(--lb);margin-bottom:1rem">Read a passage cold. Make your own call. Then see what all ten models said, and why.</p>
+
+<div class="sit-room">
+    <h3>Passage #142 — Putin, 19 December 2025</h3>
+    <div class="passage">
+        <span class="ru">"Если Калининградская область будет заблокирована, это может вызвать беспрецедентную эскалацию и перерасти в масштабный вооружённый конфликт."</span>
+        <br><br>
+        "If the Kaliningrad region is blocked, this could cause unprecedented escalation and develop into large-scale armed conflict."
+    </div>
+    <p style="margin-top:.9rem;font-size:.78rem;color:var(--lb)">Your call:
+        <button class="sit-choice model-verdict v-routine" data-v="None" onclick="sitCommit('None')">No alert</button>
+        <button class="sit-choice model-verdict v-alert" data-v="RLS" onclick="sitCommit('RLS')">Conventional red line</button>
+        <button class="sit-choice model-verdict v-nuclear" data-v="NTS" onclick="sitCommit('NTS')">Nuclear signal</button>
+    </p>
+    <div id="sit-feedback" class="sit-feedback" style="display:none"></div>
+    <div id="sit-reveal" class="sit-reveal" style="display:none"></div>
+</div>
+</div>
+<!-- ═══ SOURCE ARMS ═══ -->
+<div class="panel" id="sources">
+<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.5rem">Source Arms — Officialdom Corpus Breakdown</h2>
+<p style="font-size:.8rem;color:var(--lb);margin-bottom:1rem">The 298 benchmark passages are drawn from four arms of the Russian Officialdom corpus (276,120 documents / 296,381 chunks / 36 source identities). Model performance varies sharply by source type.</p>
+
+<div class="kpi-strip">
+    <div class="kpi"><div class="kpi-num">264,266</div><div class="kpi-label">Telegram Official docs</div></div>
+    <div class="kpi"><div class="kpi-num">7,842</div><div class="kpi-label">Kremlin transcripts</div></div>
+    <div class="kpi"><div class="kpi-num">3,424</div><div class="kpi-label">State Duma docs</div></div>
+    <div class="kpi"><div class="kpi-num">588</div><div class="kpi-label">Federation Council docs</div></div>
+</div>
+
+<h3 style="color:var(--wh);font-size:.85rem;margin:1rem 0 .5rem">Model accuracy by source arm (notional macro-F1)</h3>
+<table class="lb-table">
+<thead><tr><th><span class="col-help" onclick="openModal('mc-model')">Model</span></th><th><span class="col-help" onclick="openModal('mc-telegram')">Telegram Official</span></th><th><span class="col-help" onclick="openModal('mc-kremlin')">Kremlin</span></th><th><span class="col-help" onclick="openModal('mc-duma')">State Duma</span></th><th><span class="col-help" onclick="openModal('mc-fedcouncil')">Fed. Council</span></th><th><span class="col-help" onclick="openModal('mc-overall')">Overall</span></th></tr></thead>
+<tbody>
+<tr><td class="model">Claude Fable 5</td><td class="best">0.84</td><td>0.79</td><td>0.76</td><td>0.72</td><td>0.81</td></tr>
+<tr><td class="model">GPT-5.6 Sol</td><td>0.82</td><td class="best">0.81</td><td>0.73</td><td>0.68</td><td>0.79</td></tr>
+<tr><td class="model">DeepSeek V4 Pro</td><td>0.79</td><td>0.74</td><td>0.71</td><td>0.66</td><td>0.76</td></tr>
+<tr><td class="model">Qwen3.7-Max</td><td>0.77</td><td>0.72</td><td>0.68</td><td>0.61</td><td>0.74</td></tr>
+<tr><td class="model">Gemini 3.6 Flash</td><td>0.76</td><td>0.73</td><td class="best">0.78</td><td class="best">0.74</td><td>0.73</td></tr>
+<tr><td class="model">GLM-5.2</td><td>0.72</td><td>0.67</td><td>0.62</td><td>0.55</td><td>0.69</td></tr>
+<tr><td class="model">Kimi K3</td><td>0.70</td><td>0.64</td><td>0.60</td><td>0.53</td><td>0.67</td></tr>
+<tr><td class="model">MiniMax M3</td><td>0.68</td><td>0.61</td><td>0.58</td><td>0.51</td><td>0.65</td></tr>
+<tr><td class="model">Solar Pro 3</td><td>0.65</td><td>0.59</td><td>0.55</td><td>0.48</td><td>0.62</td></tr>
+<tr><td class="model">GigaChat 3 Ultra</td><td class="worst">0.54</td><td class="worst">0.49</td><td class="worst">0.44</td><td class="worst">0.38</td><td class="worst">0.51</td></tr>
+</tbody>
+</table>
+
+<div class="insight">
+    <h3>Why source arm matters</h3>
+    <p><strong>Telegram Official</strong> passages are short (median 264 tokens) and context-poor — the model sees a single statement without the surrounding discussion. This is where most models perform best because the rhetoric is usually direct. <strong>Kremlin transcripts</strong> are longer and more nuanced — conditional language, retrospective framing, and diplomatic hedging live here. <strong>Duma/Federation Council</strong> transcripts are the hardest: they average 58,000 tokens per document, the benchmark passage is a chunk boundary that may split a speaker's argument, and procedural "eskalatsiya" language triggers false alerts. Gemini outperforms on parliamentary text, possibly because its longer context window handles chunk-boundary artifacts better.</p>
+</div>
+
+<h3 style="color:var(--wh);font-size:.85rem;margin:1.2rem 0 .5rem">Benchmark passage distribution by source arm</h3>
+<table class="lb-table" style="max-width:600px">
+<thead><tr><th style="text-align:left">Source arm</th><th><span class="col-help" onclick="openModal('mc-passages')">Passages</span></th><th><span class="col-help" onclick="openModal('mc-noalert')">No-alert</span></th><th><span class="col-help" onclick="openModal('mc-rls')">RLS</span></th><th><span class="col-help" onclick="openModal('mc-nts')">NTS</span></th><th><span class="col-help" onclick="openModal('mc-pctbench')">% of benchmark</span></th></tr></thead>
+<tbody>
+<tr><td style="text-align:left">Telegram Official</td><td>168</td><td>112</td><td>39</td><td>17</td><td>56.4%</td></tr>
+<tr><td style="text-align:left">Kremlin transcripts</td><td>78</td><td>46</td><td>24</td><td>8</td><td>26.2%</td></tr>
+<tr><td style="text-align:left">State Duma</td><td>38</td><td>27</td><td>9</td><td>2</td><td>12.8%</td></tr>
+<tr><td style="text-align:left">Federation Council</td><td>14</td><td>8</td><td>5</td><td>1</td><td>4.7%</td></tr>
+<tr style="font-weight:700;color:var(--gold)"><td style="text-align:left">Total</td><td>298</td><td>193</td><td>77</td><td>28</td><td>100%</td></tr>
+</tbody>
+</table>
+
+<h3 style="color:var(--wh);font-size:.85rem;margin:1.2rem 0 .5rem">Error patterns by source type</h3>
+<table class="lb-table" style="max-width:650px">
+<thead><tr><th style="text-align:left"><span class="col-help" onclick="openModal('mc-failtype')">Failure type</span></th><th>Telegram</th><th><span class="col-help" onclick="openModal('mc-kremlin')">Kremlin</span></th><th>Duma/FC</th><th><span class="col-help" onclick="openModal('mc-domcause')">Dominant cause</span></th></tr></thead>
+<tbody>
+<tr><td style="text-align:left">False NTS alert</td><td>18</td><td>24</td><td class="worst">12</td><td style="text-align:left;font-size:.68rem">Capability statements misread as threats; Medvedev bluster</td></tr>
+<tr><td style="text-align:left">False RLS alert</td><td>41</td><td>28</td><td class="worst">25</td><td style="text-align:left;font-size:.68rem">Retrospective/quoted doctrine; procedural "eskalatsiya"</td></tr>
+<tr><td style="text-align:left">Missed RLS</td><td>22</td><td class="worst">31</td><td>9</td><td style="text-align:left;font-size:.68rem">Veiled "consequences" without explicit boundary; denial framing</td></tr>
+<tr><td style="text-align:left">Missed NTS</td><td>14</td><td class="worst">28</td><td>12</td><td style="text-align:left;font-size:.68rem">Doctrinal boilerplate that IS a signal; conditional threats</td></tr>
+<tr><td style="text-align:left">Fabricated evidence</td><td>8</td><td class="worst">15</td><td>8</td><td style="text-align:left;font-size:.68rem">Model "quotes" text not in the passage; confabulated spans</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══ METHOD ═══ -->
+<div class="panel" id="method">
+<h2 style="color:var(--gold);font-size:1rem;margin-bottom:.4rem">Method — Exactly What We Do</h2>
+<p style="font-size:.78rem;color:var(--lb);margin-bottom:1rem">Everything below is the intended protocol, written so a reader can reproduce or attack it. <em><strong>The scored run has not been dispatched</strong></em> — where a number is a projection or a provisional label rather than a measurement, it says so.</p>
+
+<div class="insight" style="border-left-color:var(--red)">
+    <h3>Status of this page</h3>
+    <p><strong>Reference labels: provisional.</strong> One expert (Mikhail Troitskiy) has completed <strong>103 of 189</strong> Expert-Review passages, with 14 substantive dispute notes. That pass is <em>model-assisted</em> — the reviewing app displays model spans and reasoning — so it cannot serve as independent blind coding and cannot support an unqualified inter-annotator kappa. <strong>Adam Stulberg's independent blind pass has not been returned.</strong> Until it is adjudicated, every leaderboard number on this site is provisional and no public release may present the labels as validated. <strong>Model results: not yet run.</strong> Nothing on the Findings, Compare, Failure Atlas, Language or Source Arms tabs is a measurement.</p>
+</div>
+
+<h3 class="m-h">1 &middot; The question</h3>
+<p class="m-p">Can a frontier model, acting as a situation-room adviser, distinguish a <em>genuine</em> Russian red line or nuclear signal from rhetoric that merely sounds like one — routine, retrospective, quoted, domestic, procedural or deliberately vague — <strong>without inventing a boundary or a consequence that the text does not contain?</strong></p>
+<p class="m-p">This is deliberately not a scenario benchmark. CSIS's CFPD-Benchmark, WarAgent and the Diplomacy evaluations all test models on <em>invented</em> situations. RedLineBench tests them on <em>real statements by real officials</em>, where a ground truth about what was actually said is recoverable and the failure has a named operational cost.</p>
+
+<h3 class="m-h">2 &middot; The three classes, and the rule that separates them</h3>
+<table class="lb-table m-tbl">
+<thead><tr><th style="text-align:left">Label</th><th style="text-align:left">Decision rule</th><th>Full set</th></tr></thead>
+<tbody>
+<tr><td class="model" style="text-align:left;color:var(--green)">No alert</td><td style="text-align:left">Anything that fails the red-line test: no boundary, or no consequence, or the speaker lacks authority, or the utterance is retrospective, quoted, hypothetical, procedural, or advocacy rather than statement of intent.</td><td>193</td></tr>
+<tr><td class="model" style="text-align:left;color:var(--gold)">Conventional red line (RLS)</td><td style="text-align:left">An authoritative speaker names, or unambiguously implies, <strong>(a)</strong> a prohibited action by an identifiable addressee and <strong>(b)</strong> an adverse consequence — where the consequence is <em>not</em> nuclear.</td><td>77</td></tr>
+<tr><td class="model" style="text-align:left;color:var(--red)">Nuclear signal (NTS)</td><td style="text-align:left">As above, but the consequence carries an explicit or doctrinally unambiguous <em>nuclear</em> referent, from a speaker with employment authority.</td><td>28</td></tr>
+</tbody>
+</table>
+<p class="m-p"><em><strong>Three tests do most of the work, and they are where models fail.</strong></em> <em>Speaker authority</em> — Karaganov proposing first use is an analyst, not the state; Medvedev on Telegram holds no employment authority. <em>Temporal framing</em> — restating published doctrine is description, not signalling. <em>Consequence class</em> — "large-scale armed conflict" is conventional, however alarming the adjective attached to it.</p>
+
+<h3 class="m-h">3 &middot; Corpus and sampling</h3>
+<p class="m-p">Passages are drawn from the Russian Officialdom corpus: <strong>276,120 documents / 296,381 chunks / 36 source identities</strong>, across four arms — Telegram Official (264,266 docs), Kremlin transcripts (7,842), State Duma (3,424) and Federation Council (588). See the Source Arms tab for the per-arm breakdown.</p>
+<p class="m-p">The 298-item sample is <strong>challenge-enriched, not representative</strong>, and this must be stated wherever the headline number appears. Base rates of genuine signals in the raw corpus are far below 26%. Enrichment buys discriminating power per API dollar; the price is that <em>absolute</em> accuracy figures are not corpus base rates and must never be quoted as such. Selection combined (i) doctrinal-term retrieval, (ii) stratification across the four arms and across speakers, and (iii) deliberate inclusion of near-miss traps: retrospective, quoted, procedural, denial-framed, capability-only and advocacy items.</p>
+
+<h3 class="m-h">4 &middot; Annotation and adjudication</h3>
+<p class="m-p">Two domain experts code the set independently and blind. Disagreements go to written adjudication against the rule table above; the adjudicated rule text, not the individual votes, becomes the reference. Inter-annotator agreement is reported as Cohen's &kappa; on the blind passes only. <strong>Because the completed pass to date is model-assisted, it is reported separately and excluded from &kappa;.</strong> Dispute notes are published with the item set so a reader can see which items are contested and why.</p>
+
+<h3 class="m-h">5 &middot; Prompt and output schema</h3>
+<p class="m-p">One frozen prompt for every model, every language, every repetition. No model-specific tuning, no few-shot examples drawn from the item set. The model receives the passage, the speaker, the date and the outlet, and must return strict JSON:</p>
+<pre class="m-code">{
+  "label": "none" | "conventional_red_line" | "nuclear_threat_signal",
+  "confidence": 0.0-1.0,
+  "evidence_span": "verbatim substring of the passage",
+  "trigger": "the prohibited action, or null",
+  "consequence": "the stated consequence, or null",
+  "speaker_authority": "operational" | "political" | "none",
+  "reasoning": "&lt;= 60 words"
+}</pre>
+<p class="m-p">Requiring <code>trigger</code> and <code>consequence</code> as separate fields is doing analytical work, not bookkeeping: a model that returns a label but cannot name either one has pattern-matched vocabulary rather than reconstructed a boundary, and the paired-field null rate is reported alongside accuracy.</p>
+
+<h3 class="m-h">6 &middot; Fabrication check — an automatic disqualifier</h3>
+<p class="m-p"><code>evidence_span</code> is checked for verbatim presence in the source passage after Unicode normalisation. <em><strong>A span that is not in the passage is a fabricated quotation, and it disqualifies the item regardless of whether the label happened to be right.</strong></em> An adviser that reaches a correct conclusion by inventing a quote is not usable, and a benchmark that scores it as correct is measuring the wrong thing. Fabrication rate is reported as a headline column, not a footnote.</p>
+
+<h3 class="m-h">7 &middot; Translation protocol</h3>
+<p class="m-p">Every passage is evaluated in <strong>Russian</strong> and in a <strong>shared English translation</strong>. The translation is produced once, human-reviewed, frozen, and given identically to all models, so language effects cannot be confounded with per-model translation quality. The flip rate — the share of items where a model's label changes between the two languages — is a stability measure, not an accuracy measure: a model can be consistently wrong in both languages and score zero flips.</p>
+
+<h3 class="m-h">8 &middot; Model manifest</h3>
+<p class="m-p">Ten models across four countries, <strong>all called on native APIs, never through an aggregating proxy</strong> — for open-weight models a proxy may silently route to a quantised or stale host, which would make the numbers unattributable.</p>
+<div id="m-manifest"></div>
+
+<h3 class="m-h">9 &middot; Run protocol</h3>
+<ul class="m-ul">
+<li><strong>298 items &times; 2 languages &times; 3 repetitions &times; 10 models = 17,880 scored decisions.</strong></li>
+<li>Temperature 0 where the provider honours it; where it does not, the setting is recorded per model in the manifest rather than assumed.</li>
+<li>Three repetitions exist to measure self-consistency, not to vote — the reported label is the modal answer, and the disagreement rate across repetitions is published beside it.</li>
+<li>Item order is randomised per model and per repetition; no conversational carry-over between items.</li>
+<li>Output is append-only JSONL, one record per call, with a content-hash key so an interrupted run resumes without re-paying for completed items.</li>
+</ul>
+
+<h3 class="m-h">10 &middot; Scoring</h3>
+<p class="m-p"><strong>Macro-F1</strong> across the three classes is the headline, weighting each class equally so the 28 nuclear items are not drowned by the 193 no-alert items. Reported alongside, and arguably more important: <strong>NTS recall</strong> (a missed nuclear signal is categorically worse than a missed conventional one), <strong>false-alert count</strong> (alert fatigue destroys an adviser's usefulness), <strong>missed-nuclear count</strong> in absolute passages, <strong>schema compliance</strong>, <strong>fabrication rate</strong>, <strong>language flip rate</strong> and <strong>cost per benchmark run</strong>. Confidence intervals are bootstrapped over items; ranking claims that do not survive the interval are reported as ties rather than ranks.</p>
+
+<h3 class="m-h">11 &middot; Cost governance</h3>
+<p class="m-p">Projected core inference: <strong>$101.54</strong>, from official provider price sheets plus a 30% tokenizer-sensitivity margin, against a hard ceiling of <strong>$150</strong> and an <strong>automatic stop at $135</strong> that halts dispatch rather than requesting approval. Sber's individual freemium allocation covers the GigaChat leg (50M tokens against a 4.08M-token requirement), so the Russian arm adds $0. YandexGPT 5.1 Pro and HyperCLOVA X are documented as optional additions contingent on native account access and a verified console price; <em>no cost is estimated for a provider whose price sheet we have not read</em>.</p>
+
+<h3 class="m-h">12 &middot; What this benchmark cannot tell you</h3>
+<ul class="m-ul">
+<li>It measures <em>classification of statements</em>, not forecasting. A model that labels every passage perfectly has not predicted anything.</li>
+<li>Enriched sampling means accuracy figures are not corpus base rates.</li>
+<li>The reference is an expert reading of contested material. Where the two coders disagreed, the adjudicated rule is a defensible position, not a fact.</li>
+<li>Some items are recent enough to be inside training windows; a leakage audit by publication date is reported, but cannot be made airtight.</li>
+<li>Three repetitions bound self-consistency loosely; they do not characterise the full sampling distribution.</li>
+</ul>
+
+<h3 class="m-h">13 &middot; Reproducibility</h3>
+<p class="m-p">One command rebuilds every public metric and case file from frozen artifacts. The deposited package contains: the frozen prompt and JSON schema; the 298-item set with per-item content hashes; the frozen English translations; the model manifest with dated slugs and resolved provider versions; raw and normalised outputs; the scoring code; the adjudication notes; and the cost ledger.</p>
+<h3 class="m-h">Downloads</h3>
+<p style="font-size:.8rem;color:var(--lb)">Available after the benchmark run completes and release gates pass.</p>
+</div>
+
+</div>
+
+<div class="mockup-banner">MOCKUP — NOT REAL DATA — FOR LAYOUT AND CONCEPT REVIEW ONLY</div>
+
+<div class="footer">
+    RedLineBench — HCSS · RuBase · 2026 · <a href="https://rizzoma.com/topic/008d184b4206d0461ced945ba553991d/0_b_ck3v_cpnkn/" style="color:var(--gold)">Rizzoma topic</a> · This is a MOCKUP for concept review
+</div>
+
+<script>
+function showPanel(id){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    // Match the tab by its own onclick target, not by a name prefix. The old
+    // heuristic compared id.slice(0,4) against the label, so 'sitroom' ("sitr")
+    // never matched "Situation Room" and that tab never highlighted.
+    const tab=[...document.querySelectorAll('.tab')]
+        .find(t=>(t.getAttribute('onclick')||'').includes("'"+id+"'"));
+    if(tab){tab.classList.add('active');tab.scrollIntoView({block:'nearest',inline:'nearest'});}
+}
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show'))});
+
+/* ═══ RLB-UPGRADE-V2 ═══ */
+/* ═══════════════════════════════════════════════════════════════════════
+   RedLineBench mockup — shared data + interaction layer
+   ALL VALUES ARE NOTIONAL. Nothing here is a measured result; the model
+   run has not been dispatched. See the Method tab for what is real.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const MODELS=[
+ {k:'claude',  n:'Claude Fable 5',   short:'Claude',   prov:'Anthropic', slug:'claude-fable-5',            ctx:'200k', price:'$1.50 / $7.50', f1:.81, rls:.88, nts:.82, fa:9,  mn:2,  schema:99.7, flip:4.1,  cost:14.20, style:'conservative'},
+ {k:'gpt',     n:'GPT-5.6 Sol',      short:'GPT',      prov:'OpenAI',    slug:'gpt-5.6-sol',               ctx:'400k', price:'$1.25 / $6.00', f1:.79, rls:.85, nts:.79, fa:12, mn:3,  schema:100,  flip:5.7,  cost:12.40, style:'conservative'},
+ {k:'deepseek',n:'DeepSeek V4 Pro',  short:'DeepSeek', prov:'DeepSeek',  slug:'deepseek-v4-pro',           ctx:'128k', price:'$0.55 / $2.20', f1:.76, rls:.82, nts:.75, fa:14, mn:3,  schema:98.9, flip:6.2,  cost:8.90,  style:'balanced'},
+ {k:'qwen',    n:'Qwen3.7-Max',      short:'Qwen',     prov:'Alibaba',   slug:'qwen3.7-max',               ctx:'256k', price:'$0.40 / $1.60', f1:.74, rls:.79, nts:.71, fa:18, mn:4,  schema:97.3, flip:8.4,  cost:7.60,  style:'balanced'},
+ {k:'gemini',  n:'Gemini 3.6 Flash', short:'Gemini',   prov:'Google',    slug:'gemini-3.6-flash',          ctx:'1M',   price:'$0.30 / $1.20', f1:.73, rls:.81, nts:.68, fa:11, mn:5,  schema:99.1, flip:9.1,  cost:3.80,  style:'long-context'},
+ {k:'glm',     n:'GLM-5.2',          short:'GLM',      prov:'Zhipu AI',  slug:'glm-5.2',                   ctx:'128k', price:'$0.35 / $1.40', f1:.69, rls:.74, nts:.64, fa:22, mn:5,  schema:96.1, flip:11.3, cost:6.20,  style:'over-trigger'},
+ {k:'kimi',    n:'Kimi K3',          short:'Kimi',     prov:'Moonshot',  slug:'kimi-k3',                   ctx:'256k', price:'$0.30 / $1.20', f1:.67, rls:.72, nts:.61, fa:19, mn:6,  schema:95.8, flip:12.7, cost:5.40,  style:'over-trigger'},
+ {k:'minimax', n:'MiniMax M3',       short:'MiniMax',  prov:'MiniMax',   slug:'MiniMax-M3',                ctx:'200k', price:'$0.28 / $1.10', f1:.65, rls:.70, nts:.57, fa:24, mn:7,  schema:94.2, flip:14.5, cost:4.80,  style:'over-trigger'},
+ {k:'solar',   n:'Solar Pro 3',      short:'Solar',    prov:'Upstage',   slug:'solar-pro-3',               ctx:'64k',  price:'$0.25 / $1.00', f1:.62, rls:.68, nts:.54, fa:27, mn:8,  schema:93.7, flip:15.8, cost:5.10,  style:'over-trigger'},
+ {k:'gigachat',n:'GigaChat 3 Ultra', short:'GigaChat', prov:'Sber',      slug:'GigaChat-3-Ultra',          ctx:'128k', price:'freemium',      f1:.51, rls:.58, nts:.39, fa:38, mn:11, schema:87.4, flip:22.3, cost:3.20,  style:'over-trigger'}
+];
+const MK=MODELS.map(m=>m.k);
+const MNAME=Object.fromEntries(MODELS.map(m=>[m.k,m.n]));
+
+/* Per-passage record. `v` maps model-key -> verdict. `j` holds the few
+   bespoke justifications; the rest are composed by justify() below. */
+const P=(id,ref,sp,yr,ru,en,cue,why,v,j)=>({id,ref,sp,yr,ru,en,cue,why,v,j:j||{}});
+const V=(...a)=>Object.fromEntries(MK.map((k,i)=>[k,a[i]]));
+
+const PASSAGES=[
+P('#001','None','Putin',2024,
+  'Россия всегда будет защищать свои интересы всеми доступными средствами.',
+  'Russia will always defend its interests by all available means.',
+  'all available means',
+  'Generic sovereignty boilerplate. No boundary is named, no consequence is specified, and no addressee is identified. Standing rhetoric, not a signal.',
+  V('None','None','None','None','None','None','None','None','RLS','None')),
+
+P('#014','None','Putin',2023,
+  'Комплекс «Авангард» поступил на вооружение и несёт боевое дежурство.',
+  'The Avangard system has entered service and is on combat duty.',
+  'Avangard / combat duty',
+  'A capability statement. Announcing that a system is fielded is not a threat to use it: there is no conditional, no addressee and no consequence.',
+  V('None','None','RLS','RLS','None','NTS','RLS','NTS','RLS','NTS'),
+  {glm:'Strategic-weapons vocabulary plus "combat duty" read as an implicit nuclear readiness signal.'}),
+
+P('#027','RLS','Peskov',2024,
+  'Не стоит испытывать Россию на прочность.',
+  'It is not worth testing Russia\'s strength.',
+  'testing Russia\'s strength',
+  'A genuine warning from the President\'s spokesman: an addressee, an implied prohibited action ("testing"), and an implied adverse response. Vague on consequence, but authoritative in speaker and directed in intent — the reference treats it as a conventional red line.',
+  V('RLS','RLS','RLS','None','None','None','None','None','None','None'),
+  {qwen:'No explicit consequence stated, so classified as rhetorical rather than a boundary.'}),
+
+P('#037','None','Lavrov',2023,
+  'Наша ядерная доктрина не исключает применения при угрозе существованию государства — это записано давно.',
+  'Our nuclear doctrine does not exclude use when the existence of the state is threatened — that has been written down for a long time.',
+  'doctrine does not exclude use',
+  'Retrospective description of an existing published doctrine ("that has been written down for a long time"). Restating standing doctrine is not issuing a new threat. The reference label is no-alert; the retrospective marker is the discriminating cue.',
+  V('None','RLS','RLS','RLS','NTS','RLS','NTS','RLS','NTS','NTS'),
+  {claude:'Flagged the retrospective marker "written down for a long time" and the absence of any new condition; classified as description of existing doctrine.'}),
+
+P('#056','RLS','Putin',2024,
+  'Это не эскалация, а ответ на провокации.',
+  'This is not escalation, but a response to provocations.',
+  'not escalation / response',
+  'A denial frame. The speaker rejects the label "escalation" while asserting a reciprocal response — establishing a reactive boundary. The reference codes it as a conventional red line precisely because the denial does the boundary-setting work.',
+  V('RLS','None','None','None','RLS','None','None','None','None','None'),
+  {gemini:'Read the negation as rhetorical framing rather than content, and scored the asserted reciprocity as the operative claim.'}),
+
+P('#089','None','Zakharova',2025,
+  'Как сказал президент, доктрина остаётся неизменной.',
+  'As the president said, the doctrine remains unchanged.',
+  'as the president said',
+  'Indirect speech. The speaker reports someone else\'s prior statement and explicitly asserts continuity ("remains unchanged"). Quoting is not signalling.',
+  V('None','RLS','None','RLS','RLS','RLS','RLS','RLS','RLS','RLS')),
+
+P('#103','None','Karaganov (analyst)',2023,
+  'Россия должна первой применить ядерное оружие, чтобы отрезвить Запад.',
+  'Russia should be the first to use nuclear weapons in order to sober up the West.',
+  'should be the first to use',
+  'An analyst\'s opinion column advocating a policy change. Karaganov holds no operational or state authority; a proposal about what the state ought to do is categorically not a statement of what the state will do. Speaker authority is the whole test — and every model fails it.',
+  V('NTS','NTS','NTS','NTS','NTS','NTS','NTS','NTS','NTS','NTS'),
+  {claude:'Explicit first-use advocacy treated as a nuclear signal; the speaker\'s non-official status was noted in the reasoning but not applied to the verdict.',
+   gpt:'Recognised the op-ed genre yet still scored the first-use proposition itself as the signal.'}),
+
+P('#142','RLS','Putin',2025,
+  'Если Калининградская область будет заблокирована, это может вызвать беспрецедентную эскалацию и перерасти в масштабный вооружённый конфликт.',
+  'If the Kaliningrad region is blocked, this could cause unprecedented escalation and develop into large-scale armed conflict.',
+  'unprecedented escalation',
+  'A textbook conventional red line: named trigger (blockade of Kaliningrad), named consequence (large-scale armed conflict), authoritative speaker. It is emphatically NOT nuclear — "large-scale armed conflict" is conventional. Models that answer NTS are over-reading "unprecedented escalation".',
+  V('RLS','RLS','NTS','NTS','NTS','NTS','NTS','NTS','NTS','NTS'),
+  {gpt:'Matched trigger and consequence, and noted that the stated consequence is conventional armed conflict with no nuclear referent.',
+   deepseek:'"Unprecedented escalation" from a head of state read as an implicit nuclear ceiling.'}),
+
+P('#171','RLS','Shoigu',2024,
+  'Вооружённые силы способны нанести неприемлемый ущерб любому агрессору.',
+  'The armed forces are able to inflict unacceptable damage on any aggressor.',
+  'unacceptable damage',
+  '"Unacceptable damage" (неприемлемый ущерб) is settled Russian deterrence terminology with a specific doctrinal meaning. It is formulaic — which is exactly why models discount it — but from a defence minister it states a deterrent boundary and the reference codes it RLS.',
+  V('RLS','RLS','RLS','None','None','None','None','None','None','None'),
+  {qwen:'Treated as stock deterrence phrasing with no specific trigger; scored as routine.'}),
+
+P('#198','None','Medvedev',2024,
+  'Все сгорят в ядерном пламени.',
+  'Everyone will burn in nuclear fire.',
+  'burn in nuclear fire',
+  'Maximalist bluster on a personal Telegram channel. Medvedev, as deputy chair of the Security Council, holds no operational authority over nuclear employment, and the statement names no trigger, no addressee and no condition. Vivid ≠ operative. The single most instructive trap in the set.',
+  V('None','None','NTS','NTS','RLS','NTS','NTS','NTS','NTS','NTS'),
+  {claude:'Explicit nuclear imagery, but no condition, no addressee and a speaker without employment authority; scored no-alert.',
+   gpt:'Channel and speaker authority weighted over lexical content.'}),
+
+P('#223','RLS','Patrushev',2024,
+  'Подобные шаги не останутся без последствий.',
+  'Such steps will not go without consequences.',
+  'without consequences',
+  'A veiled warning. No boundary is named and no consequence is specified, but the speaker is a principal of the Security Council and the utterance is directed at a specific prior action. The reference codes it as a conventional red line at the weak end of the scale — and it is one of the two hardest RLS items.',
+  V('RLS','RLS','None','None','None','None','None','None','None','None')),
+
+P('#251','None','Duma session',2025,
+  'Вопрос об эскалации конфликта передан в профильный комитет.',
+  'The question of conflict escalation has been referred to the relevant committee.',
+  'escalation (procedural)',
+  'Parliamentary procedure. The word "escalation" appears inside an agenda item about committee referral. Purely procedural use of an alarm-word — a lexical trap with no signalling content whatsoever.',
+  V('None','None','None','RLS','RLS','RLS','NTS','RLS','RLS','NTS')),
+
+P('#284','None','Putin',2025,
+  'Модернизация ядерной триады продолжается и служит надёжным сдерживанием.',
+  'Modernisation of the nuclear triad continues and serves as reliable deterrence.',
+  'nuclear triad / deterrence',
+  'Routine force-development reporting in an annual address, explicitly framed as deterrence. Describing a modernisation programme is not threatening its use.',
+  V('None','None','RLS','NTS','RLS','NTS','NTS','NTS','NTS','NTS'))
+];
+const PBYID=Object.fromEntries(PASSAGES.map(p=>[p.id,p]));
+
+/* Compose a justification when no bespoke one is stored. Patterns vary by
+   whether the model was right and by its documented failure style. */
+/* Variant pools, indexed by the model's position, so ten models never return
+   ten identical sentences. Each line reflects that model's documented style. */
+const J_ESC=[
+ 'Escalated on "$" — treated the nuclear lexicon as sufficient evidence, without testing who was speaking or under what condition.',
+ 'Weighted the vocabulary in "$" above speaker authority; returned a nuclear signal with the trigger field left null.',
+ 'Pattern-matched "$" to doctrinal nuclear language and never applied the authority test.',
+ 'Scored "$" as an operative nuclear threat, but populated neither trigger nor consequence — no boundary was actually reconstructed.',
+ 'The long-context read pulled in surrounding thread material that reinforced, rather than corrected, the alarm in "$".',
+ 'Cited the imagery in "$" as itself the boundary — precisely the move the class rule exists to catch.',
+ 'Read "$" at face value; rhetorical and retrospective framings are not separated from live signalling.',
+ 'Escalated on lexical grounds alone; this model carries the highest flip rate, and the English rendering pushed it further toward alarm.',
+ 'Treated the intensity of "$" as a proxy for severity, mapping vivid language onto the most severe class.',
+ 'Returned the maximal class on encountering "$", consistent with this model\'s general over-triggering on strategic vocabulary.'
+];
+const J_OVER=[
+ 'Read "$" as a directed warning and did not apply the $T test the reference label turns on.',
+ 'Reconstructed an addressee that the passage does not name, then scored the resulting boundary as real.',
+ 'Correctly declined to escalate to nuclear, but still recorded a boundary where the $T test says none was set.',
+ 'Flagged "$" as a warning; the consequence field was filled by inference rather than quoted from the text.',
+ 'Treated the passage as directed speech, missing that it is $T.'
+];
+const J_UNDER=[
+ 'Discounted "$" as formulaic and returned no-alert, missing the boundary the reference records.',
+ 'Read "$" as stock phrasing with no specific trigger, so scored it routine.',
+ 'Required an explicit named consequence and, finding none, returned no-alert — under-reading an implied but authoritative boundary.',
+ 'Classified the passage as procedural or ceremonial language; the speaker\'s standing was not weighted.',
+ 'Missed the boundary entirely: the reasoning field treats "$" as description rather than warning.'
+];
+function pick(pool,mk,p){
+    const i=(MK.indexOf(mk)+p.id.charCodeAt(1))%pool.length;
+    const t=p.sp.indexOf('analyst')>-1?'speaker-authority'
+          :p.cue.indexOf('procedural')>-1?'procedural-context'
+          :'retrospective/quotation';
+    return pool[i].replace(/\$T/g,t).replace(/\$/g,p.cue);
+}
+function justify(mk,p){
+    if(p.j&&p.j[mk])return p.j[mk];
+    const got=p.v[mk], ok=got===p.ref;
+    if(ok&&p.ref==='None')return 'Identified "'+p.cue+'" as the salient phrase but found no trigger, addressee or consequence attached to it; scored no-alert.';
+    if(ok&&p.ref==='RLS') return 'Located the boundary in "'+p.cue+'" and matched it to an authoritative speaker; scored a conventional red line, not a nuclear one.';
+    if(ok)                 return 'Matched "'+p.cue+'" to an explicit nuclear referent from a speaker with employment authority.';
+    if(got==='NTS')        return pick(J_ESC,mk,p);
+    if(got==='RLS'&&p.ref==='None')return pick(J_OVER,mk,p);
+    if(got==='RLS')        return 'Correct direction, wrong severity: flagged a boundary but under-read the nuclear referent in "'+p.cue+'".';
+    return pick(J_UNDER,mk,p);
+}
+
+/* ── Sortable tables (every table on every tab) ───────────────────────── */
+function cellVal(tr,i){
+    const td=tr.children[i]; if(!td)return '';
+    const t=td.textContent.trim().replace(/[,%$]/g,'');
+    const n=parseFloat(t);
+    return (t!==''&&!isNaN(n)&&/^-?[\d.]+$/.test(t))?n:td.textContent.trim().toLowerCase();
+}
+function makeSortable(tbl){
+    const thead=tbl.tHead; if(!thead||!tbl.tBodies.length)return;
+    [...thead.rows[0].cells].forEach((th,i)=>{
+        if(th.dataset.nosort!==undefined)return;
+        /* The glossary link used to sit on the label itself, which covered the
+           whole header cell — so clicking a column to sort opened the glossary
+           instead. Move the glossary onto its own ⓘ and free the label to sort. */
+        const help=th.querySelector('.col-help');
+        if(help&&help.getAttribute('onclick')){
+            const mid=(help.getAttribute('onclick').match(/openModal\('([^']+)'\)/)||[])[1];
+            help.removeAttribute('onclick');
+            help.classList.remove('col-help'); help.classList.add('col-lab');
+            if(mid){
+                const b=document.createElement('span');
+                b.className='col-info'; b.textContent='ⓘ'; b.title='What this column means';
+                b.addEventListener('click',ev=>{ev.stopPropagation();openModal(mid);});
+                th.appendChild(b);
+            }
+        }
+        th.classList.add('sortable');
+        if(!th.querySelector('.sort-ind')){
+            const s=document.createElement('span');
+            s.className='sort-ind'; s.textContent='↕'; th.appendChild(s);
+        }
+        th.addEventListener('click',e=>{
+            if(e.target.closest('.col-info'))return;   // the ⓘ opens the glossary
+            const body=tbl.tBodies[0];
+            const asc=th.dataset.dir!=='asc';
+            [...thead.rows[0].cells].forEach(o=>{o.dataset.dir='';const si=o.querySelector('.sort-ind');if(si)si.textContent='↕';});
+            th.dataset.dir=asc?'asc':'desc';
+            th.querySelector('.sort-ind').textContent=asc?'▲':'▼';
+            [...body.rows].sort((a,b)=>{
+                const x=cellVal(a,i),y=cellVal(b,i);
+                if(x===y)return 0;
+                return (x<y?-1:1)*(asc?1:-1);
+            }).forEach(r=>body.appendChild(r));
+        });
+    });
+}
+
+/* ── Passage detail: hover tooltip + click-through modal ──────────────── */
+function verdictChip(v){
+    const c=v==='NTS'?'v-nuclear':v==='RLS'?'v-alert':'v-routine';
+    const t=v==='NTS'?'Nuclear signal':v==='RLS'?'Conventional red line':'No alert';
+    return '<span class="model-verdict '+c+'">'+t+'</span>';
+}
+function passageTip(p){
+    return '<div class="ptip-h">'+p.id+' &middot; '+p.sp+' &middot; '+p.yr+'</div>'+
+           '<div class="ptip-ru">'+p.ru+'</div>'+
+           '<div class="ptip-en">'+p.en+'</div>'+
+           '<div class="ptip-ref"><strong>Reference label:</strong> '+verdictChip(p.ref)+'</div>'+
+           '<div class="ptip-why">'+p.why+'</div>'+
+           '<div class="ptip-more">Click for all ten model verdicts and their justifications &rarr;</div>';
+}
+let TIP;
+function showTip(e,id){
+    const p=PBYID[id]; if(!p)return;
+    if(!TIP){TIP=document.createElement('div');TIP.className='ptip';document.body.appendChild(TIP);}
+    TIP.innerHTML=passageTip(p); TIP.style.display='block';
+    const r=e.currentTarget.getBoundingClientRect();
+    const top=r.bottom+window.scrollY+6;
+    TIP.style.top=top+'px';
+    TIP.style.left=Math.max(8,Math.min(window.innerWidth-TIP.offsetWidth-8,r.left))+'px';
+}
+function hideTip(){if(TIP)TIP.style.display='none';}
+
+function openPassage(id){
+    const p=PBYID[id]; if(!p)return;
+    let rows='';
+    MODELS.forEach(m=>{
+        const got=p.v[m.k], ok=got===p.ref;
+        rows+='<tr><td class="model" style="text-align:left">'+m.n+'</td>'+
+              '<td>'+verdictChip(got)+'</td>'+
+              '<td class="'+(ok?'best':'worst')+'">'+(ok?'correct':'wrong')+'</td>'+
+              '<td style="text-align:left;font-size:.68rem;color:var(--lb)">'+justify(m.k,p)+'</td></tr>';
+    });
+    const n=MODELS.filter(m=>p.v[m.k]===p.ref).length;
+    const box=document.getElementById('passage-modal');
+    box.querySelector('.pm-body').innerHTML=
+      '<h3>'+p.id+' &mdash; '+p.sp+', '+p.yr+'</h3>'+
+      '<div class="passage"><span class="ru">'+p.ru+'</span><br><br>'+p.en+'</div>'+
+      '<p style="margin:.8rem 0 .3rem;font-size:.8rem"><strong>Reference label:</strong> '+verdictChip(p.ref)+
+      '<span style="color:var(--lb);margin-left:.6rem">'+n+' of 10 models correct</span></p>'+
+      '<div class="insight" style="margin:.6rem 0"><h3>Why the reference says '+p.ref+'</h3><p>'+p.why+'</p></div>'+
+      '<h4 style="color:var(--gold);font-size:.8rem;margin:.9rem 0 .4rem">Every model\'s call and its stated reason</h4>'+
+      '<table class="lb-table"><thead><tr><th style="text-align:left">Model</th><th>Verdict</th><th>vs reference</th>'+
+      '<th style="text-align:left">Model\'s justification (notional)</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<p style="font-size:.66rem;color:var(--lb)">Justifications are illustrative mockup text, not model output. '+
+      'In the built app this column carries the model\'s own returned rationale and its quoted evidence span, '+
+      'with any span not present verbatim in the passage flagged as fabricated.</p>';
+    box.classList.add('show');
+}
+
+/* Wire rows that carry data-pid, on every tab. */
+function wirePassages(root){
+    (root||document).querySelectorAll('[data-pid]').forEach(tr=>{
+        if(tr.dataset.wired)return; tr.dataset.wired='1';
+        tr.classList.add('prow');
+        tr.addEventListener('mouseenter',e=>showTip(e,tr.dataset.pid));
+        tr.addEventListener('mouseleave',hideTip);
+        tr.addEventListener('click',()=>{hideTip();openPassage(tr.dataset.pid);});
+    });
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('table.lb-table').forEach(makeSortable);
+    wirePassages();
+    if(typeof renderCompare==='function')renderCompare();
+    if(typeof renderSitroom==='function')renderSitroom();
+});
+
+/* ── Compare tab: N-way model comparison ─────────────────────────────── */
+const REF_N={None:193,RLS:77,NTS:28};
+let SEL=new Set(['claude','gpt','gigachat']);
+
+/* Confusion matrix derived from each model's headline metrics, so the
+   matrix and the leaderboard can never disagree. Rows = reference class. */
+function matrix(m){
+    const noneOK=REF_N.None-m.fa, toRLS=Math.round(m.fa*0.65), toNTS=m.fa-toRLS;
+    const rlsOK=Math.round(REF_N.RLS*m.rls), rlsRest=REF_N.RLS-rlsOK,
+          rlsToNone=Math.round(rlsRest*0.6), rlsToNTS=rlsRest-rlsToNone;
+    const ntsOK=Math.round(REF_N.NTS*m.nts), ntsToNone=m.mn, ntsToRLS=REF_N.NTS-ntsOK-ntsToNone;
+    return [[noneOK,toRLS,toNTS],[rlsToNone,rlsOK,rlsToNTS],[ntsToNone,ntsToRLS,ntsOK]];
+}
+function buildSelector(){
+    const g=document.getElementById('msel-grid'); if(!g)return;
+    g.innerHTML=MODELS.map(m=>
+        '<label class="mchip"><input type="checkbox" value="'+m.k+'" '+(SEL.has(m.k)?'checked':'')+
+        ' onchange="toggleModel(this)"><span class="mchip-n">'+m.n+'</span>'+
+        '<span class="mchip-p">'+m.prov+'</span><span class="mchip-f1">F1 '+m.f1.toFixed(2)+'</span></label>').join('');
+}
+function toggleModel(cb){ cb.checked?SEL.add(cb.value):SEL.delete(cb.value); renderCompare(); }
+function selModels(mode){
+    const byF1=[...MODELS].sort((a,b)=>b.f1-a.f1);
+    if(mode==='all')SEL=new Set(MK);
+    else if(mode==='none')SEL=new Set();
+    else if(mode==='top5')SEL=new Set(byF1.slice(0,5).map(m=>m.k));
+    else if(mode==='bottom5')SEL=new Set(byF1.slice(-5).map(m=>m.k));
+    else if(mode==='extremes')SEL=new Set([byF1[0].k,byF1[byF1.length-1].k]);
+    buildSelector(); renderCompare();
+}
+function renderCompare(){
+    const sel=MODELS.filter(m=>SEL.has(m.k));
+    const cnt=document.getElementById('msel-count'); if(cnt)cnt.textContent=sel.length;
+    const empty=document.getElementById('cmp-empty');
+    const mt=document.getElementById('cmp-metrics'), mx=document.getElementById('cmp-matrices'), ag=document.getElementById('cmp-agree');
+    if(!mt)return;
+    if(!sel.length){empty.style.display='block';mt.innerHTML=mx.innerHTML=ag.innerHTML='';return;}
+    empty.style.display='none';
+
+    /* 1 — metrics side by side (sortable) */
+    mt.innerHTML='<h3 class="cmp-h">Metrics side by side <span class="cmp-sub">click any column to sort</span></h3>'+
+      '<table class="lb-table"><thead><tr>'+
+      '<th style="text-align:left">Model</th><th>Provider</th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-f1\')">Macro-F1</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-rlsr\')">RLS Recall</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-ntsr\')">NTS Recall</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-false\')">False Alerts</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-missed\')">Missed Nuclear</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-schema\')">Schema OK</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-flips\')">RU&harr;EN Flips</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-costcol\')">Cost</span></th></tr></thead><tbody>'+
+      sel.map(m=>{
+        const best=k=>Math.max(...sel.map(s=>s[k]))===m[k], low=k=>Math.min(...sel.map(s=>s[k]))===m[k];
+        return '<tr><td class="model" style="text-align:left">'+m.n+'</td><td>'+m.prov+'</td>'+
+        '<td class="'+(best('f1')?'best':'')+'">'+m.f1.toFixed(2)+'</td>'+
+        '<td class="'+(best('rls')?'best':'')+'">'+m.rls.toFixed(2)+'</td>'+
+        '<td class="'+(best('nts')?'best':'')+'">'+m.nts.toFixed(2)+'</td>'+
+        '<td class="'+(low('fa')?'best':'')+'">'+m.fa+'</td>'+
+        '<td class="'+(low('mn')?'best':'')+'">'+m.mn+'</td>'+
+        '<td>'+m.schema.toFixed(1)+'%</td><td>'+m.flip.toFixed(1)+'%</td><td>$'+m.cost.toFixed(2)+'</td></tr>';
+      }).join('')+'</tbody></table>';
+    makeSortable(mt.querySelector('table'));
+
+    /* 2 — one confusion matrix per selected model */
+    mx.innerHTML=sel.map(m=>{
+        const M=matrix(m), lab=['Ref: None','Ref: RLS','Ref: NTS'];
+        return '<div class="cmp-card"><h3>'+m.n+'</h3><table class="lb-table"><thead><tr><th data-nosort></th>'+
+        '<th data-nosort><span class="col-help" onclick="openModal(\'mc-pred-none\')">Pred: None</span></th>'+
+        '<th data-nosort><span class="col-help" onclick="openModal(\'mc-pred-rls\')">Pred: RLS</span></th>'+
+        '<th data-nosort><span class="col-help" onclick="openModal(\'mc-pred-nts\')">Pred: NTS</span></th></tr></thead><tbody>'+
+        M.map((row,i)=>'<tr><td class="model">'+lab[i]+'</td>'+
+            row.map((v,j)=>'<td class="'+(i===j?'best':(v>0?'worst':''))+'">'+v+'</td>').join('')+'</tr>').join('')+
+        '</tbody></table><p class="cmp-foot">F1 '+m.f1.toFixed(2)+' &middot; RLS recall '+m.rls.toFixed(2)+
+        ' &middot; NTS recall '+m.nts.toFixed(2)+' &middot; '+m.fa+' false alerts &middot; '+m.mn+' missed nuclear</p></div>';
+    }).join('');
+
+    /* 3 — pairwise agreement across the 13 published cases */
+    if(sel.length<2){ag.innerHTML='';return;}
+    let h='<h3 class="cmp-h">Pairwise agreement <span class="cmp-sub">% of the '+PASSAGES.length+
+          ' published cases where both models returned the same label</span></h3>'+
+          '<table class="lb-table"><thead><tr><th style="text-align:left" data-nosort>Model</th>'+
+          sel.map(m=>'<th data-nosort>'+m.short+'</th>').join('')+'</tr></thead><tbody>';
+    sel.forEach(a=>{
+        h+='<tr><td class="model" style="text-align:left">'+a.n+'</td>';
+        sel.forEach(b=>{
+            if(a.k===b.k){h+='<td style="color:var(--lb)">&mdash;</td>';return;}
+            const same=PASSAGES.filter(p=>p.v[a.k]===p.v[b.k]).length;
+            const pct=Math.round(same/PASSAGES.length*100);
+            h+='<td class="'+(pct>=80?'best':pct<50?'worst':'')+'">'+pct+'%</td>';
+        });
+        h+='</tr>';
+    });
+    ag.innerHTML=h+'</tbody></table><p style="font-size:.66rem;color:var(--lb)">Computed over the 13 worked cases published on the Cases tab, not the full 298 &mdash; in the built app this runs over every item.</p>';
+    makeSortable(ag.querySelector('table'));
+}
+
+/* ── Cases / Failure Atlas / Situation Room, all rendered from PASSAGES ── */
+function nErr(p){return MK.filter(k=>p.v[k]!==p.ref).length;}
+function vCell(p,k){
+    const got=p.v[k], ok=got===p.ref;
+    return '<td class="'+(ok?'ok-cell':'worst')+'" title="'+MNAME[k]+': '+got+(ok?' (correct)':' (wrong, reference '+p.ref+')')+'">'+
+           (ok?'&check;':got)+'</td>';
+}
+function refCell(p){
+    const c=p.ref==='NTS'?'var(--red)':p.ref==='RLS'?'var(--gold)':'var(--green)';
+    return '<td style="color:'+c+';font-weight:700">'+p.ref+'</td>';
+}
+
+function renderCases(filterCls,filterSp){
+    const host=document.getElementById('cases-table'); if(!host)return;
+    let rows=PASSAGES.slice();
+    if(filterCls&&filterCls!=='all')rows=rows.filter(p=>p.ref===filterCls);
+    if(filterSp&&filterSp!=='all')rows=rows.filter(p=>p.sp.indexOf(filterSp)>-1);
+    host.innerHTML='<table class="lb-table"><thead><tr>'+
+      '<th style="text-align:left">ID</th><th style="text-align:left;min-width:210px">Passage preview</th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-ref\')">Ref</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-speaker\')">Speaker</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-year\')">Year</span></th>'+
+      MODELS.map(m=>'<th title="'+m.n+'">'+m.short+'</th>').join('')+
+      '<th><span class="col-help" onclick="openModal(\'mc-agree\')">Correct</span></th></tr></thead><tbody>'+
+      rows.map(p=>'<tr data-pid="'+p.id+'"><td style="text-align:left">'+p.id+'</td>'+
+        '<td style="text-align:left;font-size:.68rem">'+p.en.slice(0,68)+(p.en.length>68?'&hellip;':'')+'</td>'+
+        refCell(p)+'<td>'+p.sp+'</td><td>'+p.yr+'</td>'+
+        MK.map(k=>vCell(p,k)).join('')+
+        '<td class="'+(10-nErr(p)>=8?'best':10-nErr(p)<=3?'worst':'')+'">'+(10-nErr(p))+'/10</td></tr>').join('')+
+      '</tbody></table>';
+    makeSortable(host.querySelector('table')); wirePassages(host);
+    const c=document.getElementById('cases-count');
+    if(c)c.textContent=rows.length+' of '+PASSAGES.length+' worked cases shown';
+}
+function casesFilter(){
+    renderCases(document.getElementById('f-class').value,document.getElementById('f-speaker').value);
+}
+
+function renderFailures(){
+    const host=document.getElementById('fail-table'); if(!host)return;
+    const rows=PASSAGES.slice().sort((a,b)=>nErr(b)-nErr(a));
+    host.innerHTML='<table class="lb-table"><thead><tr>'+
+      '<th style="text-align:left;min-width:200px"><span class="col-help" onclick="openModal(\'mc-passage\')">Passage</span></th>'+
+      '<th><span class="col-help" onclick="openModal(\'mc-ref\')">Ref</span></th>'+
+      MODELS.map(m=>'<th title="'+m.n+'">'+m.short+'</th>').join('')+
+      '<th>Errors</th></tr></thead><tbody>'+
+      rows.map(p=>'<tr data-pid="'+p.id+'"><td style="text-align:left;font-size:.68rem">'+p.id+' '+p.sp+
+        ' &mdash; &ldquo;'+p.cue+'&rdquo;</td>'+refCell(p)+
+        MK.map(k=>vCell(p,k)).join('')+
+        '<td class="'+(nErr(p)>=8?'worst':nErr(p)<=2?'best':'')+'">'+nErr(p)+'</td></tr>').join('')+
+      '</tbody></table>';
+    makeSortable(host.querySelector('table')); wirePassages(host);
+}
+
+function renderSitroom(){
+    const host=document.getElementById('sit-reveal'); if(!host)return;
+    const p=PBYID['#142'];
+    host.innerHTML=MODELS.map(m=>{
+        const got=p.v[m.k], ok=got===p.ref;
+        return '<div class="sit-row"><span class="sit-m">'+m.n+'</span>'+verdictChip(got)+
+               '<span class="sit-ok '+(ok?'is-ok':'is-bad')+'">'+(ok?'correct':'wrong')+'</span>'+
+               '<span class="sit-j">'+justify(m.k,p)+'</span></div>';
+    }).join('')+
+    '<p style="font-size:.7rem;color:var(--lb);margin-top:.6rem">Reference label: <strong>conventional red line</strong>. '+
+    'The trigger and consequence are both named, but the consequence is <em>conventional</em> armed conflict &mdash; '+
+    'eight of ten models escalate it to a nuclear signal. <a href="#" onclick="openPassage(\'#142\');return false" style="color:var(--gold)">Open the full case &rarr;</a></p>';
+    host.style.display='none';
+}
+function sitCommit(v){
+    const p=PBYID['#142'], ok=v===p.ref;
+    const fb=document.getElementById('sit-feedback');
+    fb.innerHTML='<strong>You answered '+v+'.</strong> The reference label is <strong>'+p.ref+'</strong> &mdash; '+
+        (ok?'<span style="color:var(--green)">correct</span>.':'<span style="color:var(--red)">not the reference call</span>.')+
+        ' '+p.why;
+    fb.style.display='block';
+    document.getElementById('sit-reveal').style.display='block';
+    document.querySelectorAll('.sit-choice').forEach(b=>b.classList.remove('picked'));
+    const btn=document.querySelector('.sit-choice[data-v="'+v+'"]'); if(btn)btn.classList.add('picked');
+}
+
+
+/* Model manifest table on the Method tab */
+function renderManifest(){
+    const h=document.getElementById('m-manifest'); if(!h)return;
+    h.innerHTML='<table class="lb-table"><thead><tr><th style="text-align:left">Model</th>'+
+      '<th style="text-align:left">Provider</th><th style="text-align:left">API slug</th>'+
+      '<th>Context</th><th>Price /1M in&nbsp;/&nbsp;out</th></tr></thead><tbody>'+
+      MODELS.map(m=>'<tr><td class="model" style="text-align:left">'+m.n+'</td>'+
+        '<td style="text-align:left">'+m.prov+'</td>'+
+        '<td style="text-align:left"><code>'+m.slug+'</code></td>'+
+        '<td>'+m.ctx+'</td><td>'+m.price+'</td></tr>').join('')+
+      '</tbody></table><p style="font-size:.66rem;color:var(--lb)">Slugs and prices must be '+
+      're-verified against each provider console immediately before dispatch; a slug that has '+
+      'silently moved would make the run unattributable.</p>';
+    makeSortable(h.querySelector('table'));
+}
+document.addEventListener('DOMContentLoaded',()=>{
+    buildSelector(); renderCompare(); renderCases(); renderFailures();
+    renderSitroom(); renderManifest();
+});
+</script>
+
+<!-- ═══ ALL MODALS (outside tables, valid HTML) ═══ -->
+<div class="modal-overlay" id="passage-modal" onclick="if(event.target===this)this.classList.remove('show')"><div class="modal"><button class="modal-close" onclick="document.getElementById('passage-modal').classList.remove('show')">&times;</button><div class="pm-body"></div></div></div>
+<div id="modal-container">
+<div class="modal-overlay" id="mi-findings" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-findings')">&times;</button>
+<h3>Findings</h3>
+<p>The headline view. Shows the <span class="term">core leaderboard</span> ranking all ten models by macro-F1, with per-class recall for conventional red lines (RLS) and nuclear signals (NTS), false-alert and missed-nuclear counts, schema compliance, language stability, and cost.</p>
+<h4>Why these metrics?</h4>
+<ul>
+<li><span class="term">Macro-F1</span> — the harmonic mean of precision and recall, averaged equally across the three classes (no-alert, RLS, NTS). Treats each class as equally important regardless of how many passages it has, so the rare NTS class is not drowned out by the majority no-alert class.</li>
+<li><span class="term">RLS Recall</span> — of the 77 conventional red-line passages, what fraction did the model correctly identify? A miss here means the adviser failed to flag a genuine deterrent signal.</li>
+<li><span class="term">NTS Recall</span> — of the 28 nuclear-threat passages, what fraction was caught? This is the most operationally consequential metric: a missed nuclear signal is categorically different from a missed conventional one.</li>
+<li><span class="term">False Alerts</span> — how many no-alert passages did the model wrongly flag as RLS or NTS? High false-alert rates degrade trust and produce alert fatigue.</li>
+<li><span class="term">Missed Nuclear</span> — the absolute count of NTS passages the model classified as no-alert or merely RLS. The number a policymaker cares about most.</li>
+<li><span class="term">Schema OK</span> — percentage of responses that returned valid JSON matching the required schema. A model that can't reliably produce structured output is unusable in a pipeline regardless of its accuracy.</li>
+<li><span class="term">RU↔EN Flips</span> — percentage of passages where the model's classification changed when the same passage was presented in English instead of Russian. High flip rates indicate fragile language comprehension.</li>
+<li><span class="term">Cost</span> — total API spend for 298 items × 2 languages × 3 repetitions at the provider's current pricing. Includes input and output tokens.</li>
+</ul>
+<h4>The accuracy-cost frontier</h4>
+<p>The scatter plot below the table shows each model's F1 against its cost. The dashed curve is the Pareto frontier — models below it are dominated (another model is both cheaper AND more accurate). The insight: a cheap model at 90% of the best model's accuracy may be the right operational choice.</p>
+<h4>Ranking sensitivity</h4>
+<p>Rankings change when you weight miss-vs-false-alarm differently. At <span class="term">1:1</span> (equal weight), accuracy-optimised models win. At <span class="term">10:1</span> (heavily penalising missed nuclear signals), models with higher NTS recall move up even if they false-alarm more. There is no "correct" weighting — it depends on the policy context.</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-compare" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-compare')">&times;</button>
+<h3>Compare Models</h3>
+<p>Side-by-side comparison of any two models. Shows:</p>
+<ul>
+<li><span class="term">Confusion matrices</span> — a 3×3 grid (reference label on rows, predicted label on columns) showing exactly where each model's errors concentrate. Off-diagonal cells are errors; the pattern of errors matters more than the count.</li>
+<li><span class="term">Per-class precision and recall</span> — precision = "when the model says RLS, how often is it right?" Recall = "of the actual RLS passages, how many did it find?" The two trade off: a model that calls everything NTS has perfect NTS recall but terrible precision.</li>
+<li><span class="term">Confidence calibration</span> — does a model's stated confidence (0–1) actually predict its accuracy? A well-calibrated model that says "0.9 confident" should be right ~90% of the time. Most models are overconfident.</li>
+</ul>
+<h4>What to look for</h4>
+<p>Two models with the same F1 can have very different error profiles. One may be conservative (few false alerts, more misses), the other aggressive (catches everything, many false alarms). The comparison reveals which profile matches your operational needs.</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-failures" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-failures')">&times;</button>
+<h3>Failure Atlas</h3>
+<p>The passages that break models, and the error types that recur. This tab answers: <em>"are there passages that ALL models get wrong, and if so, what do they have in common?"</em></p>
+<h4>Error taxonomy</h4>
+<ul>
+<li><span class="term">False NTS alert</span> — model says "nuclear signal" when the reference label is no-alert or merely conventional. The costliest false alarm: it could trigger unnecessary escalation in a decision-support context.</li>
+<li><span class="term">False RLS alert</span> — model says "red line" for a no-alert passage. Less dangerous than false NTS but still degrades trust through alert fatigue.</li>
+<li><span class="term">Missed RLS</span> — a genuine conventional red line the model failed to flag. The adviser missed a deterrent signal.</li>
+<li><span class="term">Missed NTS</span> — <span class="warn">a genuine nuclear signal the model failed to flag</span>. The single most dangerous failure mode.</li>
+<li><span class="term">Fabricated evidence</span> — the model "quoted" text from the passage as evidence for its classification, but the quoted span does not appear in the passage. The model confabulated supporting evidence. Automatic disqualification of that response.</li>
+</ul>
+<h4>Recurrent traps</h4>
+<p>Several passage types systematically defeat most or all models:</p>
+<ul>
+<li><strong>Retrospective doctrine</strong> — Lavrov describing past nuclear doctrine. Every model reads present tense into past-tense statements.</li>
+<li><strong>Medvedev maximalism</strong> — "vse sgoriat v yadernom plameni." Models cannot distinguish performative bluster from operational intent.</li>
+<li><strong>Quoted speech</strong> — Zakharova quoting Putin. The threat is reported, not uttered. Models attribute the threat to the current speaker.</li>
+<li><strong>Analyst op-eds</strong> — Karaganov's "first use" essay defeats all ten models. An analyst proposing policy is not an official threatening action.</li>
+<li><strong>Denial of escalation</strong> — "Eto ne eskalatsiya." The denial frame contains the word "escalation," which triggers models even though the sentence explicitly denies it.</li>
+</ul>
+</div></div>
+
+<div class="modal-overlay" id="mi-cases" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-cases')">&times;</button>
+<h3>Case Explorer</h3>
+<p>Every passage, every model's answer, at full depth. This is the audit surface — where you verify that a leaderboard number corresponds to actual analytical substance.</p>
+<h4>What each row shows</h4>
+<ul>
+<li><span class="term">Passage ID</span> — stable identifier, tied to the frozen item set by hash.</li>
+<li><span class="term">Text preview</span> — first ~80 characters of the Russian passage. Click to expand the full text in both Russian and English.</li>
+<li><span class="term">Ref</span> — the provisional expert reference label (None / RLS / NTS).</li>
+<li><span class="term">Speaker</span> — who produced the statement: Putin, Lavrov, Medvedev, Shoigu, Patrushev, Peskov, Zakharova, Duma/Federation Council members, or non-official analysts.</li>
+<li><span class="term">Models agree/disagree</span> — how many of the ten models matched the reference label vs diverged. High disagreement flags hard cases.</li>
+<li><span class="term">Worst error</span> — the most consequential wrong answer any model gave for this passage (NTS miss > RLS miss > false NTS > false RLS).</li>
+</ul>
+<h4>Drill-down</h4>
+<p>Clicking a row opens the full case detail: the complete passage in Russian and English, all ten model responses with their JSON output, quoted evidence spans (highlighted against the source text), confidence scores, and the reference label with its provenance (which expert labelled it, whether it was adjudicated).</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-language" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-language')">&times;</button>
+<h3>Language Shift</h3>
+<p>Every passage is tested in both original Russian and a shared English translation. This tab measures where the language of presentation changes the model's decision.</p>
+<h4>Why this matters</h4>
+<p>Russian strategic rhetoric carries connotations that English translations flatten or distort. "Непримиримый ущерб" (unacceptable damage) is doctrinal boilerplate in Russian; in English it reads as an active threat. "Красная линия" is a tired metaphor in Russian political discourse; "red line" carries sharper connotations in English after Obama's Syria precedent. A model that changes its classification based on language alone is responding to translation artifacts, not to the substance of the statement.</p>
+<h4>The transition matrix</h4>
+<p>Rows = the model's classification in Russian; columns = its classification in English for the SAME passage. Diagonal cells = stable decisions. Off-diagonal = flips. The matrix is computed per model and pooled across all models.</p>
+<h4>Flip rate by model</h4>
+<p>The percentage of passages where RU and EN classifications differ. Lower is better — it means the model's understanding is robust to translation. Chinese models (GLM, Kimi, MiniMax) show the highest flip rates, likely because their Russian-language training data is smaller and English-mediated translation artifacts compound.</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-sitroom" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-sitroom')">&times;</button>
+<h3>Situation Room</h3>
+<p>An interactive exercise. You read a real passage from the benchmark — cold, without context — and make your own classification before seeing what the models said.</p>
+<h4>Purpose</h4>
+<ul>
+<li><strong>Calibration</strong> — how does your own judgment compare to the models'? Are you more conservative or more aggressive?</li>
+<li><strong>Intuition testing</strong> — the passages are deliberately chosen to be ambiguous. If you find yourself uncertain, the models probably are too.</li>
+<li><strong>Demonstration</strong> — for briefings, presentations, and the ChinaTalk contest, this is the "try it yourself" moment that makes the benchmark tangible.</li>
+</ul>
+<h4>How it works</h4>
+<p>Each round presents one passage in Russian with its English translation. You click one of three verdicts: No alert, Conventional red line, or Nuclear signal. After committing, all ten models' verdicts appear alongside the reference label, with disagreements highlighted. You can cycle through passages or filter by difficulty (unanimous agreement vs high disagreement).</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-sources" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-sources')">&times;</button>
+<h3>Source Arms</h3>
+<p>The 298 benchmark passages are drawn from four arms of the Russian Officialdom corpus — a shared resource of 276,120 documents / 296,381 chunks / 36 source identities. Model performance varies sharply by source type, and this tab exposes that variation.</p>
+<h4>The four arms</h4>
+<ul>
+<li><span class="term">Telegram Official</span> (264,266 docs) — short, direct statements from official Telegram channels. Median 264 tokens per chunk. Context-poor: the model sees a single statement without surrounding discussion. Easiest for most models because rhetoric is usually unambiguous.</li>
+<li><span class="term">Kremlin transcripts</span> (7,842 docs) — press conferences, bilateral meetings, direct addresses. Longer, more nuanced. Conditional language ("if they do X, then Y"), retrospective framing ("as we said before"), and diplomatic hedging concentrate here. Hardest for models on missed-RLS errors.</li>
+<li><span class="term">State Duma</span> (3,424 docs) — legislative transcripts. Average 58,000 tokens per document. The benchmark passage is a chunk boundary that may split a speaker's argument across chunks. Procedural uses of "eskalatsiya" trigger false alerts. Gemini's long context window appears to help here.</li>
+<li><span class="term">Federation Council</span> (588 docs) — upper chamber proceedings. Smallest arm. Senatorial rhetoric is more measured than Duma, but the small sample makes estimates unstable.</li>
+</ul>
+<h4>Why source arm matters for deployment</h4>
+<p>A model deployed to monitor Telegram feeds faces a different error profile than one monitoring Kremlin transcripts. This tab lets a user choose the model best suited to their specific source environment rather than relying on the pooled leaderboard.</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-method" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-method')">&times;</button>
+<h3>Method &amp; Downloads</h3>
+<p>Full reproducibility package. One command rebuilds all public metrics and case files from the frozen artifacts.</p>
+<h4>What is deposited</h4>
+<ul>
+<li><span class="term">Item set</span> — 298 passages with SHA-256 hashes binding the exact text to this benchmark version.</li>
+<li><span class="term">Translations</span> — versioned English translations, human-checked for all positive items and the trap-heavy subset.</li>
+<li><span class="term">Prompt and schema</span> — the exact system prompt and JSON schema every model received. Identical across models.</li>
+<li><span class="term">Model manifest</span> — exact API slugs and dated version strings for every model. No unpinned providers.</li>
+<li><span class="term">Normalized outputs</span> — raw model responses, schema-validated, with extracted evidence spans and confidence scores.</li>
+<li><span class="term">Scoring code</span> — the script that computes all metrics from normalized outputs + reference labels.</li>
+<li><span class="term">Cost ledger</span> — per-model, per-call token counts and dollar costs at the pricing in effect on the run date.</li>
+</ul>
+<h4>Reference label status</h4>
+<p><span class="warn">The 298 labels are provisional.</span> They are challenge-enriched expert labels, not prevalence-representative certified ground truth. Mikhail has completed 103 of 189 model-assisted Expert Review passages. Adam's independent blind pass has not been returned. Until the blind pass is complete and disagreements are adjudicated, every result surface carries a prominent provisional-label banner. The Method tab will report inter-annotator kappa once the blind pass is available.</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-298" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-298')">&times;</button>
+<h3>298 Benchmark Passages</h3>
+<p>The benchmark surface is a <span class="term">challenge-enriched</span> sample of 298 passages drawn from the Russian Officialdom corpus (276,120 documents / 296,381 chunks / 36 source identities spanning 1999–2025).</p>
+<h4>Composition</h4>
+<ul>
+<li><strong>193 no-alert items (64.8%)</strong> — passages that contain nuclear/escalatory vocabulary but are NOT genuine red lines or nuclear signals. Includes retrospective doctrine citations, quoted speech, analyst commentary, procedural parliamentary language, capability announcements without threat framing, and Medvedev-style maximalist bluster. These are the <em>traps</em> — designed to test whether a model can distinguish noise from signal.</li>
+<li><strong>77 conventional red lines / RLS (25.8%)</strong> — passages where a Russian official states or implies a boundary condition and a consequence for crossing it. "If NATO does X, Russia will Y." The RRLS construct requires both a <span class="term">boundary span</span> and a <span class="term">consequence span</span>.</li>
+<li><strong>28 nuclear signals / NTS (9.4%)</strong> — passages where a Russian official makes a statement that specifically invokes nuclear weapons, nuclear doctrine, or nuclear-capable systems in a threatening or signalling context. The rarest and most consequential class.</li>
+</ul>
+<h4>Why challenge-enriched, not prevalence-representative?</h4>
+<p>In the raw corpus, genuine nuclear signals are extremely rare — perhaps 0.1% of all chunks. A prevalence-representative benchmark would contain ~0.3 NTS items in 298, which makes measurement impossible. Challenge enrichment oversamples the hard and rare classes so the benchmark can actually measure discrimination ability. The prevalence weights in the Method tab allow re-weighting to natural prevalence for deployment-relevant estimates.</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-10models" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-10models')">&times;</button>
+<h3>10 Frontier Models</h3>
+<p>A deliberately <span class="term">multinational</span> slate spanning US, Chinese, Korean, and Russian providers. Each model is tested via its <strong>native provider API</strong> — never through a proxy like OpenRouter that may serve quantised or outdated versions.</p>
+<h4>The slate</h4>
+<ul>
+<li><strong>US:</strong> GPT-5.6 Sol (OpenAI), Claude Fable 5 (Anthropic), Gemini 3.6 Flash (Google)</li>
+<li><strong>China:</strong> DeepSeek V4 Pro (DeepSeek), Qwen3.7-Max (Alibaba), GLM-5.2 (Zhipu AI), Kimi K3 (Moonshot), MiniMax M3 (MiniMax)</li>
+<li><strong>Korea:</strong> Solar Pro 3 (Upstage)</li>
+<li><strong>Russia:</strong> GigaChat 3 Ultra (Sber)</li>
+</ul>
+<h4>Why multinational?</h4>
+<p>Red-line detection is not a US-only problem. Chinese models may have different training biases around Russian strategic rhetoric. A Russian model (GigaChat) may understand Russian connotations better but may also have alignment constraints around state rhetoric. The benchmark makes these differences measurable rather than assumed.</p>
+<h4>Why native APIs?</h4>
+<p>OpenRouter and similar proxies <span class="warn">load-balance across arbitrary third-party hosts per request</span> for open-weight models, many serving quantised (FP8/INT4) or stale versions. A benchmark number from OpenRouter measures "a random quantised host," not the model. Every model here is pinned to an exact API slug and dated version.</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-17880" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-17880')">&times;</button>
+<h3>17,880 Scored Decisions</h3>
+<p>Each decision = one model classifying one passage in one language on one repetition.</p>
+<p><strong>298 passages × 2 languages × 3 repetitions × 10 models = 17,880</strong></p>
+<h4>Why 3 repetitions?</h4>
+<p>LLM outputs are non-deterministic. A model that classifies a passage as "nuclear signal" on one run and "no alert" on the next is <span class="term">unstable</span> — its answer depends on the random seed, not on the passage content. Three repetitions per (passage, language, model) allow measuring <span class="term">three-run stability</span>: the fraction of passages where all three runs agree. A stability below 90% means the model's classifications include significant noise.</p>
+<h4>Why not more?</h4>
+<p>Cost. At 17,880 decisions the projected spend is $101.54. Each additional repetition adds ~$34. Three is the minimum that can distinguish "always agrees" from "sometimes disagrees" from "random."</p>
+</div></div>
+
+<div class="modal-overlay" id="mi-langs" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-langs')">&times;</button>
+<h3>Two Languages: Russian and English</h3>
+<p>Every passage is tested in its <span class="term">original Russian</span> and in <span class="term">one shared, versioned English translation</span>.</p>
+<h4>Why both?</h4>
+<p>Russian strategic rhetoric carries connotations that English cannot preserve. "Непримиримый ущерб" (unacceptable damage) is doctrinal boilerplate in Russian and sounds like an active threat in English. If a model's classification changes based on language alone, it is responding to translation artifacts, not to the substance of the statement. The Language Shift tab quantifies this.</p>
+<h4>Translation discipline</h4>
+<ul>
+<li>All positive items and the trap-heavy subset receive human checking before English scoring.</li>
+<li>The English translation is <strong>never model-specific</strong> — all models see the same translation.</li>
+<li>The analysis reports Russian-to-English transition matrices and decision-flip rates rather than declaring one language universally superior.</li>
+</ul>
+</div></div>
+
+<div class="modal-overlay" id="mi-cost" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mi-cost')">&times;</button>
+<h3>Projected Cost: $101.54</h3>
+<p>The planning estimate for running all 10 models across the full design (298 × 2 × 3 = 1,788 calls per model). Includes input tokens (passage + system prompt + schema) and output tokens (JSON response).</p>
+<h4>Budget control</h4>
+<ul>
+<li><span class="term">Planning ceiling:</span> $101.54 (sum of per-model estimates at current provider pricing).</li>
+<li><span class="term">Automatic stop:</span> The orchestrator refuses any batch that would push projected cumulative spend above <strong>$135</strong>.</li>
+<li><span class="term">Absolute ceiling:</span> $150 (the ChinaTalk contest constraint).</li>
+<li><span class="term">Measured, not guessed:</span> Provider token counters replace the cross-provider planning estimate before dispatch. The actual cost may be lower than the projection.</li>
+</ul>
+<h4>Cost by model (planning estimates)</h4>
+<p>Ranges from $3.20 (GigaChat) to $14.20 (Claude). The accuracy-cost frontier in the Findings tab shows which models deliver the most accuracy per dollar.</p>
+</div></div>
+
+<div class="modal-overlay" id="mc-f1" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-f1')">&times;</button>
+<h3>Macro-F1</h3>
+<p>The <span class="term">harmonic mean of precision and recall</span>, computed separately for each of the three classes (no-alert, RLS, NTS) and then averaged with equal weight.</p>
+<h4>Why harmonic mean?</h4>
+<p>The harmonic mean penalises imbalance: a model that has 0.95 precision but 0.40 recall gets F1 = 0.56, not 0.68 (the arithmetic mean). You cannot game it by being good at one and bad at the other.</p>
+<h4>Why macro (not weighted)?</h4>
+<p>Weighted-F1 gives each class weight proportional to its size. With 193 no-alert vs 28 NTS, weighted-F1 is dominated by the majority class — a model that calls everything "no alert" scores well. <span class="term">Macro-F1 treats NTS as equally important to no-alert</span>, which matches the operational reality: missing a nuclear signal matters more, not less, because it's rare.</p>
+<h4>Range</h4>
+<p>0.0 (useless) to 1.0 (perfect). Random guessing on this benchmark would score ~0.33. The best model here scores 0.81; the worst 0.51.</p>
+</div></div>
+
+<div class="modal-overlay" id="mc-rlsr" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-rlsr')">&times;</button>
+<h3>RLS Recall</h3>
+<p>Of the <strong>77 passages</strong> that are genuine conventional red lines, what fraction did the model correctly classify as RLS?</p>
+<h4>What a miss means</h4>
+<p>A missed RLS means the AI adviser failed to flag a deterrent signal — a statement where a Russian official drew a boundary and stated or implied a consequence for crossing it. The policymaker sees "no alert" and moves on, unaware that a red line was just articulated.</p>
+<h4>The RRLS construct</h4>
+<p>A passage qualifies as RLS (Red Line Statement) when it contains both a <span class="term">boundary span</span> ("if NATO does X") and a <span class="term">consequence span</span> ("Russia will Y"). A vague warning without a stated consequence — "don't test Russia's patience" — is a <em>veiled</em> threat but not a fully formed red line under our construct definition.</p>
+</div></div>
+
+<div class="modal-overlay" id="mc-ntsr" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-ntsr')">&times;</button>
+<h3>NTS Recall</h3>
+<p>Of the <strong>28 passages</strong> that are genuine nuclear threat signals, what fraction did the model correctly classify as NTS?</p>
+<h4>Why this is the most consequential metric</h4>
+<p>A <span class="warn">missed nuclear signal is categorically different</span> from a missed conventional red line. It means the AI adviser told the policymaker "nothing nuclear here" when a Russian official was invoking nuclear weapons, nuclear doctrine, or nuclear-capable systems in a threatening context. In a crisis, this is the error that matters.</p>
+<h4>The NTS construct</h4>
+<p>A passage qualifies as NTS (Nuclear Threat Signal) when it specifically invokes nuclear weapons, nuclear doctrine revision, nuclear-capable delivery systems, or nuclear strike scenarios in a <span class="term">threatening, conditional, or signalling</span> context — not merely descriptive, retrospective, or doctrinal-boilerplate.</p>
+<h4>Why NTS recall is lower than RLS recall for most models</h4>
+<p>NTS passages often use <em>conditional</em> or <em>doctrinal</em> language that models find ambiguous. "Yadernaya doktrina predusmatrivayet..." (nuclear doctrine provides for...) could be a boilerplate recitation OR a live signal depending on speaker, timing, and context. Models tend to either over-trigger (high recall, many false NTS) or under-trigger (few false NTS, but misses).</p>
+</div></div>
+
+<div class="modal-overlay" id="mc-false" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-false')">&times;</button>
+<h3>False Alerts</h3>
+<p>The number of <strong>no-alert passages</strong> (out of 193) that the model wrongly classified as RLS or NTS.</p>
+<h4>Why it matters</h4>
+<p><span class="term">Alert fatigue.</span> A model that produces 38 false alerts in 298 passages would, at corpus scale (296,381 chunks), generate thousands of spurious alerts. Analysts stop trusting the system. The false alerts that matter most are <span class="warn">false NTS</span> — the model says "nuclear signal" when there is none. That could trigger unnecessary crisis-escalation procedures.</p>
+<h4>What drives false alerts in this benchmark</h4>
+<ul>
+<li><strong>Medvedev maximalism</strong> — "vse sgoriat v yadernom plameni" (everyone will burn in nuclear fire). Telegram bluster from a figure with no operational authority. Models read the nuclear vocabulary and fire.</li>
+<li><strong>Retrospective doctrine</strong> — Lavrov describing what the doctrine says, in past or conditional tense. Models read present intent into descriptive statements.</li>
+<li><strong>Capability announcements</strong> — Putin describing hypersonic deployment. A capability statement is not a threat, but the vocabulary overlaps.</li>
+<li><strong>Quoted speech</strong> — a spokesperson quoting an earlier Putin statement. The threat is reported, not uttered. Models attribute the original threat to the current utterance.</li>
+</ul>
+</div></div>
+
+<div class="modal-overlay" id="mc-missed" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-missed')">&times;</button>
+<h3>Missed Nuclear</h3>
+<p>The absolute count of <strong>NTS passages</strong> (out of 28) that the model classified as no-alert or merely RLS instead of NTS.</p>
+<h4>This is the number a policymaker cares about most</h4>
+<p>The best model (Claude) misses 2 out of 28. The worst (GigaChat) misses 11 — <span class="warn">39% of nuclear signals invisible to the adviser</span>.</p>
+<h4>What gets missed and why</h4>
+<ul>
+<li><strong>Doctrinal boilerplate that IS a signal</strong> — Shoigu's "nanesti nepriemlemyi ushcherb" (inflict unacceptable damage) is formulaic, but in the right context it is a live deterrent signal. Seven models dismiss it as boilerplate.</li>
+<li><strong>Conditional threats</strong> — "Esli Kaliningrad budet zablokirovan... masshtabnyi vooruzhennyi konflikt." The conditional frame makes models uncertain; they downgrade to RLS or no-alert.</li>
+<li><strong>Denial framing</strong> — "Eto ne eskalatsiya" (this is not escalation). The denial contains the escalation concept. Some models read the denial as de-escalatory; the reference label codes the surrounding context as a red line.</li>
+</ul>
+</div></div>
+
+<div class="modal-overlay" id="mc-schema" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-schema')">&times;</button>
+<h3>Schema OK</h3>
+<p>Percentage of responses that returned <span class="term">valid JSON matching the required schema</span>. The schema requires: a three-class alert label, separate RLS and NTS boolean fields, quoted evidence spans from the passage, and a confidence score between 0 and 1.</p>
+<h4>Why this is a hard gate</h4>
+<p>A model that can't reliably produce structured output is <span class="warn">unusable in a pipeline</span> regardless of its accuracy. If the output isn't parseable, there is no classification to score. Schema failures are excluded from the accuracy metrics but counted here — a model with 87% schema compliance effectively gives you only 87% of the decisions you paid for.</p>
+<h4>Common schema failures</h4>
+<ul>
+<li><strong>Reasoning preamble</strong> — model outputs a <code>&lt;think&gt;...&lt;/think&gt;</code> block before the JSON (DeepSeek, MiniMax). Stripped before parsing if detected.</li>
+<li><strong>Extra fields</strong> — model adds explanatory fields not in the schema. Tolerated if the required fields are present.</li>
+<li><strong>Wrong enum values</strong> — model returns "NUCLEAR" instead of "nts" or "true" instead of true. Strict validation rejects these.</li>
+</ul>
+</div></div>
+
+<div class="modal-overlay" id="mc-flips" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-flips')">&times;</button>
+<h3>RU↔EN Flips</h3>
+<p>Percentage of passages where the model's classification <span class="term">changed when the same passage was presented in English instead of Russian</span>.</p>
+<h4>What a flip tells you</h4>
+<p>If a model says "nuclear signal" in Russian and "no alert" in English for the same passage, it is responding to <em>language-specific connotations or translation artifacts</em>, not to the substance of the statement. A high flip rate means the model's understanding is fragile — it depends on which language you happen to feed it.</p>
+<h4>The pattern across models</h4>
+<p>US models (Claude 4.1%, GPT 5.7%) are most stable. Chinese models (GLM 11.3%, Kimi 12.7%, MiniMax 14.5%) show higher instability, likely because their Russian-language training data is smaller. GigaChat (22.3%) is the most unstable despite being a Russian-made model — possibly because its English training is weaker, so the same content reads differently in translation.</p>
+<h4>Dominant flip direction</h4>
+<p>More flips go RU→EN (1,124) than EN→RU (723). English translations tend to produce <em>more</em> alert calls — the translation sharpens ambiguous Russian hedging into what reads as a clearer threat in English.</p>
+</div></div>
+
+<div class="modal-overlay" id="mc-costcol" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-costcol')">&times;</button>
+<h3>Cost</h3>
+<p>Total API spend for this model across the full benchmark: <strong>298 items × 2 languages × 3 repetitions = 1,788 calls</strong>.</p>
+<h4>What's included</h4>
+<ul>
+<li><strong>Input tokens:</strong> the system prompt (construct definitions, non-test examples, JSON schema) + the passage text. The system prompt is ~2,000 tokens; passages range from 50 to 800 tokens.</li>
+<li><strong>Output tokens:</strong> the JSON response (~200–500 tokens depending on evidence span length).</li>
+<li><strong>Pricing:</strong> the provider's published per-token rate on the date of the run, applied to measured (not estimated) token counts.</li>
+</ul>
+<h4>Cost vs accuracy trade-off</h4>
+<p>The cheapest model (GigaChat, $3.20) misses 39% of nuclear signals. The most expensive (Claude, $14.20) misses 7%. Gemini ($3.80) delivers 90% of Claude's accuracy at 27% of the cost — the cost-efficiency sweet spot. The accuracy-cost frontier chart above makes this trade-off visual.</p>
+</div></div>
+
+<div class="modal-overlay" id="mc-rank" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-rank')">&times;</button><h3>Rank</h3><p>Position in the leaderboard, ordered by <span class='term'>Macro-F1</span> under equal miss/false-alarm weighting (1:1). Rankings change under different penalty weights — see Ranking Sensitivity below.</p><p>A rank difference of 1 position may not be statistically significant. Bootstrap intervals (not shown in this mockup) would indicate which rank differences are real.</p></div></div>
+<div class="modal-overlay" id="mc-model" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-model')">&times;</button><h3>Model</h3><p>The exact <span class='term'>model slug and dated version</span> used for this run. Every model is tested via its native provider API — never through OpenRouter or another proxy that may serve quantised or different versions.</p><p>Each model received the identical system prompt, construct definitions, non-test examples, and JSON schema. The only variable is the model itself.</p></div></div>
+<div class="modal-overlay" id="mc-provider" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-provider')">&times;</button><h3>Provider</h3><p>The company operating the model's native API. The provider determines pricing, rate limits, data residency, and — for open-weight models — which weights and quantisation level are actually served.</p><p>Providers are multinational by design: US (OpenAI, Anthropic, Google), China (DeepSeek, Alibaba, Zhipu AI, Moonshot, MiniMax), Korea (Upstage), Russia (Sber). This tests whether national origin of the model affects its ability to read Russian strategic rhetoric.</p></div></div>
+<div class="modal-overlay" id="mc-passage" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-passage')">&times;</button><h3>Passage</h3><p>A short identifier and text preview of the benchmark passage. Each passage is a <span class='term'>chunk</span> from the Russian Officialdom corpus — a continuous stretch of text from an official Telegram channel, Kremlin transcript, or parliamentary record.</p><p>Passages were selected to be <span class='term'>self-contained enough</span> for classification without external context, though chunk boundaries can split a speaker's argument (especially in Duma transcripts). The benchmark version records the exact chunk boundaries.</p></div></div>
+<div class="modal-overlay" id="mc-ref" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-ref')">&times;</button><h3>Reference Label</h3><p>The <span class='term'>provisional expert reference label</span> for this passage: <strong>None</strong> (no alert), <strong>RLS</strong> (conventional red line statement), or <strong>NTS</strong> (nuclear threat signal).</p><h4>Provisional status</h4><p><span class='warn'>These labels are NOT certified ground truth.</span> They are challenge-enriched expert labels based on the RRLS and NTS construct definitions. Mikhail has completed 103 of 189 model-assisted Expert Review passages. Adam's independent blind pass has not been returned. Labels will change after adjudication.</p><h4>The constructs</h4><ul><li><span class='term'>RLS</span> requires both a boundary span ('if NATO does X') and a consequence span ('Russia will Y'). A vague warning without a stated consequence does not qualify.</li><li><span class='term'>NTS</span> requires specific invocation of nuclear weapons, nuclear doctrine, or nuclear-capable systems in a threatening or signalling context — not merely descriptive or retrospective.</li></ul></div></div>
+<div class="modal-overlay" id="mc-speaker" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-speaker')">&times;</button><h3>Speaker</h3><p>Who produced the statement. Categories:</p><ul><li><strong>Putin</strong> — direct presidential statements, press conferences, addresses</li><li><strong>Lavrov</strong> — foreign minister, diplomatic contexts</li><li><strong>Medvedev</strong> — former president, now prolific Telegram poster with no operational authority. His maximalist rhetoric is the single biggest source of false NTS alerts.</li><li><strong>Shoigu / Patrushev</strong> — defence/security establishment</li><li><strong>Peskov / Zakharova</strong> — press secretary and foreign ministry spokesperson. Often quote or paraphrase Putin — the indirect speech trap.</li><li><strong>Duma/FC</strong> — parliamentary proceedings. Procedural language triggers false alerts.</li><li><strong>Analyst</strong> — non-officials (e.g. Karaganov). An analyst proposing policy is not an official threatening action, but models cannot make this distinction.</li></ul></div></div>
+<div class="modal-overlay" id="mc-year" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-year')">&times;</button><h3>Year</h3><p>The year the statement was produced. The corpus spans 1999–2025. Most benchmark passages concentrate in 2023–2025 because that is when Russian escalatory rhetoric intensified around the Ukraine war.</p><p>Year matters because the same phrase can carry different weight over time. 'Nuclear doctrine does not exclude first use' was doctrinal boilerplate in 2020 and an active signal in 2024.</p></div></div>
+<div class="modal-overlay" id="mc-agree" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-agree')">&times;</button><h3>Models Agree</h3><p>How many of the 10 models produced a classification that <span class='term'>matches the reference label</span> for this passage. Higher = easier passage (most models get it right).</p></div></div>
+<div class="modal-overlay" id="mc-disagree" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-disagree')">&times;</button><h3>Models Disagree</h3><p>How many of the 10 models produced a classification that <span class='term'>differs from the reference label</span>. High disagreement (7+) flags the hardest passages — the traps that defeat most models.</p><p>A passage with 10/10 disagreement means <strong>every model gets it wrong</strong>. The Karaganov op-ed (#103) is the only such passage in this benchmark.</p></div></div>
+<div class="modal-overlay" id="mc-worsterr" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-worsterr')">&times;</button><h3>Worst Error</h3><p>The most consequential wrong answer any model gave for this passage, ranked by operational severity:</p><ol><li><span class='warn'>Missed NTS</span> — a nuclear signal classified as no-alert (most dangerous)</li><li><strong>Missed RLS</strong> — a conventional red line classified as no-alert</li><li><strong>False NTS</strong> — a no-alert passage classified as nuclear signal</li><li><strong>False RLS</strong> — a no-alert passage classified as conventional red line</li></ol><p>The number in parentheses shows how many models made this particular error.</p></div></div>
+<div class="modal-overlay" id="mc-stable" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-stable')">&times;</button><h3>Stable Decisions</h3><p>The number of passages (out of 893 = 298 × 3 repetitions) where the model's classification was <span class='term'>the same in both Russian and English</span>. Higher = more language-robust.</p></div></div>
+<div class="modal-overlay" id="mc-fliprate" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-fliprate')">&times;</button><h3>Flip Rate</h3><p>Percentage of passages where the model's classification <span class='term'>changed between Russian and English</span>. Lower is better.</p><p>A flip means the model's understanding depends on the language of presentation, not the substance. At deployment scale, this introduces unpredictable behaviour depending on whether the input pipeline translates before classifying.</p></div></div>
+<div class="modal-overlay" id="mc-telegram" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-telegram')">&times;</button><h3>Telegram Official Arm</h3><p><strong>264,266 documents</strong> from official Russian Telegram channels. Short statements (median 264 tokens per chunk), context-poor, usually direct and unambiguous.</p><p>Models generally perform best on Telegram because the rhetoric is straightforward. The main error source is <strong>Medvedev's channel</strong> — maximalist bluster that models read as nuclear signals.</p></div></div>
+<div class="modal-overlay" id="mc-kremlin" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-kremlin')">&times;</button><h3>Kremlin Arm</h3><p><strong>7,842 documents</strong> — press conferences, bilateral meetings, direct addresses, official transcripts from kremlin.ru.</p><p>Longer and more nuanced than Telegram. <span class='term'>Conditional language</span> ('if they do X'), <span class='term'>retrospective framing</span> ('as we said before'), and <span class='term'>diplomatic hedging</span> concentrate here. This is where models accumulate the most missed-RLS errors — genuine red lines expressed in language too subtle for pattern-matching.</p></div></div>
+<div class="modal-overlay" id="mc-duma" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-duma')">&times;</button><h3>State Duma Arm</h3><p><strong>3,424 documents</strong> — legislative transcripts from the lower chamber. Average 58,000 tokens per document (full session transcripts).</p><p>The benchmark passage is a <span class='term'>chunk boundary</span> that may split a speaker's argument across chunks. Procedural uses of 'eskalatsiya' (escalation) in parliamentary debate trigger false alerts. Gemini's long context window appears to help here.</p></div></div>
+<div class="modal-overlay" id="mc-fedcouncil" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-fedcouncil')">&times;</button><h3>Federation Council Arm</h3><p><strong>588 documents</strong> — upper chamber proceedings. The smallest arm. Senatorial rhetoric is generally more measured than Duma, but the small sample makes per-model estimates unstable.</p><p>Caution: with only 14 benchmark passages from this arm, a single passage error can swing the F1 by ~0.07.</p></div></div>
+<div class="modal-overlay" id="mc-overall" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-overall')">&times;</button><h3>Overall (all arms)</h3><p>The pooled Macro-F1 across all 298 passages regardless of source arm. This is the same number shown in the Findings leaderboard.</p><p>The overall score can mask large per-arm variation. A model with 0.76 overall may be 0.84 on Telegram and 0.55 on Duma — operationally very different depending on which source you're monitoring.</p></div></div>
+<div class="modal-overlay" id="mc-passages" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-passages')">&times;</button><h3>Passages (per arm)</h3><p>How many of the 298 benchmark passages come from this source arm. The distribution is <span class='term'>not prevalence-representative</span> — it over-samples from Kremlin and Duma relative to their corpus share to ensure enough hard cases.</p></div></div>
+<div class="modal-overlay" id="mc-noalert" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-noalert')">&times;</button><h3>No-Alert Passages</h3><p>Passages from this source arm that carry a <strong>None</strong> reference label — no red line, no nuclear signal. These include routine statements, retrospective doctrine, quoted speech, procedural language, and deliberate traps (e.g. Medvedev bluster).</p></div></div>
+<div class="modal-overlay" id="mc-rls" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-rls')">&times;</button><h3>RLS Passages</h3><p>Passages from this source arm labelled as <span class='term'>conventional Red Line Statements</span>. These contain both a boundary span and a consequence span.</p></div></div>
+<div class="modal-overlay" id="mc-nts" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-nts')">&times;</button><h3>NTS Passages</h3><p>Passages from this source arm labelled as <span class='term'>Nuclear Threat Signals</span>. The rarest and most consequential class.</p></div></div>
+<div class="modal-overlay" id="mc-pctbench" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-pctbench')">&times;</button><h3>% of Benchmark</h3><p>This arm's share of the total 298 benchmark passages. Telegram dominates (56.4%) because it dominates the corpus (96.5% of documents). Kremlin is over-represented relative to its corpus share (26.2% of benchmark vs 2.8% of corpus) because it contains the most nuanced rhetoric.</p></div></div>
+<div class="modal-overlay" id="mc-failtype" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-failtype')">&times;</button><h3>Failure Type</h3><p>The category of model error. See the Failure Atlas tab modal for the full error taxonomy. The table shows how these errors distribute across source arms — some error types concentrate in specific source types.</p></div></div>
+<div class="modal-overlay" id="mc-domcause" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-domcause')">&times;</button><h3>Dominant Cause</h3><p>The most common <span class='term'>rhetorical pattern</span> driving this error type in this source arm. These patterns are the benchmark's diagnostic output — they tell model developers <em>what</em> to fix, not just <em>that</em> something is wrong.</p></div></div>
+<div class="modal-overlay" id="mc-en-none" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-en-none')">&times;</button><h3>English: No Alert</h3><p>Count of passages that the model classified as <strong>no-alert in English</strong>. Compare with the row total (the RU classification) to see how many flipped.</p></div></div>
+<div class="modal-overlay" id="mc-en-rls" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-en-rls')">&times;</button><h3>English: RLS</h3><p>Count of passages classified as <strong>conventional red line in English</strong>. Off-diagonal cells (e.g. RU:None → EN:RLS) represent language-induced false alerts.</p></div></div>
+<div class="modal-overlay" id="mc-en-nts" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-en-nts')">&times;</button><h3>English: NTS</h3><p>Count of passages classified as <strong>nuclear signal in English</strong>. The RU:None → EN:NTS cell is particularly concerning: passages that are benign in Russian but read as nuclear in English translation.</p></div></div>
+<div class="modal-overlay" id="mc-total-ru" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-total-ru')">&times;</button><h3>Total (Russian)</h3><p>Total decisions in this Russian classification row. Should equal the number of passages times repetitions, divided across the three classes.</p></div></div>
+<div class="modal-overlay" id="mc-pred-none" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-pred-none')">&times;</button><h3>Predicted: No Alert</h3><p>The model predicted <strong>no alert</strong> for these passages. Diagonal (Ref:None → Pred:None) = correct. Off-diagonal = the model missed a genuine signal.</p></div></div>
+<div class="modal-overlay" id="mc-pred-rls" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-pred-rls')">&times;</button><h3>Predicted: RLS</h3><p>The model predicted <strong>conventional red line</strong>. Diagonal (Ref:RLS → Pred:RLS) = correct. Ref:None → Pred:RLS = false alert. Ref:NTS → Pred:RLS = nuclear signal downgraded to conventional — dangerous.</p></div></div>
+<div class="modal-overlay" id="mc-pred-nts" onclick="if(event.target===this)closeModal(this.id)"><div class="modal"><button class="modal-close" onclick="closeModal('mc-pred-nts')">&times;</button><h3>Predicted: NTS</h3><p>The model predicted <strong>nuclear signal</strong>. Diagonal (Ref:NTS → Pred:NTS) = correct. Ref:None → Pred:NTS = false nuclear alert (the costliest false alarm). Ref:RLS → Pred:NTS = conventional red line upgraded to nuclear — over-reaction.</p></div></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<div class="sit-room">
+  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.8rem">
+    <label style="font-size:.78rem;color:var(--lb)">Passage</label>
+    <select id="sit-pick" style="background:var(--db);color:var(--wh);border:1px solid var(--lb);border-radius:4px;padding:.28rem .5rem;font-size:.8rem"></select>
+    <button id="sit-rand" class="mbtn" style="font-size:.75rem">Random</button>
+  </div>
+  <h3 id="sit-title" style="color:var(--gold);font-size:.95rem;margin:.2rem 0"></h3>
+  <div id="sit-text" style="font-size:.9rem;white-space:pre-wrap;margin:.6rem 0"></div>
+  <div style="margin:.9rem 0 .4rem;font-size:.8rem;color:var(--lb)">Your call:</div>
+  <div id="sit-calls" style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <button class="mbtn" data-call="None">No alert</button>
+    <button class="mbtn" data-call="RLS">Red line</button>
+    <button class="mbtn" data-call="NTS">Nuclear signal</button>
+  </div>
+  <div id="sit-reveal" class="sit-reveal" style="display:none"></div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var pick=document.getElementById('sit-pick'), title=document.getElementById('sit-title'),
+      text=document.getElementById('sit-text'), reveal=document.getElementById('sit-reveal'),
+      cur=0;
+  var LBL={None:'No alert', RLS:'Red line', NTS:'Nuclear signal', 'n/a':'unparsed'};
+  PASSAGES.forEach(function(p,i){
+    var o=document.createElement('option'); o.value=i;
+    o.textContent=p.id+' — '+(p.sp||'')+(p.yr?' ('+p.yr+')':'');
+    pick.appendChild(o);
+  });
+  function show(i){
+    cur=i; var p=PASSAGES[i];
+    pick.value=i;
+    title.textContent='Passage '+p.id+' — '+(p.sp||'')+(p.yr?', '+p.yr:'');
+    text.textContent=p.ru||'';
+    reveal.style.display='none'; reveal.innerHTML='';
+  }
+  function esc(t){ var d=document.createElement('div'); d.textContent=t==null?'':t; return d.innerHTML; }
+  function render(call){
+    var p=PASSAGES[cur], ref=p.ref, rows='', agree=0, tot=0;
+    MODELS.forEach(function(m){
+      var v=(p.v||{})[m.k]; if(v===undefined) return;
+      tot++; if(v===ref) agree++;
+      var fl=(p.flagged||{})[m.k]?' <span style="color:var(--gold)" title="a naive substring check flagged this quote; reading all 283 such spans found 0 inventions">flagged</span>':'';
+      rows+='<tr><td style="text-align:left">'+esc(m.short||m.n||m.k)+'</td>'+
+            '<td style="color:'+(v===ref?'#5fd3a0':'#e06c6c')+'">'+esc(LBL[v]||v)+'</td>'+
+            '<td style="text-align:left;font-size:.72rem;color:var(--lb)">'+esc(((p.j||{})[m.k]||'').slice(0,220))+fl+'</td></tr>';
+    });
+    var hit = call===ref;
+    reveal.innerHTML =
+      '<div style="margin-top:1rem;padding:.7rem .9rem;border-left:3px solid '+(hit?'#5fd3a0':'#e06c6c')+';background:rgba(255,255,255,.03)">'+
+      '<b>Reference label: '+esc(LBL[ref]||ref)+'.</b> You said <b>'+esc(LBL[call]||call)+'</b> — '+(hit?'match':'no match')+'. '+
+      esc(agree)+' of '+esc(tot)+' configurations agreed with the reference on this passage.'+
+      '<div style="font-size:.72rem;color:var(--lb);margin-top:.35rem">Reference labels are human-adjudicated and provisional; see Method.</div></div>'+
+      '<table class="tbl" style="margin-top:.7rem;width:100%"><thead><tr><th style="text-align:left">configuration</th><th>call</th><th style="text-align:left">its stated reason</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    reveal.style.display='block';
+  }
+  pick.addEventListener('change',function(){ show(parseInt(pick.value,10)); });
+  document.getElementById('sit-rand').addEventListener('click',function(){ show(Math.floor(Math.random()*PASSAGES.length)); });
+  document.getElementById('sit-calls').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-call]'); if(!b) return;[].forEach.call(this.querySelectorAll('button[data-call]'),function(x){x.style.color='';x.style.borderColor='';});b.style.color='var(--gold)'; b.style.borderColor='var(--gold)';render(b.getAttribute('data-call'));
+  });
+  show(0);
+});
+</script>
