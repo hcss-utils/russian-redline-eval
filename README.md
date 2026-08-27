@@ -92,12 +92,12 @@ NUCLEAR. It may raise or lower it freely.
 
 | configuration | caught | cry-wolf before the signal | stuck high after catching | naive-flagged span |
 |---|---|---|---|---|
+| gpt-5.6-sol | 14/17 | 3.5% | 3.6% | 0.0% |
 | haiku-4.5 | 14/17 | 3.5% | 17.9% | 36.4% |
-| gpt-5.6-sol | 14/17 | 3.5% | 3.8% | 0.0% |
-| opus-5-think | 13/17 | 2.4% | 4.2% | 2.9% |
-| deepseek-v4-pro | 13/17 | 2.4% | 9.1% | 9.4% |
-| fable-5 | 10/17 | 2.4% | 5.6% | 5.9% |
-| gemini-3.6-flash | 8/17 | 1.2% | 0.0% | 25.0% |
+| deepseek-v4-pro | 13/17 | 2.4% | 7.7% | 7.5% |
+| opus-5-think | 13/17 | 2.4% | 3.8% | 2.8% |
+| fable-5 | 10/17 | 2.4% | 5.0% | 5.8% |
+| gemini-3.6-flash | 8/17 | 1.2% | 0.0% | 26.1% |
 
 ### The finding
 

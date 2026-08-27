@@ -3,9 +3,9 @@
 'not found'; it cannot tell an ellipsis from an invention.
 
 The ladder runs benign-first, so each span gets the mildest category that
-explains it. Anything that survives every mechanical test is a candidate real
-fabrication and is printed for human reading -- the classifier proposes, the
-eye disposes.
+explains it. Anything that survives every mechanical test is unexplained by the benign
+classes and is printed for human reading -- the classifier proposes, the eye
+disposes. On this corpus 0 of 283 survived as inventions.
 """
 import json, io, re, unicodedata, difflib, sys
 

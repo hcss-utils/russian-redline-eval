@@ -71,7 +71,7 @@ def main():
     print(f"records {out['n_records']}  parsed {out['n_parsed']}  errors {out['n_errors']}  "
           f"unparsed {out['n_unparsed']}  items {out['n_items']}  spend ${out['spend_usd']}\n")
     print(f"{'model':18s} {'RLSacc':>7s} {'RLSrec':>7s} {'NTSacc':>7s} {'NTSmiss':>8s} "
-          f"{'fabr':>6s} {'refus':>6s} {'consis':>7s} {'$':>6s}")
+          f"{'flag%':>6s} {'refus':>6s} {'consis':>7s} {'$':>6s}")
     for mk in sorted(models, key=lambda m: -(out["models"][m]["nts_incl"]["acc"])):
         d=out["models"][mk]
         print(f"{mk:18s} {d['rls_incl']['acc']:7.3f} {(d['rls_incl']['recall'] or 0):7.3f} "

@@ -62,8 +62,11 @@ All figures derived from `results_sweep.jsonl` via `score.py`; none typed by han
 2. ***A naive verbatim check separates them widely; reading the flags shows why that is misleading.*** a naive substring check flags 18.5% of cited spans; reading all 283 found **0 inventions**. Mechanically checked — the span either is or is not a substring of
    the passage. No judgement involved.
 3. **The most alarming profile is cheap and accurate.** `haiku-4.5` misses **0 of 36** nuclear signals at
-   **$0.65** — and has the highest naive-flag rate in the slate; reading every flagged span found no invention. For an adviser that is worse than
-   being wrong: the analyst checks the quote, it reads plausibly, and it is not in the source.
+   **$0.65** — and has the highest naive-flag rate in the slate; reading every flagged span found no invention. What the rate measures is
+   citation *hygiene*, not honesty: the quote is traceable to the passage but not byte-identical
+   to it, most often because the channel's own markup or an ellipsis was carried across. An
+   analyst should still verify the span before quoting it onward — but a flag here is not
+   evidence that the model made anything up.
 4. **Price predicts nothing.** `gpt-5.6-luna` at **$0.11** has RLS recall 1.000. `fable-5` at **$7.00** —
    64× the cost — misses two nuclear signals. `deepseek-v4-pro` misses **8 of 36**, the worst in the slate.
 5. **Confidence is mildly inverted, not flat.** Models are only slightly less confident when wrong than
@@ -84,13 +87,13 @@ All figures derived from `results_sweep.jsonl` via `score.py`; none typed by han
 - **Reference labels are provisional** — single-adjudicator, and coded before Codebook Amendment 1. See
   `CODEBOOK_VERSION_FINDING.md`. No kappa is quoted.
 - **`minimax-m3` absent** (token-plan quota); Solar Pro 3 and GigaChat have no credentials.
-- **No corpus-random control arm yet**, so no operational false-alarm rate.
+- The corpus-random control arm below bounds over-triggering on **pipeline-screened non-candidate** traffic only; there is no false-alarm rate for unscreened traffic.
 - 10 unparsed records (0.4%) retain their raw text and are recoverable.
 
 
 ## Corpus-random control arm
 
-Accuracy on a class-enriched set says nothing about how often a model cries wolf on ordinary traffic.
+Accuracy on a class-enriched set says nothing about how often a model cries wolf on traffic that is not enriched for the classes it is hunting.
 **50 passages** were drawn at random from the corpus (deterministic seed,
 tokens >= 50, screened by the pipeline as non-candidates) and put to all
 **14 configurations**.
@@ -103,7 +106,7 @@ This bounds over-triggering on **pipeline-screened non-candidate traffic** only;
 
 ***Not one model raised a single red-line or nuclear alert on any of them.***
 
-This is load-bearing for the headline finding: the models are appropriately **quiet on noise** and
+This is load-bearing for the headline finding: on this screened slice the models are **quiet on noise** and
 accurate on signal, and a naive check flags up to 42.2% of their quotes, none of which is an invention. The flags are therefore not an artefact of over-triggering either.
 
 **Boundary:** at a corpus nuclear prevalence of 2.563%, roughly one of 50 random chunks might genuinely
