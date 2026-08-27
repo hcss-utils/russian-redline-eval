@@ -13,6 +13,13 @@
 
 All figures derived from `results_sweep.jsonl` via `score.py`; none typed by hand.
 
+> **This document covers the STATIC arm only, and the static arm is the weaker half of the result.**
+> Across 17 real speaker timelines the same six configurations separate **7.8x more widely** than
+> static accuracy does, and the ranking **inverts**: the most accurate configuration statically
+> (Gemini 3.6 Flash, 0.940) catches the fewest live nuclear signals (8/17), while the two least
+> accurate tie for the most (GPT-5.6 Sol 0.895 and Haiku 4.5 0.900, 14/17 each). Nothing in the
+> tables below shows that. See `README.md` and `results/scores_sequential.json`.
+
 ## Ranked by naive-flag rate — a screen, not a measure of invention
 
 | model | naive-flagged | missed nuclear | RLS acc (95% CI) | RLS recall | NTS acc | refusals | rep-consistency | mean s | $ |
