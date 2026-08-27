@@ -62,7 +62,7 @@ same speech act as a red line, and the models split on it.
 
 ## Reproducing
 
-> **One script is not reproducible from this repository, by design.** `code/build_app_data.py` rebuilds the internal dashboard payload and needs the unreleased reference annotations (`gold298_rows.json`), which are colleagues' unpublished work. It exits with that message rather than a traceback. **Everything this benchmark claims is reproducible without it** — `code/score.py` and `code/score_sequential.py` run against the published `results/` and regenerate the scores byte-identically.
+> **All three scripts run from a clean checkout.** `code/score.py` and `code/score_sequential.py` regenerate the published scores byte-identically, and `code/build_app_data.py` rebuilds the dashboard payload from `data/benchmark_100.json`. It formerly read passage text from an unreleased reference file and so could not run outside the project; it now reads the published benchmark, and the private set is an optional override for the wider 298-item pool only.
 
 ```
 export CREDENTIALS_ENV=~/.rubicon.env     # your own provider keys; none are in this repo
@@ -141,7 +141,7 @@ The check was a substring test: is the cited span present in the passage? It is 
 
 The dominant category is the source channel's own Telegram markup (`__bold__`, `**bold**`) sitting *inside* the sentence the model quoted. The model dropped it, as any careful reader would. Our checker called that an invention.
 
-**The usable finding is methodological:** a naive verbatim check reports **18.5%** fabrication on this corpus, and the true rate is **0**. If you are building a citation-faithfulness eval, normalise source markup and whitespace, allow ellipses and splices, and **read your positives before you publish a rate**.
+**The usable finding is methodological:** a naive verbatim check flags **18.5%** of cited spans on this corpus, and the invention rate among them is **0**. If you are building a citation-faithfulness eval, normalise source markup and whitespace, allow ellipses and splices, and **read your positives before you publish a rate**.
 
 Reproduce: `python code/classify_flagged_spans.py` against `results/flagged_span_categories.json`, which carries the category and the reason for every flagged span.
 

@@ -2,10 +2,11 @@
 """Generate the app's MODELS[] and PASSAGES[] from measured results. Nothing typed."""
 import json, io, os, collections, statistics, re
 
-# NOTE ON KEYS: the payload keys "fab"/"fabr" are HISTORICAL SERIALIZATION NAMES kept for
-# compatibility with the deployed app. They mean "naive-substring-flagged", NOT "fabricated":
-# all 283 flagged spans were read and 0 were inventions. Human-readable labels use the
-# neutral vocabulary; only these two short wire keys retain the old spelling.
+# PAYLOAD KEYS ARE NEUTRAL AND CANONICAL: "flagged" (per passage) and "flag_rate" (per
+# model). They mean naive-substring-flagged, which is NOT fabricated -- all 283 flagged
+# spans were read and 0 were inventions. The deployed view still uses the historical
+# short names; that spelling is confined to ONE named adapter in the app (adaptLegacyKeys).
+# The "fabricated" INPUT key is still accepted as a read fallback for older score files.
 # Passage text comes from the PUBLISHED benchmark file. It was previously read from an
 # unreleased reference set, which made this script unrunnable for anyone outside the
 # project -- and, when that file went missing locally, unrunnable for us too. The
@@ -72,7 +73,7 @@ for k in keys:
         price=LIST[k], f1=f1(k,"rls"), rls=m["rls_incl"]["acc"], nts=m["nts_incl"]["acc"],
         rlsrec=m["rls_incl"]["recall"], ntsrec=m["nts_incl"]["recall"],
         fa=m["nts_incl"]["missed"], mn=m["nts_incl"]["missed"],
-        fabr=(m.get("naive_flagged") or m.get("fabricated"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
+        flag_rate=(m.get("naive_flagged") or m.get("fabricated"))["rate"], refus=m["refusals"], schema=round(100*(m["n"]/(m["n"]+m["unparsed"]+m["errors"])),1),
         consis=m["rep_consistency"], secs=m["mean_secs"], cost=m["est_cost"], flip=None))
 
 # passages: first rep only, per model verdict
@@ -83,7 +84,7 @@ passages=[]
 for i,(cid,per) in enumerate(sorted(byitem.items()), 1):
     s=SAMP[cid]
     ref = "NTS" if s["gold_nts"]=="Y" else ("RLS" if s["gold_rls"]=="Y" else "None")
-    verd={}; just={}; fab={}
+    verd={}; just={}; flagged={}
     for k in keys:
         r=per.get(k)
         if not r: verd[SAFE(k)]="n/a"; continue
@@ -92,17 +93,17 @@ for i,(cid,per) in enumerate(sorted(byitem.items()), 1):
         rat=v.get("nts_rationale") if v.get("nts")=="Y" else v.get("rls_rationale")
         if rat: just[SAFE(k)]=rat
         if r.get("rls_ev_verbatim") is False or r.get("nts_ev_verbatim") is False:
-            fab[SAFE(k)]=True
+            flagged[SAFE(k)]=True
     agree=sum(1 for k in keys if verd.get(SAFE(k))==ref)
     passages.append(dict(id=f"#{i:03d}", cid=cid, ref=ref, sp=s.get("src") or "n/a",
         yr=(s.get("date") or "")[:4] or "n/a", ru=TXT[cid], en=None,
         cue=(s.get("database") or ""), agree=agree, n_models=len(keys),
-        v=verd, j=just, fab=fab, tokens=s["tokens"]))
+        v=verd, j=just, flagged=flagged, tokens=s["tokens"]))
 
 out=dict(generated_from=os.path.basename(RES), n_records=SCO["n_records"], spend=SCO["spend_usd"],
          n_items=len(passages), n_models=len(keys), models=models, passages=passages)
 io.open(os.path.join(HERE,"app_data.json"),"w",encoding="utf-8").write(json.dumps(out,ensure_ascii=False))
 print(f"models={len(models)} passages={len(passages)} "
-      f"flagged_spans={sum(len(p['fab']) for p in passages)} "
+      f"flagged_spans={sum(len(p['flagged']) for p in passages)} "
       f"justifications={sum(len(p['j']) for p in passages)}")
 print("wrote app_data.json", os.path.getsize(os.path.join(HERE,"app_data.json")), "bytes")
