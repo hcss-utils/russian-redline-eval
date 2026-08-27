@@ -1,6 +1,6 @@
 # RedLineBench — red-line & nuclear-signal detection on real Russian official statements
 
-> 🟥 **CORRECTION, 2026-08-27.** An earlier version of this document reported a fabricated-quote rate of
+> 🟥 **CORRECTION, 2026-08-27.** An earlier version of this document reported a naive-flagged-quote rate of
 > 2.5%–45.8% and concluded *"the standard way of testing that is what fails"*. That conclusion was **wrong**.
 > All **283** spans the naive substring check flagged were then read individually: **0 were
 > inventions**. 238 were formatting only, of which 154 were the source channel's own Telegram markup (`__`/`**`) sitting inside the quoted
@@ -26,7 +26,7 @@ the span of text justifying its call, and we check mechanically whether that quo
 | GPT-5.6 Luna | 36.9% | 2/36 | **$0.11** |
 | Claude Haiku 4.5 | **45.8%** | **0/36** | $0.65 |
 
-**An 18-fold spread in whether the justification is real, at equal accuracy.** Claude Haiku 4.5 misses no
+**A wide spread in how much source markup each model strips when it quotes — and, on inspection, no spread at all in whether it invents.** Claude Haiku 4.5 misses no
 nuclear signal at all, for 65 cents, and has the highest naive-flag rate in the slate; reading every flagged span found no invention.
 
 ## Why real statements rather than scenarios
@@ -53,7 +53,7 @@ same speech act as a red line, and the models split on it.
 | `prompt/` | the frozen system prompt and user template, with hashes |
 | `data/` | **`benchmark_100.json`** and **`control_50.json`** — passages WITH text, per-item SHA-256, channel, date, source arm and URL where the publisher exposes one; the 15 excluded contested items; corpus marginals; English reading aids |
 | `code/` | sampler, model registry, runner, scorer, cost model |
-| `results/` | **all 3,496 per-decision records** (2,800 benchmark + 696 control) with rationales, confidences, evidence spans and verbatim checks; plus derived scores |
+| `results/` | **all 3,496 per-decision records** (2,800 benchmark + 700 control) with rationales, confidences, evidence spans and verbatim checks; plus derived scores |
 | `RESULTS.md` | the measured findings |
 | `REPRESENTATIVENESS.md` | how the sample matches the corpus, and where it does not |
 | `CODEBOOK_VERSION_FINDING.md` | how the benchmark was nearly run on a superseded codebook |
@@ -123,7 +123,7 @@ python code/score_sequential.py results/results_sequential.jsonl
 
 ## The correction that matters most
 
-This benchmark originally reported a **fabricated-quote rate of 2.5%–45.8%** and concluded that model justifications could not be trusted. **That was wrong, and the error was ours, not the models'.**
+This benchmark originally reported a **naive-flagged-quote rate of 2.5%–45.8%** and concluded that model justifications could not be trusted. **That was wrong, and the error was ours, not the models'.**
 
 The check was a substring test: is the cited span present in the passage? It is a reasonable *screen*. It is not a verdict. We went back and read **every one of the 283 flagged spans**:
 

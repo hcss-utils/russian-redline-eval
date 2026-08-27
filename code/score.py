@@ -43,7 +43,7 @@ def main():
         # fabricated evidence
         fab=sum(1 for r in v if r.get("rls_ev_verbatim") is False or r.get("nts_ev_verbatim") is False)
         claimed=sum(1 for r in v if r.get("rls_ev_verbatim") is not None or r.get("nts_ev_verbatim") is not None)
-        d["fabricated"]={"n":fab,"of_claimed":claimed,"rate":round(fab/claimed,3) if claimed else None}
+        d["naive_flagged"]={"n":fab,"of_claimed":claimed,"rate":round(fab/claimed,3) if claimed else None}
         # confidence calibration
         cc=[(r["verdict"].get("rls_confidence"), r["verdict"].get("rls")==r["gold_rls"]) for r in v
             if isinstance(r["verdict"].get("rls_confidence"),(int,float))]
@@ -70,7 +70,7 @@ def main():
         d=out["models"][mk]
         print(f"{mk:18s} {d['rls_incl']['acc']:7.3f} {(d['rls_incl']['recall'] or 0):7.3f} "
               f"{d['nts_incl']['acc']:7.3f} {d['nts_incl']['missed']:4d}/{d['nts_incl']['n_pos']:<3d} "
-              f"{(d['fabricated']['rate'] or 0):6.3f} {d['refusals']:6d} "
+              f"{(d['naive_flagged']['rate'] or 0):6.3f} {d['refusals']:6d} "
               f"{(d['rep_consistency'] or 0):7.3f} {d['est_cost']:6.2f}")
     print("\nwrote scores.json")
 

@@ -15,11 +15,12 @@ justification is actually present in the passage.**
 
 ## The result most relevant to deployment
 
-Accuracy does not separate these models; **faithfulness does, by an order of magnitude.** Several models
-reach near-identical verdict accuracy while a naive substring check flags their supporting quotation on a large fraction of
-records. Any deployment that surfaces a model's cited evidence to an analyst — which is the normal design
-for decision support — inherits that failure directly, and it is invisible unless the citation is checked
-against the source automatically.
+Accuracy does not separate these models, and **neither does faithfulness**. A naive substring check
+flags their supporting quotations at rates from 1.7% to 42.2%, which looks like an order-of-magnitude
+difference in honesty — but reading all 283 flagged spans found **zero inventions**. The spread measures
+how much source-channel markup each model strips when it quotes, not whether it invents. What does
+separate them, measurably, is behaviour over time: tracked across real speaker timelines the same
+configurations separate 7.8x more widely than static accuracy, and the ranking inverts.
 
 ## Cautions
 

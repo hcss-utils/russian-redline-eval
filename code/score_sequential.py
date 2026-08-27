@@ -49,7 +49,7 @@ def main():
           "cost":round(sum(r.get("cost",0) for r in rs),4),
         }
     io.open("bench/scores_sequential.json","w",encoding="utf-8").write(json.dumps(out,indent=1,ensure_ascii=False))
-    print(f"{'model':22s} {'caught':>10s} {'cry-wolf':>10s} {'stuck-high':>12s} {'fabricated':>11s} {'cost':>7s}")
+    print(f"{'model':22s} {'caught':>10s} {'cry-wolf':>10s} {'stuck-high':>12s} {'naive-flag':>11s} {'cost':>7s}")
     for mk,s in out.items():
         print(f"{mk:22s} {s['caught']['k']:>4d}/{s['caught']['n']:<5d} "
               f"{s['cry_wolf']['rate']*100:>9.1f}% {s['stuck_high_after_catching']['rate']*100:>11.1f}% "

@@ -56,7 +56,7 @@
     "missed": 23,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 26,
     "of_claimed": 81,
     "rate": 0.321
@@ -119,7 +119,7 @@
     "missed": 23,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 22,
     "of_claimed": 79,
     "rate": 0.278
@@ -182,7 +182,7 @@
     "missed": 21,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 3,
     "of_claimed": 82,
     "rate": 0.037
@@ -245,7 +245,7 @@
     "missed": 16,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 14,
     "of_claimed": 68,
     "rate": 0.206
@@ -308,7 +308,7 @@
     "missed": 21,
     "n_pos": 35
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 22,
     "of_claimed": 75,
     "rate": 0.293
@@ -371,7 +371,7 @@
     "missed": 25,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 31,
     "of_claimed": 84,
     "rate": 0.369
@@ -434,7 +434,7 @@
     "missed": 17,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 2,
     "of_claimed": 80,
     "rate": 0.025
@@ -497,7 +497,7 @@
     "missed": 25,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 8,
     "of_claimed": 75,
     "rate": 0.107
@@ -560,7 +560,7 @@
     "missed": 15,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 33,
     "of_claimed": 72,
     "rate": 0.458
@@ -623,7 +623,7 @@
     "missed": 21,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 4,
     "of_claimed": 74,
     "rate": 0.054
@@ -686,7 +686,7 @@
     "missed": 16,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 6,
     "of_claimed": 83,
     "rate": 0.072
@@ -749,7 +749,7 @@
     "missed": 15,
     "n_pos": 35
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 4,
     "of_claimed": 89,
     "rate": 0.045
@@ -812,7 +812,7 @@
     "missed": 15,
     "n_pos": 34
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 19,
     "of_claimed": 61,
     "rate": 0.311
@@ -875,7 +875,7 @@
     "missed": 22,
     "n_pos": 36
    },
-   "fabricated": {
+   "naive_flagged": {
     "n": 19,
     "of_claimed": 69,
     "rate": 0.275
